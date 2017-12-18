@@ -12,14 +12,12 @@
 
 **2. Goal**
 
-In this project, we will build a space ship powered by waste
-cooker oil. Helm is string operated.
+In this project, we will create a simple but functional website that allows to play and sell games. Developer will be able to link their games into the website and set a price for the sell. Gamers will be able to buy the games and play directly in the website. The Website will create a game library for each user and collects some basic statistics about the games.  
 
 
 **3. Plans**
 
-Our initial streghts go to the backend in order to create the structures which allow the website to run.  
-
+Our initial focus go to the backend in order to create the structures which allow the website to run.  
 
 
 *   Backend
