@@ -40,6 +40,11 @@ Our initial focus go to the backend in order to create the structures which allo
 
 ![Alt text](doc/wds_readme_pic01.jpg "Db model")
 
+**ER-Diagram**
+![Alt text](doc/er_diagram.png "ER diagram for models")
+
+The diagram is more about the concept and actual representation of the relationship than exact definition of attributes.
+
 The test and the security will be implemented while proper fnctionalities are created.
 
 **4. Process and Time Schedule**
