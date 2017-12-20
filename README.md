@@ -31,16 +31,22 @@ The diagram is more about the concept and actual representation of the relations
 
 **3.2 Views**
 
-* Home
-  The home view will be allow for logging in and searching for games.
-* Login
-* BuyGame
-* UploadGame
-* PlayGame
-* Search
-  The search query view will be used by the search function of the Home view without reloading the page.
-* PayForGame
-  Paying for a game will be done from the BuyGame view, and should not need to reload the page.
+* Home (/)
+  The home view will present the players with a splash screen, and options for signing up, signing in, searching for games, and if the user is logged in, presents the user with her game catalogue.
+* Signup (/signup)
+  The signup screen.
+* Login (/login)
+  The login screen.
+* Search (/search)
+  This view presents the user with the results of a search query. The query itself is passed as a GET parameter. Clicking on a game should redirect the user to the BuyGame view.
+* BuyGame (/buy)
+  This view gives the player a presentation/description of the game, and asks the player to buy it.
+* UploadGame (/upload)
+  Developers go through this view to upload a game.
+* PlayGame (/play)
+  Here the playing takes place.
+* ConfirmPayment (/confirm)
+  Paying for a game will be done from the BuyGame view. This view implements the backend part of the payment flow.
 
 **3.3 Extra features**
 
@@ -67,6 +73,8 @@ We communicate using the messagging application Slack. Most work will be done re
 **5. Testing**
 
 The backend will have tests for all views and all response cases. For the frontend we will use AVA. To ensure code quality we require all features must have unit tests before merging to master.
+
+The testing of the frontend will be done continuously during development, both on desktop and phone. During the last week we will do a final test of the apps security.
 
 **6. Risk Analysis**
 
