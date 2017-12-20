@@ -49,21 +49,8 @@ The test and the security will be implemented while proper fnctionalities are cr
 
 **4. Process and Time Schedule**
 
-We communicate using the messagging application Slack.
+We communicate using the messagging application Slack. Most work will be done remotely due to divergent schedules of teammates.
 
-2016 
-    20-end: documentation and logging .
-2017
-    Weeks 1-2: 
-
-
-
-**5. Testing**
-
-The backend will have tests for all views and all response cases. For the frontend we will use AVA. To ensure code quality we require all features must have unit tests before merging to master.
-
-
-**6. Time schedule**
 * 25.12-30.12:
   Development begins. We set up logging and documentation system and begin working on the backend, starting with authentication.
 * 1.1-21.1:
@@ -73,7 +60,10 @@ The backend will have tests for all views and all response cases. For the fronte
 * 5.2-20.2:
   Assuming everything else works we use this time to implement extra features.
 
+**5. Testing**
 
-**7. Risk Analysis**
+The backend will have tests for all views and all response cases. For the frontend we will use AVA. To ensure code quality we require all features must have unit tests before merging to master.
+
+**6. Risk Analysis**
 
 
