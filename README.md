@@ -20,7 +20,7 @@ The backend will be implemented using Django. We will begin by setting up a logg
 
 We will use jQuery and Bootstrap to make the UI responsive and mobile friendly. The frontend scripts will be written with Typescript. To keep things simple GNU Make will do as our build system. We will begin working on design right from the start, with continuous testing to ensure that it works on mobile. Unit testing for the frontend scripts will be done using AVA.
 
-* Models
+**3.1 Models**
 
 ![Alt text](doc/wds_readme_pic01.jpg "Db model")
 
@@ -29,7 +29,27 @@ We will use jQuery and Bootstrap to make the UI responsive and mobile friendly. 
 
 The diagram is more about the concept and actual representation of the relationship than exact definition of attributes.
 
-* Views
+**3.2 Views**
+
+* Home
+  The home view will be allow for logging in and searching for games.
+* Login
+* BuyGame
+* UploadGame
+* PlayGame
+* Search
+  The search query view will be used by the search function of the Home view without reloading the page.
+* PayForGame
+  Paying for a game will be done from the BuyGame view, and should not need to reload the page.
+
+**3.3 Extra features**
+
+After the basic functionality is implemented, we will implement the following extra features depending on what time permits. These are ranked by priority.
+
+* Better search functionality. A tag system would be helpful.
+* Social media sharing.
+* REST API. Using django rest\_framework this should not be difficult. This will allow for getting statistics about players, developers and games straight from the database.
+* Recommendation system. This one might be difficult to implement, we'll see.
 
 **4. Process and Time Schedule**
 
