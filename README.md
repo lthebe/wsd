@@ -38,7 +38,7 @@ Our initial focus go to the backend in order to create the structures which allo
     *   Developer
     *   Gamer
 
-![Alt text](doc/wds_readme_pic.jpg? "Db model")
+![Alt text](doc/wds_readme_pic01.jpg "Db model")
 
 The test and the security will be implemented while proper fnctionalities are created.
 
