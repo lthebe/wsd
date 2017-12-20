@@ -14,29 +14,13 @@
 
 In this project, we will create a simple but functional website that allows to play and sell games. Developer will be able to link their games into the website and set a price for the sell. Gamers will be able to buy the games and play directly in the website. The Website will create a game library for each user and collects some basic statistics about the games.  
 
-
 **3. Plans**
 
-Our initial focus go to the backend in order to create the structures which allow the website to run.  
+The backend will be implemented using Django. We will begin by setting up a logging system and a documentation system using Sphinx, to aid development. Thereafter the management and authentication of user accounts. The payment system will be replaced with a simple on server toggle while the core functionality is implemented. The tests and the security will be implemented while proper fnctionalities are created.
 
+We will use jQuery and Bootstrap to make the UI responsive and mobile friendly. The frontend scripts will be written with Typescript. To keep things simple GNU Make will do as our build system. We will begin working on design right from the start, with continuous testing to ensure that it works on mobile. Unit testing for the frontend scripts will be done using AVA.
 
-*   Backend
-    *   documentation and logging
-    *   models
-        *   person
-        *   player
-        *   developer
-        *   game
-    *   Authentication
-    *   upload game
-    *   buy game
-    *   play game
-    *   Search
-*   Frontend
-    *   Home
-    *   Login
-    *   Developer
-    *   Gamer
+* Models
 
 ![Alt text](doc/wds_readme_pic01.jpg "Db model")
 
@@ -45,11 +29,11 @@ Our initial focus go to the backend in order to create the structures which allo
 
 The diagram is more about the concept and actual representation of the relationship than exact definition of attributes.
 
-The test and the security will be implemented while proper fnctionalities are created.
+* Views
 
 **4. Process and Time Schedule**
 
-We communicate using the messagging application Slack. Most work will be done remotely due to divergent schedules of teammates.
+We communicate using the messagging application Slack. Most work will be done remotely due to divergent schedules of teammates. To ensure code quality will will require that feature branches are merged not by the developer behind the feature. This will work as a simple code review process.
 
 * 25.12-30.12:
   Development begins. We set up logging and documentation system and begin working on the backend, starting with authentication.
@@ -58,7 +42,7 @@ We communicate using the messagging application Slack. Most work will be done re
 * 28.1-5.2:
   Polish for the frontend. The payment system should be implemented this week. If time permits we begin implementing tag system here.
 * 5.2-20.2:
-  Assuming everything else works we use this time to implement extra features.
+  Assuming everything else works we use this time to implement extra features, and test the final product.
 
 **5. Testing**
 
