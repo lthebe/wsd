@@ -60,9 +60,20 @@ We communicate using the messagging application Slack.
 
 **5. Testing**
 
-We use unit test for the backend functionalities.
+The backend will have tests for all views and all response cases. For the frontend we will use AVA. To ensure code quality we require all features must have unit tests before merging to master.
 
 
-**6. Risk Analysis**
+**6. Time schedule**
+* 25.12-30.12:
+  Development begins. We set up logging and documentation system and begin working on the backend, starting with authentication.
+* 1.1-21.1:
+  We begin work on the frontend design, with continuous testing on phone. Most core features should be implemented during this time.
+* 28.1-5.2:
+  Polish for the frontend. The payment system should be implemented this week. If time permits we begin implementing tag system here.
+* 5.2-20.2:
+  Assuming everything else works we use this time to implement extra features.
+
+
+**7. Risk Analysis**
 
 
