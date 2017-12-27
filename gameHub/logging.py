@@ -1,7 +1,7 @@
 """Logging for gameHub backend."""
 
 import logging
-from logging import Formatter
+from logging import StreamHandler, Formatter
 
 from django.utils import timezone
 
@@ -38,3 +38,34 @@ class SingleLineFormatter(Formatter):
   def formatStack(self, stack_info):
     msg = super(SingleLineFormatter, self).formatStack(stack_info)
     return msg
+
+class ColoredStreamHandler(StreamHandler):
+  """A stream handler that colors the output.
+  
+    The color scheme is:
+      DEBUG: blue
+      INFO: green
+      WARNING: yellow
+      ERROR: red
+      CRITICAL: bold purple
+  """
+  
+  color_scheme = None
+  color_terminator = None
+  
+  def __init__(self, colors, stream=None, color_end='\033[0m'):
+    self.color_scheme = colors
+    self.color_terminator = color_end
+    super(ColoredStreamHandler, self).__init__(stream)
+  
+  def emit(self, record):
+    try:
+      msg = self.format(record)
+      if record.levelname in self.color_scheme:
+        msg = self.color_scheme[record.levelname] + msg + self.color_terminator
+      stream = self.stream
+      stream.write(msg)
+      stream.write(self.terminator)
+      self.flush()
+    except:
+      self.handleError(record)
