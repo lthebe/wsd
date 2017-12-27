@@ -1,0 +1,23 @@
+{
+  "name": "gameHub",
+  "version": "1.0.0",
+  "description": "------",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@version.aalto.fi:wsd2017_flo/gameHub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
