@@ -6,10 +6,12 @@
 Welcome to gameHub's documentation!
 ===================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Contents:
 
+.. toctree::
+  :maxdepth: 2
+  
+  modules/gameHub
 
 
 Indices and tables

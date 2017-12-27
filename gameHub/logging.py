@@ -5,6 +5,12 @@
     
     The log messages are stored with date, time, message level, and the sender module,
     separated by tabs.
+    
+    The raw logs can be quite difficult to read, so it's recommended to have some kind
+    of reader program that can filter the messages. There is a simple python script
+    called rlog which has been added to the repository just for convenience. It's a
+    bit wonky, but it's capable of reading and filtering the logs, so what more can
+    you want? Run 'python rlog.py -h' for help.
 """
 
 import logging
