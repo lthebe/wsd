@@ -16,6 +16,12 @@ import dj_database_url
 #as heroku can not read .env file
 from decouple import config
 
+from logging import handlers
+
+from gameHub import logging as be_logging
+
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -155,6 +161,65 @@ USE_TZ = True
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
+
+# Logging stuff
+LOG_FILE = config('LOG_FILE', default='log/logfile.txt')
+
+filehandler = {
+    'level': 'DEBUG',
+    'formatter': 'file_formatter',
+    'filename': LOG_FILE,
+    'class': 'logging.handlers.RotatingFileHandler',
+    'mode': 'a',
+    'maxBytes': 1048576,
+    'backupCount': 10
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(name)s: %(message)s'
+        },
+        'message_only': {
+            'format': '%(message)s'
+        },
+        'file_formatter': {
+            'format': '%(message)s',
+            '()': be_logging.SingleLineFormatter,
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'gameHub.logging.ColoredStreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'simple',
+            'colors': {
+                'DEBUG':    '\033[94m',
+                'INFO':     '\033[92m',
+                'WARNING':  '\033[93m',
+                'ERROR':    '\033[91m',
+                'CRITICAL': '\033[95m' + '\033[1m',
+            },
+        },
+        'filehandler': filehandler,
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'INFO' if DEBUG else 'WARNING'
+        }
+    }
+}
+
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
