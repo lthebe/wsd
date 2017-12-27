@@ -12,8 +12,7 @@ Contents:
   :maxdepth: 2
   
   modules/gameHub
-
-
+  
 Indices and tables
 ==================
 
