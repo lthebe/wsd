@@ -1,4 +1,11 @@
-"""Logging for gameHub backend."""
+"""Logging for gameHub backend.
+    
+    Currently all messages are written to stderr when settings.DEBUG==True, and
+    also to a rotating log file, specified by the LOG_FILE environment variable.
+    
+    The log messages are stored with date, time, message level, and the sender module,
+    separated by tabs.
+"""
 
 import logging
 from logging import StreamHandler, Formatter
