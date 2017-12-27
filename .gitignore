@@ -13,3 +13,5 @@ eggs
 parts
 src/*.egg-info
 doc/build
+gameHub/settings.ini
+log/*
