@@ -38,7 +38,7 @@ def pick_group(request):
         if form.is_valid():
             # because of FIELDS_STORED_IN_SESSION, this will get copied
             # to the request dictionary when the pipeline is resumed
-            if len(request.user.groups.all())<=1:
+            if len(request.user.groups.all()) >= 1:
                 #add message that you are allowed only a group
                 return redirect('accounts:home')
             request.session['user_group'] = str(form.cleaned_data['group'])
