@@ -47,4 +47,4 @@ def search(request):
     q = request.GET.get('q', default=None)
     p = request.GET.get('p', default=0)
     
-    return HttpResponse(str(Game.search(q, p)))
+    return HttpResponse(qset)
