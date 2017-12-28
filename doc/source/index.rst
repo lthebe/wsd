@@ -13,6 +13,7 @@ Contents:
   
   modules/gameHub
   modules/game
+  modules/accounts
   
 Indices and tables
 ==================

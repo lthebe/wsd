@@ -9,7 +9,8 @@ class Game(models.Model):
     
     :members: name, url, description, gameimage
     
-    .. todo:: Relations with user models.
+    .. todo::
+        Relations with user models.
     """
     
     name        = models.TextField()
@@ -27,11 +28,6 @@ class Game(models.Model):
         return game
     
     def __str__(self):
-        """Returns a string representing the object.
-        
-        The returned string contains the private_key, name and url.
-        """
-        
         return 'Game {0}, name: {1}, url: {2}'.format(
             self.pk,
             self.name,

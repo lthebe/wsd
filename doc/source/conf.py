@@ -20,6 +20,9 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'gameHub.settings'
+import django
+django.setup()
 
 
 # -- General configuration ------------------------------------------------
@@ -33,7 +36,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.ifconfig']
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
