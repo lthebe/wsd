@@ -15,4 +15,5 @@ src/*.egg-info
 doc/build
 gameHub/settings.ini
 log/*
-node_modules/.bin
+node_modules/
+doc/typedoc/*
