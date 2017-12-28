@@ -48,7 +48,7 @@ class Game(models.Model):
             
             qset = cls.objects.all().filter(query)
         
-        return = qset[(p) * pagelen : (p + 1) * pagelen]
+        return qset[(p) * pagelen : (p + 1) * pagelen]
     
     def __str__(self):
         return 'Game {0}, name: {1}, url: {2}'.format(
