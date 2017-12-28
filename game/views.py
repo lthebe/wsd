@@ -2,6 +2,7 @@ import logging
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.views.decorators.http import require_http_methods
 
 from .models import Game
 
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
+@require_http_methods(('GET', 'HEAD'))
 def buy(request, game):
     """Presents a game for buying.
     
@@ -27,7 +29,7 @@ def buy(request, game):
     except:
         return HttpResponseNotFound()
 
-
+@require_http_methods(('GET', 'HEAD'))
 def search(request):
     """Gives the result page for a search query.
     
@@ -41,10 +43,6 @@ def search(request):
     
     :statuscode 200: Success
     """
-    
-    if request.method != 'GET':
-        logger.debug('games.views.search responded 405')
-        return HttpResponseNotAllowed()
     
     q = request.GET.get('q', default=None)
     p = request.GET.get('p', default=0)
