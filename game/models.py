@@ -16,7 +16,7 @@ class Game(models.Model):
         Relations with user models.
     """
     
-    name        = models.TextField()
+    name        = models.TextField(unique=True)
     url         = models.TextField()
     description = models.TextField()
     gameimage   = models.TextField()
@@ -39,7 +39,7 @@ class Game(models.Model):
         if q is None:
             qset = cls.objects.all()
         else:
-            qwords = re.findall(r'".+"|\S+', request.GET['q'])
+            qwords = re.findall(r'".+"|\S+', q)
             query = Q()
             for word in qwords:
                 query = query & (
