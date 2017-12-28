@@ -9,6 +9,7 @@ from .forms import RegisterForm, GroupChoiceForm
 # Create your views here.
 
 class RegisterView(CreateView):
+    """Registration of the user - custom form to include the group selection"""
     model = User
     form_class = RegisterForm
     def post(self, request):
@@ -30,9 +31,12 @@ class RegisterView(CreateView):
             return render(request, template_name='accounts/register.html', context={'form': form})
 
 def home_view(request):
+    """Returns the home page of the site"""
     return render(request, template_name='gamehub/home.html')
 
 def pick_group(request):
+    """Pick the group for the user - either developer or player.
+    A user will have only one group"""
     if request.method == 'POST':
         form = GroupChoiceForm(request.POST)
         if form.is_valid():
