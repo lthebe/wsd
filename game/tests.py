@@ -61,6 +61,15 @@ class GameSearchTest(TestCase):
         qset = Game.search('baz bar foo')
         self.assertEquals(len(qset), 1)
     
+    def testStringSearch(self):
+    
+        qset = Game.search('"foo bar"')
+        self.assertEquals(len(qset), 2)
+        qset = Game.search('"foo baz"')
+        self.assertEquals(len(qset), 1)
+        qset = Game.search('"foo bar" baz')
+        self.assertEquals(len(qset), 1)
+    
     def testDescriptionSearch(self):
         
         qset = Game.search('some')

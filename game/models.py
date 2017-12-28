@@ -1,7 +1,10 @@
+import logging
 import re
 
 from django.db import models
 from django.db.models import Q
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 
@@ -32,14 +35,15 @@ class Game(models.Model):
     
     @classmethod
     def search(cls, q, p=0, pagelen=50):
-        """
+        """Searches for games in the database.
         """
         
         qset = None
         if q is None:
             qset = cls.objects.all()
         else:
-            qwords = re.findall(r'".+"|\S+', q)
+            qwords = map(lambda m: m[0] if len(m[0]) > 0 else m[1],
+                re.findall(r'"(.+)"|(\S+)', q))
             query = Q()
             for word in qwords:
                 query = query & (
