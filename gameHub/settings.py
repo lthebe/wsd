@@ -163,7 +163,7 @@ USE_TZ = True
 DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
 
 # Logging stuff
-LOG_FILE = config('LOG_FILE', default='log/logfile.txt')
+LOG_FILE = os.path.join(BASE_DIR, config('LOG_FILE', default='log/logfile.txt'))
 
 filehandler = {
     'level': 'DEBUG',
