@@ -22,5 +22,6 @@ import game.views as views
 app_name = 'accounts'
 
 urlpatterns = [
-    path('buy/<int:game>/', views.buy, name='buy')
+    path('buy/<int:game>/', views.buy, name='buy'),
+    path('search/', views.search, name='search'),
 ]
