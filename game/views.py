@@ -1,10 +1,13 @@
 import logging
 
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 
 from .models import Game
+
+import accounts.urls
 
 logger = logging.getLogger(__name__)
 
@@ -47,4 +50,5 @@ def search(request):
     q = request.GET.get('q', default=None)
     p = request.GET.get('p', default=0)
     
-    return HttpResponse(qset)
+    return render(request, template_name='game/search.html')
+    

@@ -19,7 +19,7 @@ Examples:
 from django.urls import path
 import game.views as views
 
-app_name = 'accounts'
+app_name = 'game'
 
 urlpatterns = [
     path('buy/<int:game>/', views.buy, name='buy'),
