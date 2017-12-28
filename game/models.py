@@ -36,6 +36,14 @@ class Game(models.Model):
     @classmethod
     def search(cls, q, p=0, pagelen=50):
         """Searches for games in the database.
+        
+        Args:
+            q (str): The search query string.
+            p (int): The page number.
+            pagelen (int): The number of games to retrieve on a single search page.
+        
+        Return:
+            A queryset containing all the found games.
         """
         
         qset = None

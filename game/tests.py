@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 # Create your tests here.
 
 class BuyViewTest(TestCase):
+    """Tests the buy view responses. This really is just a test of finding the games
+    by their private keys.
+    """
     
     def setUp(self):
         
@@ -21,6 +24,7 @@ class BuyViewTest(TestCase):
         Game.create(name='name', url='url').save()
     
     def testResponses(self):
+        """Tests the response codes"""
         
         game = Game.objects.all()[0]
         pk = game.pk
@@ -31,6 +35,11 @@ class BuyViewTest(TestCase):
         self.assertEquals(response.status_code, 404)
 
 class GameSearchTest(TestCase):
+    """Tests the search function of the Game model.
+    
+    Given that these tests are implemented here, testing for which games a query finds
+    on the views is unnessecary.
+    """
     
     def setUp(self):
         
@@ -49,6 +58,7 @@ class GameSearchTest(TestCase):
         Game.create('another game', '', description='this game also has a title').save()
         
     def testNameSearch(self):
+        """Tests if games are found by their names"""
         
         qset = Game.search('foo')
         self.assertEquals(len(qset), 4)
@@ -56,12 +66,18 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 4)
         qset = Game.search('foo bar')
         self.assertEquals(len(qset), 2)
+        qset = Game.search('foo baz')
         qset = Game.search('foo bar baz')
         self.assertEquals(len(qset), 1)
         qset = Game.search('baz bar foo')
         self.assertEquals(len(qset), 1)
     
     def testStringSearch(self):
+        """Tests if string searches work correctly.
+        
+        This verifies that a query like '"foo bar"' finds different results than
+        'foo bar'.
+        """
     
         qset = Game.search('"foo bar"')
         self.assertEquals(len(qset), 2)
@@ -71,6 +87,7 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 1)
     
     def testDescriptionSearch(self):
+        """Tests that games can be found by their description."""
         
         qset = Game.search('some')
         self.assertEquals(len(qset), 2)
@@ -80,6 +97,7 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 4)
         
     def testPageLimits(self):
+        """Tests that the limits on pages, as well as the paging function works."""
         
         qset1 = Game.search(None, p=0, pagelen=5)
         qset2 = Game.search(None, p=1, pagelen=5)
