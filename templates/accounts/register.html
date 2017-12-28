@@ -1,0 +1,69 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+  <form class="well form-horizontal" method="POST">
+    <fieldset>
+    <legend><center><h2><b>Registration Form</b></h2></center></legend><br>
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.username.errors }}
+    <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label">UserName:</label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    <!--<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>-->
+    {{form.username}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.email.errors }}
+    <label for="{{ form.email.id_for_label }}" class="col-md-4 control-label">Email: </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.email}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.password1.errors }}
+    <label for="{{ form.password1.id_for_label }}" class="col-md-4 control-label">Password: </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.password1}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.password2.errors }}
+    <label for="{{ form.password2.id_for_label }}" class="col-md-4 control-label">Confirm Password:  </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.password2}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.group.errors }}
+    <label for="{{ form.group.id_for_label }}" class="col-md-4 control-label">Choose Group:  </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.group}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-md-4 control-label"></label>
+    <div class="col-md-4"><br><button type="submit" class="btn btn-success" >Register</button>
+    </div>
+    </div>
+  </fieldset>
+  </form>
+    <legend><center><h2><b>Social Login</b></h2></center></legend><br>
+    <center>
+     <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
+   </center>
+{% endblock %}
