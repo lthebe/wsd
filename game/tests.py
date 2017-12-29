@@ -102,3 +102,41 @@ class GameSearchTest(TestCase):
         qset = Game.search('game')
         self.assertEquals(len(qset), 4)
     
+class SearchViewTest(TestCase):
+    
+    def setUp(self):
+        
+        logger.debug('SearchViewTest.setUp')
+        
+        self.client = Client()
+        
+        for i in range(0, 30):
+            Game.create('game title {0}'.format(i), '').save()
+    
+    def testEmptyResult(self):
+        
+        response = self.client.get(reverse('game:search'), {'q': 'foo'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content.count(
+            b'No games matched your search query!'
+        ), 1)
+    
+    def testPaging(self):
+        
+        response = self.client.get(reverse('game:search'), {'q': 'game', 'p': '1'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content.count(b'game title'), 20)
+        
+        response = self.client.get(reverse('game:search'), {'q': 'game', 'p': '2'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content.count(b'game title'), 10)
+        
+        response = self.client.get(reverse('game:search'), {'q': 'game', 'p': '3'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content.count(b'game title'), 0)
+        
+    def testFailResponses(self):
+        
+        response = self.client.get(reverse('game:search'), {'q': 'game', 'p': 0})
+        self.assertEquals(response.status_code, 400)
+    
