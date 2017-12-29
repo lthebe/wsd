@@ -57,6 +57,12 @@ class GameSearchTest(TestCase):
         Game.create('title', '', description='this game has a title').save()
         Game.create('another game', '', description='this game also has a title').save()
         
+    def testEmptyQuery(self):
+        """Tests if an empty query returns all games in the database"""
+        
+        qset = Game.search(None)
+        self.assertEquals(len(qset), len(Game.objects.all()))
+    
     def testNameSearch(self):
         """Tests if games are found by their names"""
         
@@ -95,19 +101,4 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 2)
         qset = Game.search('game')
         self.assertEquals(len(qset), 4)
-        
-    def testPageLimits(self):
-        """Tests that the limits on pages, as well as the paging function works."""
-        
-        qset1 = Game.search(None, p=0, pagelen=5)
-        qset2 = Game.search(None, p=1, pagelen=5)
-        qset3 = Game.search(None, p=2, pagelen=5)
-        self.assertEquals(len(qset1), 5)
-        self.assertEquals(len(qset2), 5)
-        self.assertEquals(len(qset3), 1)
-        
-        collision = reduce(lambda a, b: a or b,
-        map(lambda key: key in (game.pk for game in qset2),
-        (game.pk for game in qset1)))
-        self.assertFalse(collision)
     

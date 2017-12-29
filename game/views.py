@@ -47,8 +47,25 @@ def search(request):
     :statuscode 200: Success
     """
     
-    q = request.GET.get('q', default=None)
-    p = request.GET.get('p', default=0)
+    pagelen = 20
     
-    return render(request, template_name='game/search.html')
+    q = request.GET.get('q', default=None)
+    p = int(request.GET.get('p', default=1))
+    
+    if p <= 0:
+        return HttpResponseBadRequest()
+    
+    qset = Game.search(q)
+    qlen = len(qset)
+    numpages = (qlen + pagelen - 1) // pagelen
+    qset = qset[(p - 1) * pagelen : p * pagelen]
+    
+    return render(request,
+        template_name='game/search.html',
+        context={
+            'hits': qset,
+            'page': p,
+            'numpages': numpages,
+            'query': q,
+        })
     

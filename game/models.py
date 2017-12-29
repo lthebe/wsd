@@ -34,21 +34,18 @@ class Game(models.Model):
         return game
     
     @classmethod
-    def search(cls, q, p=0, pagelen=50):
+    def search(cls, q):
         """Searches for games in the database.
         
         Args:
             q (str): The search query string.
-            p (int): The page number.
-            pagelen (int): The number of games to retrieve on a single search page.
         
         Return:
             A queryset containing all the found games.
         """
         
-        qset = None
         if q is None:
-            qset = cls.objects.all()
+            return cls.objects.all()
         else:
             qwords = map(lambda m: m[0] if len(m[0]) > 0 else m[1],
                 re.findall(r'"(.+)"|(\S+)', q))
@@ -58,9 +55,7 @@ class Game(models.Model):
                     Q(name__contains=word) |
                     Q(description__contains=word))
             
-            qset = cls.objects.all().filter(query)
-        
-        return qset[(p) * pagelen : (p + 1) * pagelen]
+            return cls.objects.all().filter(query)
     
     def __str__(self):
         return 'Game {0}, name: {1}, url: {2}'.format(
