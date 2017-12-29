@@ -38,7 +38,8 @@ class Game(models.Model):
         """Searches for games in the database.
         
         Args:
-            q (str): The search query string.
+            q (str):
+                The search query string. If None then it fetches all games from database
         
         Return:
             A queryset containing all the found games.

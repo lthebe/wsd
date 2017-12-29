@@ -36,15 +36,25 @@ def buy(request, game):
 def search(request):
     """Gives the result page for a search query.
     
-    At the moment this view only responds with a string describing the result of the
-    search query.
+    The following context is provided to the template:
+    
+    - hits: queryset containing all the models for the current page in the query.
+    - page: the number of the current page.
+    - numpages: the total number of pages found in the query.
+    - query: the original query string.
     
     GET Params:
-        q:  The search query string. If not provided it finds all games.
-        p:  The page number. The number of games in a response is limited by a maximum
-            page size. Page numbers start from 0.
     
-    :statuscode 200: Success
+    - q: The search query string. If not provided it finds all games.
+    - p: The page number.
+    
+    The number of games in a response is limited by a maximum page size. Page numbers
+    start from 1. If not provided it defaults to 1.
+    
+    :statuscode 200: Success.
+    :statuscode 400: Bad request if page number is 0 or lower.
+    
+    .. todo:: Make the template presentable.
     """
     
     pagelen = 20

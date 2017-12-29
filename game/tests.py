@@ -103,6 +103,12 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 4)
     
 class SearchViewTest(TestCase):
+    """Tests for the search view.
+    
+    Given that the searching functionality is implemented on the Game model, and
+    tested by GameSearchTest, this class does not test the specific responses of the
+    search function.
+    """
     
     def setUp(self):
         
@@ -114,6 +120,7 @@ class SearchViewTest(TestCase):
             Game.create('game title {0}'.format(i), '').save()
     
     def testEmptyResult(self):
+        """Tests template rendering for an empty queryset."""
         
         response = self.client.get(reverse('game:search'), {'q': 'foo'})
         self.assertEquals(response.status_code, 200)
@@ -122,6 +129,7 @@ class SearchViewTest(TestCase):
         ), 1)
     
     def testPaging(self):
+        """Tests the number of reponses shown on a given page."""
         
         response = self.client.get(reverse('game:search'), {'q': 'game', 'p': '1'})
         self.assertEquals(response.status_code, 200)
@@ -136,6 +144,7 @@ class SearchViewTest(TestCase):
         self.assertEquals(response.content.count(b'game title'), 0)
         
     def testFailResponses(self):
+        """Tests the fail conditions."""
         
         response = self.client.get(reverse('game:search'), {'q': 'game', 'p': 0})
         self.assertEquals(response.status_code, 400)
