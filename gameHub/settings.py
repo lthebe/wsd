@@ -100,7 +100,7 @@ TEMPLATES = [
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-LOGIN_URL = 'login'
+LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = '/'
 
 
@@ -218,7 +218,22 @@ LOGGING = {
             'handlers': ['console', 'filehandler'],
             'propagate': False,
             'level': 'INFO' if DEBUG else 'WARNING'
-        }
+        },
+        'gameHub': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
+        'accounts': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
+        'game': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
     }
 }
 
