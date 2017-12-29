@@ -1,6 +1,10 @@
 {% extends 'gamehub/base.html' %}
 {% block content %}
+{% if next %}
+<form class="form-inline" action="{% url 'accounts:login' %}?next={{next}}" method="POST" >
+{%else%}
 <form class="form-inline" method="POST" action="{% url 'accounts:login' %}">
+{% endif %}
    {% csrf_token %}
   <div class="form-group">
     {{ form.username.errors }}
