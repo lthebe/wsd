@@ -24,4 +24,5 @@ app_name = 'game'
 urlpatterns = [
     path('buy/<int:game>/', views.buy, name='buy'),
     path('search/', views.search, name='search'),
+    path('upload/', views.upload, name='upload'),
 ]

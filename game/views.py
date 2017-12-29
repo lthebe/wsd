@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 
 from .models import Game
 
@@ -78,4 +79,9 @@ def search(request):
             'numpages': numpages,
             'query': q,
         })
+
+@require_http_methods(('GET', 'HEAD'))
+@login_required
+def upload(request):
     
+    return HttpResponse('upload view.')
