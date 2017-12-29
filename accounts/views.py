@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
 from .forms import RegisterForm, GroupChoiceForm
+from game.models import Game
 
 # Create your views here.
 
@@ -32,7 +33,8 @@ class RegisterView(CreateView):
 
 def home_view(request):
     """Returns the home page of the site"""
-    return render(request, template_name='gamehub/home.html')
+    games = Game.objects.all()[:5]
+    return render(request, template_name='gamehub/home.html', context={'games': games})
 
 def pick_group(request):
     """Pick the group for the user - either developer or player.
