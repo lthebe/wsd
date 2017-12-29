@@ -16,6 +16,7 @@
             <h1>Play the game {{game.name}}</h1>
             <p>{{game.description}}</p>
             <p><a class="btn btn-lg btn-primary" href="{% url 'accounts:register' %}" role="button">Register today</a></p>
+            <p><a class="btn btn-lg btn-success" href="{% url 'game:purchase' game=game.id %}" role="button">Buy Game</a></p>
           </div>
         </div>
       </div>

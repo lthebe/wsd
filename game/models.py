@@ -22,6 +22,7 @@ class Game(models.Model):
 
     name        = models.TextField(max_length=300)
     url         = models.URLField()
+    price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
     gameimage   = models.ImageField()
 
@@ -33,19 +34,19 @@ class Game(models.Model):
 
         game = cls(name=name, url=url, description=description, gameimage=gameimage)
         return game
-    
+
     @classmethod
     def search(cls, q):
         """Searches for games in the database.
-        
+
         Args:
             q (str):
                 The search query string. If None then it fetches all games from database
-        
+
         Return:
             A queryset containing all the found games.
         """
-        
+
         if q is None:
             return cls.objects.all()
         else:
@@ -56,9 +57,9 @@ class Game(models.Model):
                 query = query & (
                     Q(name__contains=word) |
                     Q(description__contains=word))
-            
+
             return cls.objects.all().filter(query)
-    
+
     def __str__(self):
         return 'Game {0}, name: {1}, url: {2}'.format(
             self.pk,

@@ -2,5 +2,5 @@
 <a href="{{game.url}}">{{game.name}}</a>
 <img src="{{game.gameimage.url}}" class="img-responsive" />
 {{game.description}}
-<button class="btn btn-warning">Buy</button>
+<a href={% url 'game:purchase' %}<button class="btn btn-warning">Buy</button></a>
 </a><button class="btn btn-success">Play</button>
