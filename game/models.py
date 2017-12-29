@@ -54,7 +54,11 @@ class GamePlayed(models.Model):
     users = models.ManyToManyField(User)
 
     def __str__(self):
+        if (self.game):
+            gamename = self.game.name
+        else:
+            gamename = 'Game Deleted'
         return 'Game {0}, GameState: {1}'.format(
-            self.game.name,
+            gamename,
             self.gameState
         )
