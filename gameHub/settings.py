@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'social_django',
-    
+    #wsd apps
     'game',
     'accounts',
 ]
