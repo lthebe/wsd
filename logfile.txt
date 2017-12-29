@@ -1228,3 +1228,145 @@
 2017-12-29 12:15:44,992	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
 2017-12-29 12:15:45,002	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
 2017-12-29 12:15:45,011	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:35:26,170	20	django.server	"GET / HTTP/1.1" 200 5585
+2017-12-29 12:35:26,217	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:35:26,225	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:35:26,235	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:35:26,246	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:35:26,257	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:35:26,261	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:35:26,281	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:35:26,291	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:36:05,694	20	django.server	"GET /upload/ HTTP/1.1" 200 12
+2017-12-29 12:38:20,681	20	django.server	"GET / HTTP/1.1" 200 5593
+2017-12-29 12:38:20,706	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:38:20,709	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:38:20,719	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:20,725	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:20,738	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:38:20,739	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:38:20,768	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:38:20,769	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:38:23,809	20	django.server	"GET / HTTP/1.1" 200 5593
+2017-12-29 12:38:23,832	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:38:23,834	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:38:23,844	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:23,852	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:23,865	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:38:23,866	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:38:23,889	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:38:23,890	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:38:25,587	20	django.server	"GET / HTTP/1.1" 200 5593
+2017-12-29 12:38:25,611	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:38:25,612	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:38:25,622	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:25,625	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:25,635	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:38:25,636	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:38:25,652	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:38:25,653	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:38:26,799	20	django.server	"GET / HTTP/1.1" 200 5593
+2017-12-29 12:38:26,820	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:38:26,828	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:26,829	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:38:26,837	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:26,848	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:38:26,849	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:38:26,865	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:38:26,866	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:38:27,788	20	django.server	"GET / HTTP/1.1" 200 5593
+2017-12-29 12:38:27,812	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:38:27,813	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:38:27,822	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:27,827	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:38:27,839	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:38:27,840	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:38:27,850	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:38:27,854	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:39:01,049	20	django.server	"GET / HTTP/1.1" 200 5602
+2017-12-29 12:39:01,071	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:39:01,072	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:39:01,079	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:39:01,084	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:39:01,094	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:39:01,095	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:39:01,110	30	django.request	Not Found: /media/ArgoIcon512x512.png
+2017-12-29 12:39:01,112	30	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 404 1818
+2017-12-29 12:39:17,497	20	django.server	"GET /admin/ HTTP/1.1" 200 8755
+2017-12-29 12:39:17,522	20	django.server	"GET /static/admin/css/base.css HTTP/1.1" 304 0
+2017-12-29 12:39:17,529	20	django.server	"GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+2017-12-29 12:39:17,535	20	django.server	"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2017-12-29 12:39:18,027	20	django.server	"GET /admin/ HTTP/1.1" 200 8755
+2017-12-29 12:39:18,133	20	django.server	"GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2017-12-29 12:39:18,157	20	django.server	"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+2017-12-29 12:39:18,157	20	django.server	"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+2017-12-29 12:39:18,158	20	django.server	"GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:18,160	20	django.server	"GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:18,163	20	django.server	"GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 304 0
+2017-12-29 12:39:18,165	20	django.server	"GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:21,562	20	django.server	"GET /admin/game/game/ HTTP/1.1" 200 4662
+2017-12-29 12:39:21,589	20	django.server	"GET /static/admin/css/base.css HTTP/1.1" 304 0
+2017-12-29 12:39:21,593	20	django.server	"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+2017-12-29 12:39:21,605	20	django.server	"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,635	20	django.server	"GET /static/admin/js/core.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,638	20	django.server	"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,641	20	django.server	"GET /admin/jsi18n/ HTTP/1.1" 200 3185
+2017-12-29 12:39:21,645	20	django.server	"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2017-12-29 12:39:21,648	20	django.server	"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,647	20	django.server	"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,666	20	django.server	"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,674	20	django.server	"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,676	20	django.server	"GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2017-12-29 12:39:21,685	20	django.server	"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+2017-12-29 12:39:21,728	20	django.server	"GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:21,733	20	django.server	"GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:21,735	20	django.server	"GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:21,736	20	django.server	"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+2017-12-29 12:39:23,613	20	django.server	"GET /admin/game/game/4/change/ HTTP/1.1" 200 6046
+2017-12-29 12:39:23,646	20	django.server	"GET /static/admin/css/base.css HTTP/1.1" 304 0
+2017-12-29 12:39:23,648	20	django.server	"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+2017-12-29 12:39:23,649	20	django.server	"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,670	20	django.server	"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,688	20	django.server	"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2017-12-29 12:39:23,690	20	django.server	"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,691	20	django.server	"GET /static/admin/js/core.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,703	20	django.server	"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,710	20	django.server	"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,712	20	django.server	"GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2017-12-29 12:39:23,712	20	django.server	"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+2017-12-29 12:39:23,710	20	django.server	"GET /admin/jsi18n/ HTTP/1.1" 200 3185
+2017-12-29 12:39:23,721	20	django.server	"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,722	20	django.server	"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,731	20	django.server	"GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,738	20	django.server	"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+2017-12-29 12:39:23,773	20	django.server	"GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:23,779	20	django.server	"GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:23,783	20	django.server	"GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:31,146	20	django.server	"POST /admin/game/game/4/change/ HTTP/1.1" 302 0
+2017-12-29 12:39:31,203	20	django.server	"GET /admin/game/game/ HTTP/1.1" 200 4892
+2017-12-29 12:39:31,235	20	django.server	"GET /static/admin/css/base.css HTTP/1.1" 304 0
+2017-12-29 12:39:31,237	20	django.server	"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+2017-12-29 12:39:31,256	20	django.server	"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,257	20	django.server	"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,258	20	django.server	"GET /static/admin/js/core.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,270	20	django.server	"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,272	20	django.server	"GET /admin/jsi18n/ HTTP/1.1" 200 3185
+2017-12-29 12:39:31,273	20	django.server	"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2017-12-29 12:39:31,275	20	django.server	"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,276	20	django.server	"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,289	20	django.server	"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,295	20	django.server	"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+2017-12-29 12:39:31,298	20	django.server	"GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2017-12-29 12:39:31,329	20	django.server	"GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:31,334	20	django.server	"GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+2017-12-29 12:39:31,338	20	django.server	"GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:31,339	20	django.server	"GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2017-12-29 12:39:31,347	20	django.server	"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+2017-12-29 12:39:36,235	20	django.server	"GET / HTTP/1.1" 200 5602
+2017-12-29 12:39:36,308	20	django.server	"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+2017-12-29 12:39:36,319	20	django.server	"GET /static/css/carousel.css HTTP/1.1" 304 0
+2017-12-29 12:39:36,329	20	django.server	"GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 304 0
+2017-12-29 12:39:36,333	20	django.server	"GET /static/js/bootstrap.min.js HTTP/1.1" 304 0
+2017-12-29 12:39:36,349	30	django.request	Not Found: /media/maurice_frydman_1.jpg
+2017-12-29 12:39:36,350	30	django.server	"GET /media/maurice_frydman_1.jpg HTTP/1.1" 404 1824
+2017-12-29 12:39:36,361	20	django.server	"GET /media/ArgoIcon512x512.png HTTP/1.1" 200 67270
