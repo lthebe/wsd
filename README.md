@@ -1,4 +1,5 @@
-#Typescript setup
+Typescript setup
+----------------
 
 The typescript files should be stored under the app they belong to under the directory
 static\_src. To build the scripts just run make from the project root. For example if
@@ -8,7 +9,8 @@ it and output the compiled script to 'some\_app/static/example.js'.
 The build system requires that *tsc* can be invoked from the command line. The easiest
 way is to have a global installation.
 
-#Documentation
+Documentation
+-------------
 
 The backend uses Sphinx for documentation. To generate the documenation files, go into
 the 'doc' directory and run 'make html'. The produced documentation can be found in
@@ -21,8 +23,8 @@ running 'make docs' from the project root. The generated documentation can be fo
 Make requires that *typedoc* can be invoked from the command line. The easiest way is
 to have a global installation.
 
-#Project Plan
-------
+Project Plan
+------------
 
 **1. Team**
 

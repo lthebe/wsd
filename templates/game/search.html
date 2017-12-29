@@ -1,0 +1,27 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+<main role="main" class="inner cover">
+  {% if numpages > 0 %}
+    {% for hit in hits %}
+      <div>
+        <h3>{{ hit.name }}</h3>
+        <p>{{ hit.description }}</p>
+        <a href="{% url 'game:buy' game=hit.pk %}">Buy now!</a>
+      </div>
+    {% endfor %}
+    {% if page > 1 %}
+      <a href="{% url 'game:search' %}?q={{ query }}&p={{ page|add:"-1" }}">
+        previous
+      </a>
+    {% endif %}
+      <p>{{ page }}</p>
+    {% if page < numpages %}
+      <a href="{% url 'game:search' %}?q={{ query }}&p={{ page|add:"1" }}">
+        next
+      </a>
+    {% endif %}
+  {% else %}
+    <h1>No games matched your search query!</h1>
+  {% endif %}
+</main>
+{% endblock content %}

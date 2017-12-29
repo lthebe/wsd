@@ -218,7 +218,22 @@ LOGGING = {
             'handlers': ['console', 'filehandler'],
             'propagate': False,
             'level': 'INFO' if DEBUG else 'WARNING'
-        }
+        },
+        'gameHub': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
+        'accounts': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
+        'game': {
+            'handlers': ['console', 'filehandler'],
+            'propagate': False,
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
     }
 }
 
