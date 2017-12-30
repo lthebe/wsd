@@ -1,3 +1,5 @@
+import pdb
+
 import logging
 
 from django.conf import settings
@@ -85,19 +87,15 @@ def search(request):
 
 @login_required
 def upload(request):
-    
     if request.method == 'POST':
-        
-        form = UploadGameForm(request.POST)
-        
+        pdb.set_trace()
+        form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponse('Thxbye!')
         else:
             return HttpResponse('Bad boy!')
-        
     else:
-        
         form = UploadGameForm()
         return render(request, 'game/upload.html', {'form': form})
 
