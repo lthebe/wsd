@@ -143,6 +143,6 @@ def process_purchase(request):
         buy_game.game = Game.objects.get(pk=pid)
         buy_game.users.add(request.user)
         buy_game.save()
-        return HttpResponse('Thank you for the purchase')
+        return render(request, template_name='game/game.html', context={'game': buy_game.game})
     else:
         return HttpResponse('sorry, you!')
