@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Game, GamePlayed
 from .utils import get_checksum
@@ -18,6 +18,16 @@ import accounts.urls
 logger = logging.getLogger(__name__)
 
 # Create your views here.
+
+def group_required(*groups):
+    """Requires user membership in at least one of the groups passed in.
+    Source: Django Snippets"""
+    def in_groups(u):
+        if u.is_authenticated:
+            if bool(u.groups.filter(name__in=groups)) | u.is_superuser:
+                return True
+        return False
+    return user_passes_test(in_groups)
 
 @require_http_methods(('GET', 'HEAD'))
 def details(request, game):
@@ -85,10 +95,11 @@ def search(request):
             'query': q,
         })
 
-@login_required
+#ONLY Developer can upload the game and of course superuser
+@group_required('developer')
 def upload(request):
     if request.method == 'POST':
-        pdb.set_trace()
+        #pdb.set_trace()
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()

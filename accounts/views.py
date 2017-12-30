@@ -33,7 +33,7 @@ class RegisterView(CreateView):
 
 def home_view(request):
     """Returns the home page of the site"""
-    games = Game.objects.all()[:5]
+    games = Game.objects.all()[:3] #you can make it render the top games in home page for example
     return render(request, template_name='gamehub/home.html', context={'games': games})
 
 def pick_group(request):
