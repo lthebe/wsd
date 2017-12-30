@@ -81,11 +81,24 @@ def search(request):
             'query': q,
         })
 
-@require_http_methods(('GET', 'HEAD'))
 @login_required
 def upload(request):
+    
+    if request.method == 'POST':
+        
+        form = UploadGameForm(request.POST)
+        
+        if form.is_valid():
+            form.save()
+            return HttpResponse('Thxbye!')
+        else:
+            return HttpResponse('Bad boy!')
+        
+    else:
+        
+        form = UploadGameForm()
+        return render(request, 'game/upload.html', {'form': form})
 
-    return HttpResponse('upload view.')
 
 @require_http_methods(('GET', 'HEAD'))
 @login_required
