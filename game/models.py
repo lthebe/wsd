@@ -1,6 +1,7 @@
 import logging
 import re
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -20,12 +21,12 @@ class Game(models.Model):
         Relations with user models.
     """
 
-    name        = models.TextField(max_length=300)
+    name        = models.TextField(max_length=300, unique=True)
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
-    gameimage   = models.ImageField(null=True, upload_to='gameimages')
-
+    gameimage   = models.ImageField(null=True, blank=True, upload_to='')
+    
     @classmethod
     def create(cls, name, url, price = 0.0, description='', gameimage=None):
         """Creates an object. Use this function instead of calling the class
