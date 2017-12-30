@@ -10,7 +10,7 @@
     <div class="carousel-inner">
     {% for game in games %}
       <div class="{% cycle "carousel-item active" "carousel-item" "carousel-item" %}">
-        <img class="{% cycle "first-slide" "second-slide" "third-slide" %}" src="{{game.gameimage.url}}" alt="First slide">
+        <!--img class="{% cycle "first-slide" "second-slide" "third-slide" %}" src="{{game}}" alt="First slide"-->
         <div class="container">
           <div class="carousel-caption text-left">
             <h1>Play the game {{game.name}}</h1>
