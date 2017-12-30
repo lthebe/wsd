@@ -1,6 +1,7 @@
 import logging
 import re
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -24,7 +25,11 @@ class Game(models.Model):
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
-    gameimage   = models.ImageField(null=True, upload_to='gameimages')
+    
+    if settings.DEBUG:
+        gameimage = models.ImageField(null=True, blank=True, upload_to='gameimages')
+    else:
+        gameimage = models.ImageField(upload_to='gameimages')
 
     @classmethod
     def create(cls, name, url, price = 0.0, description='', gameimage=None):
