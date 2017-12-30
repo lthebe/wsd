@@ -6,8 +6,10 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
+
 from .models import Game, GamePlayed
 from .utils import get_checksum
+from .forms import UploadGameForm
 
 import accounts.urls
 

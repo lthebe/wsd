@@ -2,6 +2,7 @@
 {% block content %}
 <main role="main" class="inner cover">
   <form method="post">
+    {% csrf_token %}
     {{ form }}
     <input type="submit"/>
   </form>
