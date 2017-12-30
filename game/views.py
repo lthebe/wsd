@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from .models import Game
+from .models import Game, GamePlayed
 from .utils import get_checksum
 
 import accounts.urls
@@ -90,6 +90,24 @@ def upload(request):
 @login_required
 def purchase(request, game):
     game = Game.objects.get(pk=game)
-    pid = '{0}{1}'.format(request.user.pk, game.id)
-    checksum = get_checksum(game.price, pid)
-    return render(request, "game/buy.html", context={'game': game.id, 'checksum': checksum, 'pid': pid, 'sid': settings.SELLER_ID, 'amount': game.price })
+    games = request.user.gameplayed_set.all()
+    #if game in games, don't allow to buy as the user has already the game - todo
+    message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
+    checksum = get_checksum(message)
+    context =  {'game': game.id, 'checksum': checksum, 'pid': game.id, 'sid': settings.SELLER_ID, 'amount': game.price }
+    return render(request, "game/buy.html", context=context)
+
+def process_purchase(request):
+    pid = request.GET.get('pid')
+    ref = request.GET.get('ref')
+    result = request.GET.get('result')
+    checksum = request.GET.get('checksum')
+    message = "pid={}&ref={}&result={}&token={}".format(pid, ref, result, settings.PAYMENT_KEY)
+    if get_checksum(message) == checksum:
+        buy_game = GamePlayed.objects.create(gameScore=0)
+        buy_game.game = Game.objects.get(pk=pid)
+        buy_game.users.add(request.user)
+        buy_game.save()
+        return HttpResponse('thank you for the purchase')
+    else:
+        return HttpResponse('sorry, you!')

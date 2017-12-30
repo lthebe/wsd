@@ -6,7 +6,7 @@
     <label for="id_amount">Amount</label>
     <input type="text" id="id_amount" name="amount" value="{{amount}}" />
     <input id="id_success_url" type="hidden" name="success_url"
-            value="http://localhost:8000/" />
+            value="http://localhost:8000{% url 'game:process' %}" />
               {% comment %}
               value="{% url 'game:detail' game=game %}"
               somehow it feels like relative url does not work in this payment
