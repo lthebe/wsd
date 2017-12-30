@@ -4,6 +4,7 @@ from functools import reduce
 
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 from game.models import Game
 
@@ -21,6 +22,11 @@ class BuyViewTest(TestCase):
         logger.debug('BuyViewTest.setUp')
         
         self.client = Client()
+        
+        user = User.objects.create()
+        user.save()
+        self.client.force_login(user)
+        
         Game.create(name='name', url='url').save()
     
     def testResponses(self):
@@ -29,9 +35,9 @@ class BuyViewTest(TestCase):
         game = Game.objects.all()[0]
         pk = game.pk
         
-        response = self.client.get(reverse('game:buy', args=[pk]))
+        response = self.client.get(reverse('game:purchase', args=[pk]))
         self.assertEquals(response.status_code, 200)
-        response = self.client.get(reverse('game:buy', args=[pk + 1]))
+        response = self.client.get(reverse('game:purchase', args=[pk + 1]))
         self.assertEquals(response.status_code, 404)
 
 class GameSearchTest(TestCase):
