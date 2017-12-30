@@ -1,0 +1,10 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+<main role="main" class="inner cover">
+  <form method="post" enctype='multipart/form-data'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit"/>
+  </form>
+</main>
+{% endblock content %}
