@@ -105,7 +105,10 @@ def upload(request):
 @require_http_methods(('GET', 'HEAD'))
 @login_required
 def purchase(request, game):
-    game = Game.objects.get(pk=game)
+    try:
+        game = Game.objects.get(pk=game)
+    except:
+        return HttpResponseNotFound()
     games = request.user.gameplayed_set.all()
     #if game in games, don't allow to buy as the user has already the game - todo
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)

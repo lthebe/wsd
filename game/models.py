@@ -24,15 +24,21 @@ class Game(models.Model):
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
-    gameimage   = models.ImageField()
+    gameimage   = models.ImageField(null=True, upload_to='gameimages')
 
     @classmethod
-    def create(cls, name, url, description='', gameimage=''):
+    def create(cls, name, url, price = 0.0, description='', gameimage=None):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
 
-        game = cls(name=name, url=url, description=description, gameimage=gameimage)
+        game = cls(
+            name=name,
+            url=url,
+            price=price,
+            description=description,
+            gameimage=gameimage
+        )
         return game
 
     @classmethod
