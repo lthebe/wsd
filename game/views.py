@@ -1,13 +1,15 @@
 import pdb
 
 import logging
+import pdb
 
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
 
 from .models import Game, GamePlayed
 from .utils import get_checksum
@@ -44,9 +46,10 @@ def details(request, game):
 
     try:
         g = Game.objects.get(pk=game)
-        return HttpResponse(str(g))
+        context = {'game': g}
+        return render(request, template_name='game/game.html', context=context)
     except:
-        return HttpResponseNotFound()
+        return HttpResponseNotFound('The game you requested could not found!')
 
 @require_http_methods(('GET', 'HEAD'))
 def search(request):
@@ -119,6 +122,9 @@ def purchase(request, game):
     except:
         return HttpResponseNotFound()
     games = request.user.gameplayed_set.all()
+    if len(list(filter(lambda x: x.game.id == game.id, games))) > 0:
+        messages.add_message(request, messages.INFO, 'You have already purchased the game!')
+        return redirect(reverse('game:detail', kwargs={'game':game.id}))
     #if game in games, don't allow to buy as the user has already the game - todo
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
     checksum = get_checksum(message)
@@ -137,6 +143,6 @@ def process_purchase(request):
         buy_game.game = Game.objects.get(pk=pid)
         buy_game.users.add(request.user)
         buy_game.save()
-        return HttpResponse('thank you for the purchase')
+        return HttpResponse('Thank you for the purchase')
     else:
         return HttpResponse('sorry, you!')
