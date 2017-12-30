@@ -1,6 +1,10 @@
-{% load staticfiles %}
+{% extends 'gamehub/base.html' %}
+{% block content %}
 <a href="{{game.url}}">{{game.name}}</a>
 <img src="{{game.gameimage.url}}" class="img-responsive" />
 {{game.description}}
-<a href={% url 'game:purchase' %}<button class="btn btn-warning">Buy</button></a>
+<div class="row">
+<a href={% url 'game:purchase' game=game.id %}><button class="btn btn-warning">Buy</button></a>
 </a><button class="btn btn-success">Play</button>
+</div>
+{% endblock %}
