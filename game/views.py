@@ -87,6 +87,7 @@ def upload(request):
 
     return HttpResponse('upload view.')
 
+@require_http_methods(('GET', 'HEAD'))
 @login_required
 def purchase(request, game):
     game = Game.objects.get(pk=game)
@@ -97,6 +98,7 @@ def purchase(request, game):
     context =  {'game': game.id, 'checksum': checksum, 'pid': game.id, 'sid': settings.SELLER_ID, 'amount': game.price }
     return render(request, "game/buy.html", context=context)
 
+@require_http_methods(('GET', 'HEAD'))
 def process_purchase(request):
     pid = request.GET.get('pid')
     ref = request.GET.get('ref')
