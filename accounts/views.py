@@ -43,7 +43,7 @@ class RegisterView(CreateView):
                 'expiry': settings.ACTIVATION_TIME
             })
             user.email_user(subject, message)
-            messages.add_message(request, messages.INFO, 'Please activate your account and login!')
+            messages.add_message(request, messages.INFO, 'Activate your account with link in your email!')
             return redirect('accounts:login')
         else:
             return render(request, template_name='accounts/register.html', context={'form': form })
