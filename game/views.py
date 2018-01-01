@@ -99,7 +99,7 @@ def search(request):
         })
 
 #ONLY Developer can upload the game and of course superuser
-@group_required('developer')
+@group_required('Developer')
 def upload(request):
     if request.method == 'POST':
         #pdb.set_trace()
