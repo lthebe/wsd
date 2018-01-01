@@ -10,6 +10,10 @@ class Profile(models.Model):
     description = models.TextField(blank=True)
     image = models.ImageField(null=True, upload_to = 'profile/', default = 'profile/default.jpg', blank=True)
 
+    def __str__(self):
+        return '{0} owns profile'.format(
+            self.user.username,
+        )
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
