@@ -21,10 +21,7 @@ class RegistrationFormTest(TestCase):
     def testValidRegistrationForm(self):
         """Tests if the form is valid"""
         data = {'username': 'gamehub', 'is_active':True, 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'group': 1, 'email': 'info@gamehub.com', 'image': None, 'nickname': 'tuser3', 'description':'Awesome'}
-        upload_image = open('/home/agapios/Desktop/gameHub/media_cdn/5214014-game-images.png', 'rb')
-        image = {'file': SimpleUploadedFile(upload_image.name, upload_image.read())}
-        form = RegisterForm(data, image)
-        print(form.errors)
+        form = RegisterForm(data)
         self.assertTrue(form.is_valid())
 
     def testInvalidRegistrationForm(self):
@@ -53,7 +50,7 @@ class TemplateTestCase(TestCase):
 
     def testRegistration(self):
         """Checks if developer is registered and in particular group"""
-        data = {'username': 'testuser3', 'is_active': True, 'password1': 'password3', 'password2': 'password3', 'group': 1, 'email': 'game@gamehub.com'}
+        data = {'username': 'testuser3', 'is_active':True, 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'group': 1, 'email': 'testuser3@mail.com', 'nickname': 'tuser3', 'description':'Awesome'}
         response = self.client.post(reverse('accounts:register'), data)
         group = Group.objects.get(name='Player')
         self.assertTrue(group.user_set.filter(username='testuser3').exists())

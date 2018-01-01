@@ -24,7 +24,6 @@ class RegisterView(CreateView):
     form_class = RegisterForm
     def post(self, request):
         form = RegisterForm(request.POST, request.FILES)
-        print(form.is_valid())
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal

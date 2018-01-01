@@ -9,7 +9,7 @@ class RegisterForm(UserCreationForm):
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
     description = forms.CharField(widget=forms.Textarea)
     nickname = forms.CharField(max_length=20)
-    image = forms.ImageField()
+    image = forms.ImageField(required=False)
     class Meta:
         model = User
         fields = ('username', 'nickname', 'email', 'group', 'password1', 'password2', 'description', 'image')
