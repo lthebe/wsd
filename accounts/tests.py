@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import User, Group
 from .forms import RegisterForm
 
@@ -19,8 +20,11 @@ class RegistrationFormTest(TestCase):
 
     def testValidRegistrationForm(self):
         """Tests if the form is valid"""
-        data = {'username': 'gamehub', 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'group': 1, 'email': 'info@gamehub.com'}
-        form = RegisterForm(data=data)
+        data = {'username': 'gamehub', 'is_active':True, 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'group': 1, 'email': 'info@gamehub.com', 'image': None, 'nickname': 'tuser3', 'description':'Awesome'}
+        upload_image = open('/home/agapios/Desktop/gameHub/media_cdn/5214014-game-images.png', 'rb')
+        image = {'file': SimpleUploadedFile(upload_image.name, upload_image.read())}
+        form = RegisterForm(data, image)
+        print(form.errors)
         self.assertTrue(form.is_valid())
 
     def testInvalidRegistrationForm(self):
@@ -49,11 +53,11 @@ class TemplateTestCase(TestCase):
 
     def testRegistration(self):
         """Checks if developer is registered and in particular group"""
-        data = {'username': 'testuser3', 'password1': 'password3', 'password2': 'password3', 'group': 1, 'email': 'game@gamehub.com'}
+        data = {'username': 'testuser3', 'is_active': True, 'password1': 'password3', 'password2': 'password3', 'group': 1, 'email': 'game@gamehub.com'}
         response = self.client.post(reverse('accounts:register'), data)
         group = Group.objects.get(name='Player')
         self.assertTrue(group.user_set.filter(username='testuser3').exists())
-    # 
+    #
     # def testGroupRegistration(self):
     #     res = self.client.post(reverse('accounts:login'), {'username': 'testuser3', 'password': 'password3'}, follow=True)
     #     response = self.client.post('/accounts/choosegroup', {'group': 0})
