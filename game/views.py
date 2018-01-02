@@ -1,8 +1,6 @@
-import pdb
-
 import logging
 import pdb
-
+import datetime
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -10,6 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllow
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Game, GamePlayed
 from .utils import get_checksum
@@ -31,6 +30,17 @@ def group_required(*groups):
         return False
     return user_passes_test(in_groups)
 
+def owner_required(function):
+    def wrap(request, *args, **kwargs):
+        game_played = GamePlayed.objects.filter(users__pk=request.user.id, game__id=kwargs['game'])
+        if game_played:
+            return function(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+    wrap.__doc__ = function.__doc__
+    wrap.__name__ = function.__name__
+    return wrap
+
 @require_http_methods(('GET', 'HEAD'))
 def details(request, game):
     """Presents a game for buying.
@@ -45,8 +55,13 @@ def details(request, game):
     """
 
     try:
-        g = Game.objects.get(pk=game)
-        context = {'game': g}
+        game = Game.objects.get(pk=game)
+        game_owner = False
+        if request.user.is_authenticated:
+            games = request.user.gameplayed_set.all()
+            if len(list(filter(lambda x: x.game.id == game.id, games))) > 0:
+                game_owner = True
+        context = {'game': game, 'game_owner': game_owner}
         return render(request, template_name='game/game.html', context=context)
     except:
         return HttpResponseNotFound('The game you requested could not found!')
@@ -146,3 +161,23 @@ def process_purchase(request):
         return render(request, template_name='game/game.html', context={'game': buy_game.game})
     else:
         return HttpResponse('sorry, you!')
+
+@require_http_methods(('GET', 'HEAD'))
+def highscore(request, game):
+    game = Game.objects.get(pk=game)
+    if request.is_ajax():
+        return HttpResponse(datetime.datetime.now())
+    return HttpResponse('5 highest scores are included here!')
+
+@require_http_methods(('POST', 'HEAD'))
+#allow only the game owner to modify it - todo
+@csrf_exempt
+def update_played_game(request, game, user):
+    if request.is_ajax():
+        game_played = GamePlayed.objects.filter(users__pk=user, game__id=game)[0]
+        score = request.POST['score']
+        game_played.gameScore = int(score)
+        game_played.save()
+        return HttpResponse('Great Job So Far')
+    else:
+        return HttpResponse('Only ajax')
