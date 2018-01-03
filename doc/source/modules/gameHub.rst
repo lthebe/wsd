@@ -7,7 +7,7 @@ This is the main module
 Contents:
 
 .. toctree::
-  :maxdepth: 1
+  :maxdepth: 2
   
   gameHub/logging
     
