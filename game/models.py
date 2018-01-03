@@ -74,6 +74,7 @@ class Game(models.Model):
             self.url
         )
 
+
 class GamePlayed(models.Model):
     """GamePlayed model - when a user buys a game, the game is added to the
     GamePlayed database with gameState field empty, but users field with the

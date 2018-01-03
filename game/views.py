@@ -115,8 +115,6 @@ def upload(request):
             return HttpResponseRedirect(reverse('game:upload'))
     else:
         form = UploadGameForm()
-        logger.debug(type(errors))
-        logger.debug(str(errors))
         return render(request, 'game/upload.html', {'form': form, 'errors': errors})
 
 
