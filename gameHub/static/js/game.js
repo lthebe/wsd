@@ -12,7 +12,7 @@ $(document).ready(function() {
     //updates the highscore
     setInterval(function() {
       $("#gameresult").load(game_highscore_url);
-    }, 4000);
+    }, 10000);
 
     if (data.messageType)
       switch (data.messageType) {

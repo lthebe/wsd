@@ -35,7 +35,8 @@ def game_player_required(function):
     def wrap(request, *args, **kwargs):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user
-        if request.user.is_authenticated and len(list(filter(lambda x: x.game.id == kwargs['game'], games))) > 0:
+        game = Game.objects.get(pk=kwargs['game'])
+        if request.user.is_authenticated and game in list(map(lambda x: x.game, games)):
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -56,10 +57,11 @@ def details(request, game):
 
     try:
         game = Game.objects.get(pk=game)
+        game.increment_viewcount()
         game_owner = False
         if request.user.is_authenticated:
             games = request.user.gameplayed_set.all()
-            if len(list(filter(lambda x: x.game.id == game.id, games))) > 0:
+            if game in list(map(lambda x: x.game, games)):
                 game_owner = True
         context = {'game': game, 'game_owner': game_owner}
         return render(request, template_name='game/game.html', context=context)
@@ -117,37 +119,42 @@ def search(request):
 @group_required('Developer')
 def upload(request):
     """Provides the upload functionality.
-    
+
     On get it presents a form for uploading a game. On post it processes that form,
     and either redirects with an error or returns a response confirming the upload.
-    
+
     The following context is provided to the template:
       - form: templates/game/upload.html.
       - errors: a dict containing the errors.
-    
+
     The form used is a standard ModelForm with nothing special.
-    
+
     The errors dict used in the templates is copied from Form.errors in case of a
     validation error. The view then redirects to itself with a GET request. The
     errors dict is stored in the current session, in field 'errors'. This field in
     the session is cleared on a GET request.
-    
+
     :statuscode 200: Success.
     :statuscode 302: Redirection in case of either invalid authorization, or a validation error.
-    
+
     .. todo:: Upon successful upload it should redirect somewhere, not just give a string response.
     """
-    
+
     if 'errors' in request.session:
         errors = request.session['errors']
         del request.session['errors']
     else:
         errors = None
-    
+
     if request.method == 'POST':
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            new_game = form.save()
+            #adds the developer as a player allowing to play game without buying
+            played_game = GamePlayed.objects.create(gameScore=0)
+            played_game.game = new_game
+            played_game.users.add(request.user)
+            played_game.save()
             return HttpResponse('Upload successful!')
         else:
             request.session['errors'] = form.errors
@@ -165,7 +172,7 @@ def purchase(request, game):
     except:
         return HttpResponseNotFound()
     games = request.user.gameplayed_set.all()
-    if len(list(filter(lambda x: x.game.id == game.id, games))) > 0:
+    if game in list(map(lambda x: x.game, games)):
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)

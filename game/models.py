@@ -1,7 +1,9 @@
 import logging
 import re
+from decimal import Decimal
 
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -23,12 +25,16 @@ class Game(models.Model):
 
     title       = models.TextField(max_length=300, unique=True)
     url         = models.URLField()
-    price       = models.DecimalField(decimal_places=2, max_digits=10)
+    price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description = models.TextField()
     gameimage   = models.ImageField(null=True, blank=True, upload_to='game/')
+    viewcount = models.PositiveIntegerField(default=0)
 
+    def increment_viewcount(self):
+        self.viewcount += 1
+        self.save()
     @classmethod
-    def create(cls, title, url, price = 0.0, description='', gameimage=None):
+    def create(cls, title, url, price = 0.0, description='', gameimage=None, viewcount=0):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
@@ -38,7 +44,8 @@ class Game(models.Model):
             url=url,
             price=price,
             description=description,
-            gameimage=gameimage
+            gameimage=gameimage,
+            viewcount=viewcount
         )
         return game
 

@@ -1,3 +1,5 @@
+from random import shuffle
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.views.generic.edit import CreateView
@@ -72,7 +74,10 @@ class ActivationView(View):
 
 def home_view(request):
     """Returns the home page of the site"""
-    games = Game.objects.all()[:3] #you can make it render the top games in home page for example
+    #chooses top 20 games based on view count
+    top_20_games = list(Game.objects.all().order_by('viewcount')[:20])
+    shuffle(top_20_games) #shuffle the top 20 games
+    games=top_20_games[:3] #choose only three
     return render(request, template_name='gamehub/home.html', context={'games': games})
 
 def pick_group(request):
