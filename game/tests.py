@@ -164,7 +164,7 @@ class GameUploadTest(TestCase):
         logger.debug('GameUploadTest.setUp')
         self.client = Client()
         
-        group, created = Group.objects.get_or_create(name='developer')
+        group, created = Group.objects.get_or_create(name='Developer')
         user = User.objects.create()
         user.save()
         group.user_set.add(user)
