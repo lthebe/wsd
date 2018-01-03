@@ -8,7 +8,7 @@ functionality.
 Contents:
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
   
   game/admin
   game/models
@@ -16,6 +16,9 @@ Contents:
   game/views
   game/apps
   game/urls
+  game/forms
+  game/signals
+  game/utils
     
 Indices and tables
 ==================

@@ -157,6 +157,8 @@ class SearchViewTest(TestCase):
         self.assertEquals(response.status_code, 400)
 
 class GameUploadTest(TestCase):
+    """Tests for the upload feature.
+    """
     
     def setUp(self):
         logger.debug('GameUploadTest.setUp')
@@ -170,6 +172,9 @@ class GameUploadTest(TestCase):
         self.client.force_login(user)
     
     def testUpload(self):
+        """Test that uploading works.
+        """
+        
         response = self.client.post(reverse('game:upload'), {
             'title': 'somegame',
             'url': 'http://google.com',
@@ -188,6 +193,10 @@ class GameUploadTest(TestCase):
         self.assertEquals(game.description, 'This here is a game')
     
     def testValidation(self):
+        """This tests that the validation in the upload view  works.
+        
+        Tests only the case that two games with the same title are uploaded.
+        """
         response = self.client.post(reverse('game:upload'), {
             'title': 'somegame',
             'url': 'http://google.com',

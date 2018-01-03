@@ -8,5 +8,7 @@ class GameConfig(AppConfig):
     name = 'game'
     
     def ready(self):
+        """This method is called on django setup.
+        """
         logger.info('game.ready')
         import game.signals

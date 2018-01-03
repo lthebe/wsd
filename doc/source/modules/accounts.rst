@@ -7,7 +7,7 @@ Account signup and login stuff.
 Contents:
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
   
   accounts/admin
   accounts/apps
