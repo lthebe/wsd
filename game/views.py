@@ -104,12 +104,14 @@ def upload(request):
     else:
         errors = None
     
+    #pdb.set_trace()
     if request.method == 'POST':
         #pdb.set_trace()
+        logger.debug(str(request.POST))
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponse('Thxbye!')
+            return HttpResponse('Upload successful!')
         else:
             request.session['errors'] = form.errors
             return HttpResponseRedirect(reverse('game:upload'))

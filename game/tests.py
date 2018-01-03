@@ -1,10 +1,11 @@
+import pdb
 import logging
 
 from functools import reduce
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from game.models import Game
 
@@ -154,4 +155,59 @@ class SearchViewTest(TestCase):
         
         response = self.client.get(reverse('game:search'), {'q': 'game', 'p': 0})
         self.assertEquals(response.status_code, 400)
+
+class GameUploadTest(TestCase):
     
+    def setUp(self):
+        logger.debug('GameUploadTest.setUp')
+        self.client = Client()
+        
+        group, created = Group.objects.get_or_create(name='developer')
+        user = User.objects.create()
+        user.save()
+        group.user_set.add(user)
+        
+        self.client.force_login(user)
+    
+    def testUpload(self):
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This here is a game',
+        })
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Upload successful!' in response.content)
+        
+        qset = Game.objects.all().filter(title='somegame')
+        self.assertTrue(len(qset) == 1)
+        game = qset[0]
+        self.assertEquals(game.url, 'http://google.com')
+        self.assertEquals(str(game.price), '0.5')
+        self.assertEquals(game.description, 'This here is a game')
+    
+    def testValidation(self):
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This here is a game',
+        })
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Upload successful!' in response.content)
+        
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This game has the same title as the last one',
+        })
+        
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['location'], reverse('game:upload'))
+        
+        response = self.client.get(response['location'])
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Game with this Title already exists.' in response.content)
