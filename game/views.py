@@ -1,6 +1,7 @@
 import logging
 import pdb
 import datetime
+import json
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -175,9 +176,24 @@ def highscore(request, game):
 def update_played_game(request, game, user):
     if request.is_ajax():
         game_played = GamePlayed.objects.filter(users__pk=user, game__id=game)[0]
-        score = request.POST['score']
-        game_played.gameScore = int(score)
-        game_played.save()
+        data = request.POST.get('data')
+        data_dict = json.loads(data)
+        #data_dict = {country.code: country.name for country in continent.countries.all()}
+        #data-n = json.dumps(data_dict)
+        #return HttpResponse(data, content_type="text/javascript")
+        if data_dict['messageType'] == 'SAVE':
+            game_played.gameState = data
+            game_played.save()
+        if data_dict['messageType'] == 'SCORE':
+            game_played.gameScore = data_dict['score']
+            game_played.save()
+        if data_dict['messageType'] == 'LOAD_REQUEST':
+            try:
+                data = json.loads(game_played.gameState)
+                data['messageType'] = 'LOAD'
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            except:
+                return HttpResponse('error')
         return HttpResponse('Great Job So Far')
     else:
         return HttpResponse('Only ajax')

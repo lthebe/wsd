@@ -4,10 +4,11 @@ $(document).ready(function() {
 
   $(window).on("message", function(evt) {
     //Note that messages from all origins are accepted
-
+    //Game id and user_id from the hidden field to post the data
+    var url = $('#game_update_url').val();
     //Get data from sent message
     var data = evt.originalEvent.data;
-    //Create a new list item based on the data
+    //to update the highscore - yet to be done.
     setInterval(function() {
       var url = "http://localhost:8000/games/3/highscore";
       $("#gameresult").load(url);
@@ -19,32 +20,16 @@ $(document).ready(function() {
           $("#game_iframe").attr("width", data.options.width);
           $("#game_iframe").attr("height", data.options.height);
           break;
-        case "SCORE":
-          var posting = $.post( "http://localhost:8000/games/3/3/update", { score: data.score } );
-
-          // Put the results in a div
+        default:
+          var posting = $.post( url, { data: JSON.stringify(data) });
           posting.done(function( data ) {
-            console.log('done')
+            //sends event to the iframe if error or to be load the new data
+            if (data.messageType=='LOAD' || data.messageType=='ERROR'){
+              var iframe_window = $("#game_iframe")[0].contentWindow;
+              iframe_window.postMessage(data, "*");
+            }
           });
           break;
-        default:
-          console.log("Do nothing");
       }
   });
 });
-
-// Assign handlers immediately after making the request,
-// and remember the jqxhr object for this request
-/**var jqxhr = $.post( "example.php", function() {
-  alert( "success" );
-})
-  .done(function() {
-    alert( "second success" );
-  })
-  .fail(function() {
-    alert( "error" );
-  })
-  .always(function() {
-    alert( "finished" );
-  });
-**/
