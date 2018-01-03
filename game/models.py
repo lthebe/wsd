@@ -25,8 +25,8 @@ class Game(models.Model):
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
-    gameimage   = models.ImageField(null=True, blank=True, upload_to='')
-    
+    gameimage   = models.ImageField(null=True, blank=True, upload_to='game/')
+
     @classmethod
     def create(cls, title, url, price = 0.0, description='', gameimage=None):
         """Creates an object. Use this function instead of calling the class

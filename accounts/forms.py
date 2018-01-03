@@ -7,9 +7,12 @@ class RegisterForm(UserCreationForm):
     and email for registration"""
     email = forms.EmailField(max_length=100, help_text='Requried a valid email')
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+    description = forms.CharField(widget=forms.Textarea)
+    nickname = forms.CharField(max_length=20)
+    image = forms.ImageField(required=False)
     class Meta:
         model = User
-        fields = ('username', 'email', 'group', 'password1', 'password2')
+        fields = ('username', 'nickname', 'email', 'group', 'password1', 'password2', 'description', 'image')
 
 class GroupChoiceForm(forms.Form):
     """GroupChoiceForm is used to register group - basically for the user who

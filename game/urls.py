@@ -24,7 +24,9 @@ app_name = 'game'
 urlpatterns = [
     path('games/<int:game>/', views.details, name='detail'),
     path('games/<int:game>/purchase', views.purchase, name='purchase'),
+    path('games/<int:game>/highscore', views.highscore, name='highscore'),
     path('games/search/', views.search, name='search'),
+    path('games/<int:game>/<int:user>/update', views.update_played_game, name='update'),
     path('games/process_purchase', views.process_purchase, name='process'),
     path('games/upload/', views.upload, name='upload'),
 ]

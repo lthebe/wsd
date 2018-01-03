@@ -51,6 +51,9 @@ SELLER_ID = 'wsd2017'
 
 PAYMENT_KEY = '77c3d2e61d46cca01d2b5e18c3c6624e'
 
+#Email Account Activation time in Seconds
+ACTIVATION_TIME = 3600
+
 # Application definition
 
 INSTALLED_APPS = [

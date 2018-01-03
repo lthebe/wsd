@@ -1,8 +1,31 @@
 {% extends 'gamehub/base.html' %}
-<a href="{{game.url}}">{{game.name}}</a>
+{% block content %}
+<div class="container">
+<h1>{{game.name}}</h1>
 {% if game.gameimage %}
 <img src="{{game.gameimage.url}}" class="img-responsive" />
 {% endif %}
+<p>
 {{game.description}}
-<a href={% url 'game:purchase' %}<button class="btn btn-warning">Buy</button></a>
-</a><button class="btn btn-success">Play</button>
+</p>
+<p>
+<a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
+</p>
+<div class="row">
+{% if game_owner %}
+<input type="hidden" id="game_highscore_url" value="{% url 'game:highscore' game=game.id %}" />
+<input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id user=request.user.id %}" />
+{% comment %}
+The SETTINGS message in the game sends the width and height to the platform and would be rendered accordingly
+{% endcomment %}
+<iframe id="game_iframe" src="{{game.url}}" width="{{width}}" height="{{height}}"></iframe>
+<div>
+<strong>Highest Gamescore is:</strong>
+<p id="gameresult">
+  loading...
+</p>
+</div>
+{% endif %}
+</div>
+</div>
+{% endblock %}

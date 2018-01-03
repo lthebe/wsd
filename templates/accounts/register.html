@@ -1,6 +1,6 @@
 {% extends 'gamehub/base.html' %}
 {% block content %}
-  <form class="well form-horizontal" method="POST">
+  <form class="well form-horizontal" method="POST" enctype="multipart/form-data">
     <fieldset>
     <legend><center><h2><b>Registration Form</b></h2></center></legend><br>
     {% csrf_token %}
@@ -11,6 +11,16 @@
     <div class="input-group">
     <!--<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>-->
     {{form.username}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.nickname.errors }}
+    <label for="{{ form.nickname.id_for_label }}" class="col-md-4 control-label">Nickname: </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.nickname}}
     </div>
     </div>
     </div>
@@ -51,6 +61,26 @@
     <div class="col-md-4 inputGroupContainer">
     <div class="input-group">
     {{form.group}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.description.errors }}
+    <label for="{{ form.description.id_for_label }}" class="col-md-4 control-label">About you: </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.description}}
+    </div>
+    </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.image.errors }}
+    <label for="{{ form.image.id_for_label }}" class="col-md-4 control-label">Profile Picture: </label>
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    {{form.image}}
     </div>
     </div>
     </div>
