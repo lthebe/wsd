@@ -1,7 +1,6 @@
 import logging
-import pdb
-import datetime
 import json
+from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -31,15 +30,15 @@ def group_required(*groups):
         return False
     return user_passes_test(in_groups)
 
-def owner_required(function):
+def game_player_required(function):
+    """Decorator to permit only the gameowner to update the game"""
     def wrap(request, *args, **kwargs):
-        game_played = GamePlayed.objects.filter(users__pk=request.user.id, game__id=kwargs['game'])
-        if game_played:
+        """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
+        games = request.user.gameplayed_set.all() #games played by the user
+        if request.user.is_authenticated and len(list(filter(lambda x: x.game.id == kwargs['game'], games))) > 0:
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied
-    wrap.__doc__ = function.__doc__
-    wrap.__name__ = function.__name__
     return wrap
 
 @require_http_methods(('GET', 'HEAD'))
@@ -118,7 +117,6 @@ def search(request):
 @group_required('Developer')
 def upload(request):
     if request.method == 'POST':
-        #pdb.set_trace()
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
@@ -141,7 +139,6 @@ def purchase(request, game):
     if len(list(filter(lambda x: x.game.id == game.id, games))) > 0:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
-    #if game in games, don't allow to buy as the user has already the game - todo
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
     checksum = get_checksum(message)
     context =  {'game': game.id, 'checksum': checksum, 'pid': game.id, 'sid': settings.SELLER_ID, 'amount': game.price }
@@ -159,28 +156,30 @@ def process_purchase(request):
         buy_game.game = Game.objects.get(pk=pid)
         buy_game.users.add(request.user)
         buy_game.save()
-        return render(request, template_name='game/game.html', context={'game': buy_game.game})
+        return redirect(reverse('game:detail', kwargs={'game':buy_game.game.id}))
     else:
         return HttpResponse('sorry, you!')
 
 @require_http_methods(('GET', 'HEAD'))
 def highscore(request, game):
-    game = Game.objects.get(pk=game)
     if request.is_ajax():
-        return HttpResponse(datetime.datetime.now())
-    return HttpResponse('5 highest scores are included here!')
+        game = Game.objects.get(pk=game)
+        highscore = GamePlayed.objects.filter(game=game).aggregate(Max('gameScore'))
+        return HttpResponse(highscore['gameScore__max'])
 
 @require_http_methods(('POST', 'HEAD'))
-#allow only the game owner to modify it - todo
-@csrf_exempt
+@csrf_exempt #no csrf for this post
+@game_player_required #only the game player
 def update_played_game(request, game, user):
+    """Fetch the game based on the game id and users from GamePlayed tables, &
+    responds based on the messageType received in json data passed with ajax
+    request. If the messageType is 'LOAD_REQUEST', it constructs the json data
+    and send as response. So, it is with when ERROR messageType is received.
+    """
     if request.is_ajax():
-        game_played = GamePlayed.objects.filter(users__pk=user, game__id=game)[0]
+        game_played = GamePlayed.objects.get(users__pk=user, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
-        #data_dict = {country.code: country.name for country in continent.countries.all()}
-        #data-n = json.dumps(data_dict)
-        #return HttpResponse(data, content_type="text/javascript")
         if data_dict['messageType'] == 'SAVE':
             game_played.gameState = data
             game_played.save()
