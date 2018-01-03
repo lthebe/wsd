@@ -2,13 +2,14 @@ from django.forms import ModelForm, TextInput
 from .models import Game
 
 class UploadGameForm(ModelForm):
+    """Form for uploading game.
+    
+    Just a straight up ModelForm.
+    """
 
     class Meta:
         model = Game
-        fields = ('name', 'url', 'price', 'description', 'gameimage')
+        fields = ('title', 'url', 'price', 'description', 'gameimage')
         widgets = {
-            'name': TextInput,
-        }
-        labels = {
-            'name': 'Title',
+            'title': TextInput,
         }

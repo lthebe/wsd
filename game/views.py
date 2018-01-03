@@ -4,7 +4,7 @@ from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -116,16 +116,45 @@ def search(request):
 #ONLY Developer can upload the game and of course superuser
 @group_required('Developer')
 def upload(request):
+    """Provides the upload functionality.
+    
+    On get it presents a form for uploading a game. On post it processes that form,
+    and either redirects with an error or returns a response confirming the upload.
+    
+    The following context is provided to the template:
+      - form: templates/game/upload.html.
+      - errors: a dict containing the errors.
+    
+    The form used is a standard ModelForm with nothing special.
+    
+    The errors dict used in the templates is copied from Form.errors in case of a
+    validation error. The view then redirects to itself with a GET request. The
+    errors dict is stored in the current session, in field 'errors'. This field in
+    the session is cleared on a GET request.
+    
+    :statuscode 200: Success.
+    :statuscode 302: Redirection in case of either invalid authorization, or a validation error.
+    
+    .. todo:: Upon successful upload it should redirect somewhere, not just give a string response.
+    """
+    
+    if 'errors' in request.session:
+        errors = request.session['errors']
+        del request.session['errors']
+    else:
+        errors = None
+    
     if request.method == 'POST':
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponse('Thxbye!')
+            return HttpResponse('Upload successful!')
         else:
-            return HttpResponse('Bad boy!')
+            request.session['errors'] = form.errors
+            return HttpResponseRedirect(reverse('game:upload'))
     else:
         form = UploadGameForm()
-        return render(request, 'game/upload.html', {'form': form})
+        return render(request, 'game/upload.html', {'form': form, 'errors': errors})
 
 
 @require_http_methods(('GET', 'HEAD'))

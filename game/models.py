@@ -15,26 +15,26 @@ class Game(models.Model):
 
     referr to README.md for database schema.
 
-    :members: name, url, description, gameimage
+    :members: title, url, description, gameimage
 
     .. todo::
         Relations with user models.
     """
 
-    name        = models.TextField(max_length=300, unique=True)
+    title       = models.TextField(max_length=300, unique=True)
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10)
     description = models.TextField()
     gameimage   = models.ImageField(null=True, blank=True, upload_to='game/')
 
     @classmethod
-    def create(cls, name, url, price = 0.0, description='', gameimage=None):
+    def create(cls, title, url, price = 0.0, description='', gameimage=None):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
 
         game = cls(
-            name=name,
+            title=title,
             url=url,
             price=price,
             description=description,
@@ -62,17 +62,18 @@ class Game(models.Model):
             query = Q()
             for word in qwords:
                 query = query & (
-                    Q(name__contains=word) |
+                    Q(title__contains=word) |
                     Q(description__contains=word))
 
             return cls.objects.all().filter(query)
 
     def __str__(self):
-        return 'Game {0}, name: {1}, url: {2}'.format(
+        return 'Game {0}, title: {1}, url: {2}'.format(
             self.pk,
-            self.name,
+            self.title,
             self.url
         )
+
 
 class GamePlayed(models.Model):
     """GamePlayed model - when a user buys a game, the game is added to the
@@ -95,10 +96,10 @@ class GamePlayed(models.Model):
 
     def __str__(self):
         if (self.game):
-            gamename = self.game.name
+            gametitle = self.game.title
         else:
-            gamename = 'Game Deleted'
+            gametitle = 'Game Deleted'
         return 'Game {0}, GameState: {1}'.format(
-            gamename,
+            gametitle,
             self.gameState
         )

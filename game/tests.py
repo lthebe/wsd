@@ -1,10 +1,11 @@
+import pdb
 import logging
 
 from functools import reduce
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from game.models import Game
 
@@ -27,7 +28,7 @@ class BuyViewTest(TestCase):
         user.save()
         self.client.force_login(user)
         
-        Game.create(name='name', url='url').save()
+        Game.create(title='title', url='url').save()
     
     def testResponses(self):
         """Tests the response codes"""
@@ -52,11 +53,11 @@ class GameSearchTest(TestCase):
         logger.debug('GameSearchTest.setUp')
         
         for i in range(1, 8):
-            name = ''
-            name += 'foo ' if i & 1 == 1 else ''
-            name += 'bar ' if i & 2 == 2 else ''
-            name += 'baz ' if i & 4 == 4 else ''
-            Game.create(name, '').save()
+            title = ''
+            title += 'foo ' if i & 1 == 1 else ''
+            title += 'bar ' if i & 2 == 2 else ''
+            title += 'baz ' if i & 4 == 4 else ''
+            Game.create(title, '').save()
         
         Game.create('game1', '', description='some description').save()
         Game.create('game2', '', description='also some description').save()
@@ -154,4 +155,68 @@ class SearchViewTest(TestCase):
         
         response = self.client.get(reverse('game:search'), {'q': 'game', 'p': 0})
         self.assertEquals(response.status_code, 400)
+
+class GameUploadTest(TestCase):
+    """Tests for the upload feature.
+    """
     
+    def setUp(self):
+        logger.debug('GameUploadTest.setUp')
+        self.client = Client()
+        
+        group, created = Group.objects.get_or_create(name='Developer')
+        user = User.objects.create()
+        user.save()
+        group.user_set.add(user)
+        
+        self.client.force_login(user)
+    
+    def testUpload(self):
+        """Test that uploading works.
+        """
+        
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This here is a game',
+        })
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Upload successful!' in response.content)
+        
+        qset = Game.objects.all().filter(title='somegame')
+        self.assertTrue(len(qset) == 1)
+        game = qset[0]
+        self.assertEquals(game.url, 'http://google.com')
+        self.assertEquals(str(game.price), '0.5')
+        self.assertEquals(game.description, 'This here is a game')
+    
+    def testValidation(self):
+        """This tests that the validation in the upload view  works.
+        
+        Tests only the case that two games with the same title are uploaded.
+        """
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This here is a game',
+        })
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Upload successful!' in response.content)
+        
+        response = self.client.post(reverse('game:upload'), {
+            'title': 'somegame',
+            'url': 'http://google.com',
+            'price': '0.50',
+            'description': 'This game has the same title as the last one',
+        })
+        
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['location'], reverse('game:upload'))
+        
+        response = self.client.get(response['location'])
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(b'Game with this Title already exists.' in response.content)
