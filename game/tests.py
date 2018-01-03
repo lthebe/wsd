@@ -27,7 +27,7 @@ class BuyViewTest(TestCase):
         user.save()
         self.client.force_login(user)
         
-        Game.create(name='name', url='url').save()
+        Game.create(title='title', url='url').save()
     
     def testResponses(self):
         """Tests the response codes"""
@@ -52,11 +52,11 @@ class GameSearchTest(TestCase):
         logger.debug('GameSearchTest.setUp')
         
         for i in range(1, 8):
-            name = ''
-            name += 'foo ' if i & 1 == 1 else ''
-            name += 'bar ' if i & 2 == 2 else ''
-            name += 'baz ' if i & 4 == 4 else ''
-            Game.create(name, '').save()
+            title = ''
+            title += 'foo ' if i & 1 == 1 else ''
+            title += 'bar ' if i & 2 == 2 else ''
+            title += 'baz ' if i & 4 == 4 else ''
+            Game.create(title, '').save()
         
         Game.create('game1', '', description='some description').save()
         Game.create('game2', '', description='also some description').save()
