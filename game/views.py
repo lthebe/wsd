@@ -5,7 +5,7 @@ import logging
 from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -98,6 +98,12 @@ def search(request):
 #ONLY Developer can upload the game and of course superuser
 @group_required('developer')
 def upload(request):
+    if 'errors' in request.session:
+        errors = request.session['errors']
+        del request.session['errors']
+    else:
+        errors = None
+    
     if request.method == 'POST':
         #pdb.set_trace()
         form = UploadGameForm(request.POST, request.FILES)
@@ -105,10 +111,13 @@ def upload(request):
             form.save()
             return HttpResponse('Thxbye!')
         else:
-            return HttpResponse('Bad boy!')
+            request.session['errors'] = form.errors
+            return HttpResponseRedirect(reverse('game:upload'))
     else:
         form = UploadGameForm()
-        return render(request, 'game/upload.html', {'form': form})
+        logger.debug(type(errors))
+        logger.debug(str(errors))
+        return render(request, 'game/upload.html', {'form': form, 'errors': errors})
 
 
 @require_http_methods(('GET', 'HEAD'))
