@@ -17,7 +17,7 @@ from django.contrib.auth.models import User, Group
 from django.views import View
 
 
-from .forms import RegisterForm, GroupChoiceForm
+from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
 from game.models import Game
 # Create your views here.
 
@@ -75,7 +75,7 @@ class ActivationView(View):
 
 class ProfileUpdateView(UpdateView):
     model = User
-    form_class = RegisterForm
+    form_class = ProfileUpdateForm
     def post(self, request, pk):
         self.object = self.get_object()
         form_class = self.get_form_class()
@@ -85,10 +85,9 @@ class ProfileUpdateView(UpdateView):
             user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
-            group = Group.objects.get(name=form.cleaned_data.get('group'))
-            group.user_set.add(user)
             user.save()
-            return redirect('accounts:home') #redirects to the profiledetail view later to do
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect(reverse('accounts:detail', kwargs={'pk':self.request.user.id}))
         else:
             return render(request, template_name='accounts/update.html', context={'form': form })
     def get(self, request, pk):

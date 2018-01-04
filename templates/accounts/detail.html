@@ -1,6 +1,9 @@
 {% extends 'gamehub/base.html' %}
 {% block content %}
 {{object}}
+{% if object.profile.image %}
+  <img src={{object.profile.image.url}} class='img-responsive' /> 
+{% endif %}
 <br />
 <h1>Played Games</h1>
 <ul>

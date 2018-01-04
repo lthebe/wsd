@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Create your models here.
 
+#https://stackoverflow.com/questions/34239877/django-save-user-uploads-in-seperate-folders
+def user_directory_path(instance, filename):
+    return 'user_{0}/game/{1}'.format(instance.developer.id, filename)
+
 class Game(models.Model):
     """Game model
 
@@ -28,7 +32,7 @@ class Game(models.Model):
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description = models.TextField()
-    gameimage   = models.ImageField(null=True, blank=True, upload_to='game/')
+    gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
     viewcount = models.PositiveIntegerField(default=0)
 
     def increment_viewcount(self):

@@ -24,3 +24,8 @@ class GroupChoiceForm(forms.Form):
     """GroupChoiceForm is used to register group - basically for the user who
     uses social login"""
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+
+class ProfileUpdateForm(RegisterForm):
+    def __init__(self, *args, **kwargs):
+        super(ProfileUpdateForm, self).__init__(*args, **kwargs)
+        del self.fields['group']
