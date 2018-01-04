@@ -10,6 +10,12 @@ class RegisterForm(UserCreationForm):
     description = forms.CharField(widget=forms.Textarea)
     nickname = forms.CharField(max_length=20)
     image = forms.ImageField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+        for fieldname in ['username', 'password1', 'password2', 'email']:
+            self.fields[fieldname].help_text = None
+
     class Meta:
         model = User
         fields = ('username', 'nickname', 'email', 'group', 'password1', 'password2', 'description', 'image')
