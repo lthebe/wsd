@@ -12,7 +12,10 @@ from game.models import Game
 logger = logging.getLogger(__name__)
 
 # Create your tests here.
-
+def get_user():
+    user = User.objects.create()
+    user.save()
+    return user
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
     by their private keys.
@@ -23,12 +26,10 @@ class BuyViewTest(TestCase):
         logger.debug('BuyViewTest.setUp')
 
         self.client = Client()
-
-        user = User.objects.create()
-        user.save()
+        user = get_user()
         self.client.force_login(user)
 
-        Game.create(title='title', url='url').save()
+        Game.create(title='title', url='url', developer=user).save()
 
     def testResponses(self):
         """Tests the response codes"""
@@ -51,18 +52,18 @@ class GameSearchTest(TestCase):
     def setUp(self):
 
         logger.debug('GameSearchTest.setUp')
-
+        user = get_user()
         for i in range(1, 8):
             title = ''
             title += 'foo ' if i & 1 == 1 else ''
             title += 'bar ' if i & 2 == 2 else ''
             title += 'baz ' if i & 4 == 4 else ''
-            Game.create(title, '').save()
+            Game.create(title, '', developer=user).save()
 
-        Game.create('game1', '', description='some description').save()
-        Game.create('game2', '', description='also some description').save()
-        Game.create('title', '', description='this game has a title').save()
-        Game.create('another game', '', description='this game also has a title').save()
+        Game.create('game1', '', description='some description', developer=user).save()
+        Game.create('game2', '', description='also some description', developer=user).save()
+        Game.create('title', '', description='this game has a title', developer=user).save()
+        Game.create('another game', '', description='this game also has a title', developer=user).save()
 
     def testEmptyQuery(self):
         """Tests if an empty query returns all games in the database"""
@@ -122,9 +123,10 @@ class SearchViewTest(TestCase):
         logger.debug('SearchViewTest.setUp')
 
         self.client = Client()
+        user = get_user()
 
         for i in range(0, 30):
-            Game.create('game title {0}'.format(i), '').save()
+            Game.create('game title {0}'.format(i), '', developer=user).save()
 
     def testEmptyResult(self):
         """Tests template rendering for an empty queryset."""

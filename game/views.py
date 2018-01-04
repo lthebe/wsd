@@ -4,43 +4,26 @@ from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.edit import DeleteView, UpdateView
+from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 
 from .models import Game, GamePlayed
 from .utils import get_checksum
 from .forms import UploadGameForm
-
+from .decorators import group_required, game_player_required
 import accounts.urls
 
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-
-def group_required(*groups):
-    """Requires user membership in at least one of the groups passed in.
-    Source: Django Snippets"""
-    def in_groups(u):
-        if u.is_authenticated:
-            if bool(u.groups.filter(name__in=groups)) | u.is_superuser:
-                return True
-        return False
-    return user_passes_test(in_groups)
-
-def game_player_required(function):
-    """Decorator to permit only the gameowner to update the game"""
-    def wrap(request, *args, **kwargs):
-        """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
-        games = request.user.gameplayed_set.all() #games played by the user
-        game = Game.objects.get(pk=kwargs['game'])
-        if request.user.is_authenticated and game in list(map(lambda x: x.game, games)):
-            return function(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
-    return wrap
 
 @require_http_methods(('GET', 'HEAD'))
 def details(request, game):
@@ -149,7 +132,9 @@ def upload(request):
     if request.method == 'POST':
         form = UploadGameForm(request.POST, request.FILES)
         if form.is_valid():
-            new_game = form.save()
+            new_game = form.save(commit=False)
+            new_game.developer = request.user
+            new_game.save()
             #adds the developer as a player allowing to play game without buying
             played_game = GamePlayed.objects.create(gameScore=0)
             played_game.game = new_game
@@ -232,3 +217,36 @@ def update_played_game(request, game, user):
         return HttpResponse('Great Job So Far')
     else:
         return HttpResponse('Only ajax')
+
+class GameUpdateView(UpdateView):
+    model = Game
+    form_class = UploadGameForm
+    def post(self, request, game):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            new_game = form.save(commit=False)
+            new_game.developer = request.user
+            new_game.save()
+            return redirect('accounts:home') #redirects to the profiledetail view later to do
+        else:
+            return render(request, template_name='game/upload.html', context={'form': form })
+    def get(self, request, game):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        return render(request, template_name='game/upload.html', context={'form': form})
+
+    def get_object(self):
+        return get_object_or_404(Game, pk=self.kwargs['game'])
+
+class GameDeleteView( DeleteView):
+    model = Game
+    template_name = 'game/delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:detail', kwargs={'pk': self.object.developer.id})
+
+    def get_object(self):
+        return get_object_or_404(Game, pk=self.kwargs['game'])

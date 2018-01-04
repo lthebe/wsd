@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Create your models here.
 
+#https://stackoverflow.com/questions/34239877/django-save-user-uploads-in-seperate-folders
+def user_directory_path(instance, filename):
+    return 'user_{0}/game/{1}'.format(instance.developer.id, filename)
+
 class Game(models.Model):
     """Game model
 
@@ -24,17 +28,18 @@ class Game(models.Model):
     """
 
     title       = models.TextField(max_length=300, unique=True)
+    developer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description = models.TextField()
-    gameimage   = models.ImageField(null=True, blank=True, upload_to='game/')
+    gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
     viewcount = models.PositiveIntegerField(default=0)
 
     def increment_viewcount(self):
         self.viewcount += 1
         self.save()
     @classmethod
-    def create(cls, title, url, price = 0.0, description='', gameimage=None, viewcount=0):
+    def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, viewcount=0):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
@@ -43,6 +48,7 @@ class Game(models.Model):
             title=title,
             url=url,
             price=price,
+            developer = developer,
             description=description,
             gameimage=gameimage,
             viewcount=viewcount
@@ -98,7 +104,7 @@ class GamePlayed(models.Model):
 
     game = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
-    gameState = models.TextField()
+    gameState = models.TextField(default="{''}")
     users = models.ManyToManyField(User)
 
     def __str__(self):

@@ -2,7 +2,8 @@ from random import shuffle
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import DetailView
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -16,7 +17,7 @@ from django.contrib.auth.models import User, Group
 from django.views import View
 
 
-from .forms import RegisterForm, GroupChoiceForm
+from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
 from game.models import Game
 # Create your views here.
 
@@ -71,6 +72,50 @@ class ActivationView(View):
             return redirect('accounts:home')
         else:
             return render(request, 'accounts/activation_error.html')
+
+class ProfileUpdateView(UpdateView):
+    model = User
+    form_class = ProfileUpdateForm
+    def post(self, request, pk):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.profile.image = form.cleaned_data.get('image')
+            user.profile.description = form.cleaned_data.get('description')
+            user.profile.nickname = form.cleaned_data.get('nickname')
+            user.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect(reverse('accounts:detail', kwargs={'pk':self.request.user.id}))
+        else:
+            return render(request, template_name='accounts/update.html', context={'form': form })
+    def get(self, request, pk):
+        if self.request.user.id != pk:
+            messages.success(self.request, "Only your account please")
+            return redirect(reverse('accounts:update', kwargs={'pk':self.request.user.id}))
+        else:
+            self.object = self.get_object()
+            form_class = self.get_form_class()
+            form = self.get_form(form_class)
+            form.fields['nickname'].initial = self.object.profile.nickname
+            form.fields['description'].initial = self.object.profile.description
+            form.fields['image'].initial = self.object.profile.image
+            return render(request, template_name='accounts/update.html', context={'form': form})
+    def get_object(self):
+        return self.request.user
+
+class ProfileDetailView(DetailView):
+    model = User
+    template_name = "accounts/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileDetailView, self).get_context_data(**kwargs)
+        #add what is needed in profiledetails
+        context['developed_games'] = Game.objects.filter(developer=self.request.user)
+        context['played_games'] = self.request.user.gameplayed_set.all()
+        return context
+
 
 def home_view(request):
     """Returns the home page of the site"""
