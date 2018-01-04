@@ -111,7 +111,7 @@ class ProfileDetailView(DetailView):
     template_name = "accounts/detail.html"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ProfileDetailView, self).get_context_data(**kwargs)
         #add what is needed in profiledetails
         context['developed_games'] = Game.objects.filter(developer=self.request.user)
         context['played_games'] = self.request.user.gameplayed_set.all()

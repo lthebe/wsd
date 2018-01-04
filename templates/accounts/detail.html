@@ -5,7 +5,12 @@
 <h1>Played Games</h1>
 <ul>
 {% for played_game in played_games %}
-    <li>{{ played_game.game.title }} - {{played_game.gameState}} <a href="{% url 'game:detail' game=played_game.game.id %}">Play</a></li>
+    <li>
+      <p>{{played_game}} </p>
+      {% if played_game.game.id %}
+      <a href="{% url 'game:detail' game=played_game.game.id %}">Play</a>
+      {% endif %}
+    </li>
 {% empty %}
     <li>Sorry, buy some games to play or develop!</li>
 {% endfor %}
@@ -22,4 +27,5 @@
     <li>Sorry, write some game and earn money!</li>
 {% endfor %}
 {% endif %}
+<a href="{% url 'accounts:update' request.user.id %}">Update Account</a>
 {% endblock %}

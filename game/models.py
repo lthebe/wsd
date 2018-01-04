@@ -98,9 +98,9 @@ class GamePlayed(models.Model):
 
     """
 
-    game = models.ForeignKey(Game, null=True, on_delete=models.PROTECT)
+    game = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
-    gameState = models.TextField()
+    gameState = models.TextField(default="{''}")
     users = models.ManyToManyField(User)
 
     def __str__(self):
