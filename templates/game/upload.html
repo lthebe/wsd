@@ -1,0 +1,17 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+<main role="main" class="inner cover">
+  {% if errors %}
+    {% for key, value in errors.items %}
+      {% for error in value %}
+        {{ error }}
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+  <form method="post" enctype='multipart/form-data'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit"/>
+  </form>
+</main>
+{% endblock content %}

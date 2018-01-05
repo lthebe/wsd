@@ -1,0 +1,24 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+<form action="http://payments.webcourse.niksula.hut.fi/pay/" method="POST">
+    <input id="id_pid" type="hidden" name="pid" value="{{pid}}" />
+    <input id="id_sid" type="hidden" name="sid" value="{{sid}}" />
+    <label for="id_amount">Amount</label>
+    <input type="text" id="id_amount" name="amount" value="{{amount}}" />
+    <input id="id_success_url" type="hidden" name="success_url"
+            value="http://localhost:8000{% url 'game:process' %}" />
+              {% comment %}
+              value="{% url 'game:detail' game=game %}"
+              somehow it feels like relative url does not work in this payment
+              And probably, the success url should handle the adding of the game
+              to the user playedgame database
+              {% endcomment %}
+    <input id="id_cancel_url" type="hidden" name="cancel_url"
+            value="http://localhost:8000/" />
+    <input id="id_error_url" type="hidden" name="error_url"
+            value="http://localhost:8000/payment/error" />
+    <input id="id_checksum" type="hidden" name="checksum"
+            value="{{ checksum }}" />
+    <input type="submit" value="Accept Payment"/>
+</form>
+{% endblock %}
