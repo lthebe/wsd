@@ -119,18 +119,15 @@ class ProfileDetailView(DetailView):
         return context
 
 
-def home_view(request):
-    """Returns the home page of the site"""
-    #chooses top 20 games based on view count
-    top_20_games = list(Game.objects.all().order_by('viewcount')[:20])
-    shuffle(top_20_games) #shuffle the top 20 games
-    games=top_20_games[:3] #choose only three
-    return render(request, template_name='gamehub/home.html', context={'games': games})
+class HomeView(View):
+    def get(self, request):
+        top_20_games = list(Game.objects.all()[:20])
+        shuffle(top_20_games) #shuffle the top 20 games
+        games=top_20_games[:3] #choose only three
+        return render(request, template_name='gamehub/home.html', context={'games': games})
 
-def pick_group(request):
-    """Pick the group for the user - either developer or player.
-    A user will have only one group"""
-    if request.method == 'POST':
+class ChooseGropuView(View):
+    def post(self, request):
         form = GroupChoiceForm(request.POST)
         if form.is_valid():
             # because of FIELDS_STORED_IN_SESSION, this will get copied
@@ -142,6 +139,27 @@ def pick_group(request):
             # once we have the password stashed in the session, we can
             # tell the pipeline to resume by using the "complete" endpoint
             return redirect(reverse('social:complete', args=["google-oauth2"]))
-    else:
+        else:
+            form = GroupChoiceForm()
+            return render(request, "accounts/pick_group.html", context={'form': form})
+    def get(self, request):
         form = GroupChoiceForm()
-    return render(request, "accounts/pick_group.html", context={'form': form})
+        return render(request, "accounts/pick_group.html", context={'form': form})
+# def pick_group(request):
+#     """Pick the group for the user - either developer or player.
+#     A user will have only one group"""
+#     if request.method == 'POST':
+#         form = GroupChoiceForm(request.POST)
+#         if form.is_valid():
+#             # because of FIELDS_STORED_IN_SESSION, this will get copied
+#             # to the request dictionary when the pipeline is resumed
+#             if len(request.user.groups.all()) >= 1:
+#                 messages.add_message(request, messages.INFO, 'You already belong to a group!')
+#                 return redirect('accounts:home')
+#             request.session['user_group'] = str(form.cleaned_data['group'])
+#             # once we have the password stashed in the session, we can
+#             # tell the pipeline to resume by using the "complete" endpoint
+#             return redirect(reverse('social:complete', args=["google-oauth2"]))
+#     else:
+#         form = GroupChoiceForm()
+#     return render(request, "accounts/pick_group.html", context={'form': form})

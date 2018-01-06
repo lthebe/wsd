@@ -15,7 +15,7 @@ from django.views.generic import DetailView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 
-from .models import Game, GamePlayed
+from .models import Game, GamePlayed, PaymentDetail
 from .utils import get_checksum
 from .forms import UploadGameForm
 from .decorators import group_required, game_player_required
@@ -138,8 +138,8 @@ def upload(request):
             #adds the developer as a player allowing to play game without buying
             played_game = GamePlayed.objects.create(gameScore=0)
             played_game.game = new_game
-            played_game.users.add(request.user)
             played_game.save()
+            PaymentDetail.objects.create(game_played = played_game, cost=new_game.price, user=request.user)
             return HttpResponse('Upload successful!')
         else:
             request.session['errors'] = form.errors
@@ -175,8 +175,9 @@ def process_purchase(request):
     if get_checksum(message) == checksum:
         buy_game = GamePlayed.objects.create(gameScore=0)
         buy_game.game = Game.objects.get(pk=pid)
-        buy_game.users.add(request.user)
+        buy_game.game.increment_sellcount()
         buy_game.save()
+        PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
         return redirect(reverse('game:detail', kwargs={'game':buy_game.game.id}))
     else:
         return HttpResponse('sorry, you!')
@@ -203,6 +204,9 @@ def update_played_game(request, game, user):
         data_dict = json.loads(data)
         if data_dict['messageType'] == 'SAVE':
             game_played.gameState = data
+            #update highscores if score of saved game is higher
+            if data_dict['gameState']['score'] > game_played.gameScore:
+                game_played.gameScore = data_dict['gameState']['score']
             game_played.save()
         if data_dict['messageType'] == 'SCORE':
             game_played.gameScore = data_dict['score']
