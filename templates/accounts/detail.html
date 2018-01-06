@@ -2,14 +2,14 @@
 {% block content %}
 {{object}}
 {% if object.profile.image %}
-  <img src={{object.profile.image.url}} class='img-responsive' />
+  <img src={{object.profile.image.url}} class='img-responsive' /> 
 {% endif %}
 <br />
 <h1>Played Games</h1>
 <ul>
 {% for played_game in played_games %}
     <li>
-      <strong>{{played_game}}</strong>
+      <p>{{played_game}} </p>
       {% if played_game.game.id %}
       <a href="{% url 'game:detail' game=played_game.game.id %}">Play</a>
       {% endif %}
@@ -20,25 +20,15 @@
 </ul>
 {% if developed_games %}
 <h1>Developed Games</h1>
-<ul>
 {% for developed_game in developed_games %}
     <li>
-      <h1>{{ developed_game.title }} - {{developed_game.viewcount}} views - {{developed_game.sellcount}} sells</h1>
+      <p>{{ developed_game.title }} - {{developed_game.viewcount}} views</p>
       <a href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
       <a href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
-      <div>
-      <strong>Statistics</strong>
-      {% for game in developed_game.gameplayed_set.all %}
-        {% for payment in game.paymentdetail_set.all %}
-          <p>Price: {{payment.cost}}, Date: {{payment.selldate}} purchased by {{payment.user}}</p>
-        {% endfor %}
-      {% endfor %}
-    </div>
     </li>
 {% empty %}
     <li>Sorry, write some game and earn money!</li>
 {% endfor %}
-</ul>
 {% endif %}
-<a href="{% url 'accounts:update' request.user.id %}"><button class="btn btn-success">Update Profile</button></a>
+<a href="{% url 'accounts:update' request.user.id %}">Update Account</a>
 {% endblock %}
