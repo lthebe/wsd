@@ -18,7 +18,7 @@ Examples:
 """
 from django.urls import path, include, reverse
 from django.contrib.auth import views as auth_views
-from .views import RegisterView, ActivationView, HomeView, ChooseGropuView, ProfileUpdateView, ProfileDetailView
+from .views import RegisterView, ActivationView, home_view, pick_group, ProfileUpdateView, ProfileDetailView
 
 from game.decorators import profile_owner_required
 
@@ -26,8 +26,8 @@ app_name = 'accounts'
 
 #accounts use pk to determine the pk whereas games require game
 urlpatterns = [
-    path('', HomeView.as_view(), name="home"),
-    path('accounts/choosegroup', ChooseGropuView.as_view(), name="choosegroup" ),
+    path('', home_view, name="home"),
+    path('accounts/choosegroup', pick_group, name="choosegroup" ),
     path('accounts/<int:pk>', profile_owner_required(ProfileDetailView.as_view()), name='detail' ),
     path('accounts/<int:pk>/update', profile_owner_required(ProfileUpdateView.as_view()), name='update'),
     path('accounts/activate/<token>', ActivationView.as_view(), name='activate'),

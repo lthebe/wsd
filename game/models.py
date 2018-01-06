@@ -34,20 +34,10 @@ class Game(models.Model):
     description = models.TextField()
     gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
     viewcount = models.PositiveIntegerField(default=0)
-    sellcount = models.PositiveIntegerField(default=0)
-
-
-    class Meta:
-           ordering = ['viewcount', 'sellcount']
 
     def increment_viewcount(self):
         self.viewcount += 1
         self.save()
-
-    def increment_sellcount(self):
-        self.sellcount += 1
-        self.save()
-
     @classmethod
     def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, viewcount=0):
         """Creates an object. Use this function instead of calling the class
@@ -115,7 +105,7 @@ class GamePlayed(models.Model):
     game = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
     gameState = models.TextField(default="{''}")
-    users = models.ManyToManyField(User, through="PaymentDetail")
+    users = models.ManyToManyField(User)
 
     def __str__(self):
         if (self.game):
@@ -125,34 +115,4 @@ class GamePlayed(models.Model):
         return 'Game {0}, GameState: {1}'.format(
             gametitle,
             self.gameState
-        )
-
-class PaymentDetail(models.Model):
-    """PaymentDetail model - this model is used as a link between gameplayed and
-    users many to many relationship. When game is purchased, it is added here.
-
-    :members: game_played, cost, user, selldate
-    -Game purchased is stored in game_played as GamePlayed
-    -cost is the price of the game
-    -user is the buyer of the game
-    -selldate is the date of purchase
-
-    """
-    game_played = models.ForeignKey(GamePlayed, null=True, on_delete=models.SET_NULL)
-    cost = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    selldate = models.DateTimeField(auto_now=False, auto_now_add=True)
-
-    def __str__(self):
-        if (self.user):
-            user = self.user.username
-        else:
-            user = 'Account Deleted'
-        if (self.game_played.game):
-            game = self.game_played.game.title
-        else:
-            game = 'Game Deleted'
-        return '{0} owns {1}'.format(
-            user,
-            game
         )
