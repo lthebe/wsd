@@ -1,6 +1,5 @@
 import logging
 import re
-import datetime
 
 from decimal import Decimal
 
@@ -9,6 +8,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class Game(models.Model):
     gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
     viewcount   = models.PositiveIntegerField(default=0)
     sellcount   = models.PositiveIntegerField(default=0)
-    upload_date = models.DateField(default=datetime.date.today)
+    upload_date = models.DateTimeField(default=timezone.now)
 
 
     class Meta:
