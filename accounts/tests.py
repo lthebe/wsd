@@ -48,9 +48,9 @@ class TemplateTestCase(TestCase):
 
     def testRegistration(self):
         """Checks if developer is registered and in particular group"""
-        data = {'username': 'testuser3', 'is_active':True, 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'group': 1, 'email': 'testuser3@mail.com', 'nickname': 'tuser3', 'description':'Awesome'}
+        data = {'username': 'testuser3', 'is_active':True, 'password1': 'VeryStrong', 'password2': 'VeryStrong', 'developer': True, 'email': 'testuser3@mail.com', 'nickname': 'tuser3', 'description':'Awesome'}
         response = self.client.post(reverse('accounts:register'), data)
-        group = Group.objects.get(pk=1)
+        group = Group.objects.get(name='Developer')
         self.assertTrue(group.user_set.filter(username='testuser3').exists())
     
     # def testGroupRegistration(self):
