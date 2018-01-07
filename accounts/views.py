@@ -35,8 +35,12 @@ class RegisterView(CreateView):
             user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
-            group = Group.objects.get(name=form.cleaned_data.get('group'))
-            group.user_set.add(user)
+            if form.cleaned_data.get('developer'):
+                group = Group.objects.get(name='Developer')
+                group.user_set.add(user)
+            else:
+                group = Group.objects.get(name='Player')
+                group.user_set.add(user)
             user.is_active = False
             user.save()
             current_site = get_current_site(request)
