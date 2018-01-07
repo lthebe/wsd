@@ -1,14 +1,30 @@
 {% extends 'gamehub/base.html' %}
+{% load humanize %}
 {% block content %}
 <main role="main" class="inner cover">
   {% if numpages > 0 %}
-    {% for hit in hits %}
-      <div>
-        <h3>{{ hit.title }}</h3>
-        <p>{{ hit.description }}</p>
-        <a href="{% url 'game:purchase' game=hit.pk %}">Buy now!</a>
+    <div class="container">
+      {% for hit in hits %}
+      <div class="row border">
+        <div class="col-md-2">
+          image goes here
+        </div>
+        <div class="col-md-10">
+          <h5>{{ hit.title }}</h5>
+          <p>by {{ hit.developer.username }} • {{ hit.sellcount | intword }} sold • uploaded {{ hit.upload_date | timesince }} ago</p>
+        </div>
       </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
+    <!--
+    {% for hit in hits %}
+      <div class="col-md-3">
+        image goes here
+      </div>
+      <div class="col-md-9">
+        <h3>{{ hit.title }}</h3>
+      </div>
+    {% endfor %}-->
     {% if page > 1 %}
       <a href="{% url 'game:search' %}?q={{ query }}&p={{ page|add:"-1" }}">
         previous
