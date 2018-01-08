@@ -3,13 +3,15 @@
 <div class="container">
 <h1>{{game.name}}</h1>
 {% if game.gameimage %}
-<img src="{{game.gameimage.url}}" class="img-responsive" />
+<img src="{{game.gameimage.url}}" class="img-responsive" style="width: 100%" />
 {% endif %}
-<p>
+<p class="text-center text-uppercase">
 {{game.description}}
 </p>
 <p>
-<a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
+{% if not game_owner %}
+    <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
+{% endif %}
 {% with request as request %}
 {% with game as game %}
 {% include 'game/socialshare.html' %}

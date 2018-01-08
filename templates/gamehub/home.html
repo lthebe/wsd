@@ -15,10 +15,16 @@
         {% endif %}
         <div class="container">
           <div class="carousel-caption text-left">
-            <h1>Play the game {{game.title}}</h1>
-            <p>{{game.description}}</p>
-            <p><a class="btn btn-lg btn-primary" href="{% url 'accounts:register' %}" role="button">Register today</a></p>
-            <p><a class="btn btn-lg btn-success" href="{% url 'game:purchase' game=game.id %}" role="button">Buy Game</a></p>
+              <div class="text-center">
+                <a href="{% url 'game:detail' game=game.id %}" class="btn btn-primary">Play the game {{game.title}}</a>
+              </div>
+            <p class="text-center">{{game.description}}</p>
+            {% comment %}
+                Registration moved into navbar
+                <p><a class="btn btn-lg btn-primary" href="{% url 'accounts:register' %}" role="button">Register today</a></p>
+                ToDo Move buy into game page so its can be filtered if the player bought it or not
+                <p><a class="btn btn-lg btn-success" href="{% url 'game:purchase' game=game.id %}" role="button">Buy Game</a></p>
+            {% endcomment %}
           </div>
         </div>
       </div>
