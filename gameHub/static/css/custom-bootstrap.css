@@ -1,8 +1,65 @@
+:root{
+    --main-color: #494f5c;
+    --accessory-color: #ad3e3e;
+    --button-nav-color: #a1a7b2;
+    --button-hover-nav-color: white;
+    --dark-text-color: #5a5a5a;
+}
 body {
-	background-color: #5a5a5a;
+	background-color: var(--main-color);
 	color: white;
+    /*carousel padding-top override*/
+    padding-top: 0;
 }
 
 .card {
-	background-color: #5a5a5a; 
+	background-color: var(--main-color);
+}
+
+.bg-light {
+    background-color: var(--accessory-color) !important;
+}
+
+.btn-space {
+    margin-right: 5px;
+}
+
+.btn-outline-navbar{
+  color: var(--button-nav-color);
+  background-color: transparent;
+  background-image: none;
+  border-color: var(--button-nav-color);
+}
+
+.btn-outline-navbar:hover {
+  color: var(--button-hover-nav-color);
+  border-color: var(--button-hover-nav-color);
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    color: var(--dark-text-color);
+}
+.panel-default {
+    border-color: #ddd;
+}
+.panel-default>.panel-heading {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.panel-body {
+    padding: 15px;
 }

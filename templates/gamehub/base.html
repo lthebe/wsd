@@ -22,7 +22,7 @@
   <body>
     {% include 'gamehub/navbar.html' %}
     {% if messages %}
-    <div class="container">
+    <div class="container mt2">
       <div class="alert alert-success alert-dismissible text-center"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         {% for message in messages %}
         <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
@@ -30,7 +30,7 @@
       </div>
     </div>
     {% endif %}
-    <div class="container">
+    <div class="container mt-3">
       {% block content %}
       {% endblock %}
       {% include 'gamehub/footer.html' %}

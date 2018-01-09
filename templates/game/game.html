@@ -1,11 +1,15 @@
 {% extends 'gamehub/base.html' %}
 {% block content %}
-<div class="container">
-<h1>{{game.name}}</h1>
+<!-- <div class="container"> -->
+<div class="panel panel-default">
+<div class="panel-heading">
+<h1 class="text-center text-uppercase">{{game.title}}</h1>
 {% if game.gameimage %}
 <img src="{{game.gameimage.url}}" class="img-responsive" style="width: 100%" />
 {% endif %}
-<p class="text-center text-uppercase">
+</div>
+<div class="panel-body">
+<p>
 {{game.description}}
 </p>
 <p>
@@ -18,7 +22,7 @@
 {% endwith %}
 {% endwith %}
 </p>
-<div class="row">
+<div class="d-block text-center">
 {% if game_owner %}
 <input type="hidden" id="game_highscore_url" value="{% url 'game:highscore' game=game.id %}" />
 <input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id user=request.user.id %}" />
@@ -35,6 +39,8 @@ The SETTINGS message in the game sends the width and height to the platform and 
 {% endif %}
 </div>
 </div>
+</div>
+<!-- </div>-->
 {% endblock %}
 {% comment %}
 Meta Data for opengraphsearch would be included in the game!
