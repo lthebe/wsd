@@ -24,7 +24,7 @@
               <p>{{ hit.description }}</p>
             </div>
           </div>
-          <div class="row pb">
+          <div class="row">
             <div class="col-md-2 offset-5">
               {% if user.is_authenticated %}
                 <a href="{% url 'game:purchase' game=hit.pk %}" class="btn btn-primary" role="button">Buy Game!</a>
@@ -37,17 +37,29 @@
       </div>
       {% endfor %}
     </div>
-    {% if page > 1 %}
-      <a href="{% url 'game:search' %}?q={{ query }}&p={{ page|add:"-1" }}">
-        previous
-      </a>
-    {% endif %}
-      <p>{{ page }}</p>
-    {% if page < numpages %}
-      <a href="{% url 'game:search' %}?q={{ query }}&p={{ page|add:"1" }}">
-        next
-      </a>
-    {% endif %}
+    <div class="container">
+      <div class="row mt-3 justify-content-center align-items-center">
+        <ul class="pagination">
+          {% if page > 1 %}
+            <li class="page-item"><a class="page-link" href="{% url 'game:search' %}?q={{ query }}&p={{ page | add:"-1" }}">Previous</a></li>
+          {% endif %}
+          {% for pnum in pagelist %}
+            {% if pnum == page %}
+              <li class="page-item active">
+            {% else %}
+              <li class="page-item">
+            {% endif %}
+              <a class="page-link" href="{% url 'game:search' %}?q={{ query }}&p={{ pnum }}">{{ pnum }}</a>
+            </li>
+          {% endfor %}
+          <!--li class="page-item active"><a class="page-link" href="#">{{ page }}</a></li-->
+          {% if page < numpages %}
+            <li class="page-item"><a class="page-link" href="{% url 'game:search' %}?q={{ query }}&p={{ page | add:"1" }}">Next</a></li>
+          {% endif %}
+          <li></li>
+        </ul>
+      </div>
+    </div>
   {% else %}
     <h1>No games matched your search query!</h1>
   {% endif %}
