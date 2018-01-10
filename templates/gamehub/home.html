@@ -22,14 +22,6 @@ Carousel appears only if games are available
               <div class="text-center">
                 <a href="{% url 'game:detail' game=game.id %}" class="btn btn-primary">Play <br \> {{game.title}}</a>
               </div>
-              {% comment %}
-              If the Game desription is 10 - 12 rows the carousel become unusable, so i remove it
-            <p class="text-center">{{game.description}}</p>
-                Registration moved into navbar
-                <p><a class="btn btn-lg btn-primary" href="{% url 'accounts:register' %}" role="button">Register today</a></p>
-                ToDo Move buy into game page so its can be filtered if the player bought it or not
-                <p><a class="btn btn-lg btn-success" href="{% url 'game:purchase' game=game.id %}" role="button">Buy Game</a></p>
-            {% endcomment %}
           </div>
         </div>
       </div>
@@ -44,12 +36,15 @@ Carousel appears only if games are available
       <span class="sr-only">Next</span>
     </a>
   </div>
+  
 {% endif %}
+{% comment %}
   <h1 class="cover-heading">Who are we?</h1>
   <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
   <strong>"And most importantly, register yourself and come to play the game"</strong>
   <p class="lead">
     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
   </p>
+  {% endcomment %}
 </main>
 {% endblock content %}

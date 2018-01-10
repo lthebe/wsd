@@ -3,12 +3,12 @@
 <!-- <div class="container"> -->
 <div class="panel panel-default">
 <div class="panel-heading">
-<h1 class="text-center text-uppercase">{{game.title}}</h1>
 {% if game.gameimage %}
 <img src="{{game.gameimage.url}}" class="img-responsive" style="width: 100%" />
 {% endif %}
 </div>
 <div class="panel-body">
+<h1 class="text-center text-uppercase">{{game.title}}</h1>
 <p>
 {{game.description}}
 </p>
@@ -16,11 +16,6 @@
 {% if not game_owner %}
     <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
 {% endif %}
-{% with request as request %}
-{% with game as game %}
-{% include 'game/socialshare.html' %}
-{% endwith %}
-{% endwith %}
 </p>
 <div class="d-block text-center">
 {% if game_owner %}
@@ -38,6 +33,11 @@ The SETTINGS message in the game sends the width and height to the platform and 
 </div>
 {% endif %}
 </div>
+{% with request as request %}
+{% with game as game %}
+{% include 'game/socialshare.html' %}
+{% endwith %}
+{% endwith %}
 </div>
 </div>
 <!-- </div>-->
