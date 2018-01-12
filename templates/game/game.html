@@ -2,21 +2,7 @@
 
 {% block styles %}
 <style>
-.rating-star.unrated:before {
-  color: #444444;
-  content: "\2605";
-  position: absolute;
-}
-.rating-star.full:before {
-  content: "\2605";
-  position: absolute;
-}
-.rating-star.half:before {
-  content: "\2605";
-  position: absolute;
-  width: 50%;
-  overflow: hidden;
-}
+
 </style>
 {% endblock %}
 
@@ -53,11 +39,7 @@
     <div class="row">
       <p>Rate this game: </p>
       <div class="rating">
-        <span class="rating-star full">&#x2606</span>
-        <span class="rating-star full">&#x2606</span>
-        <span class="rating-star half">&#x2606</span>
-        <span class="rating-star">&#x2606</span>
-        <span class="rating-star">&#x2606</span>
+        <p><i class="fa fa-star-o"></i></p>
       </div>
     </div>
   {% endif %}
