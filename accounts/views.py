@@ -121,10 +121,12 @@ class ProfileDetailView(DetailView):
 
 class HomeView(View):
     def get(self, request):
-        top_20_games = list(Game.objects.all()[:20])
+        games = list(Game.objects.all())
+        top_20_games = list(games[:20])
         shuffle(top_20_games) #shuffle the top 20 games
-        games=top_20_games[:3] #choose only three
-        return render(request, template_name='gamehub/home.html', context={'games': games})
+        carousel_games=top_20_games[:3] #choose only three
+        return render(request, template_name='gamehub/home.html', context={'carousel_games': carousel_games, 'games':games})
+
 
 class ChooseGropuView(View):
     def post(self, request):

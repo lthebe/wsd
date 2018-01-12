@@ -12,15 +12,15 @@ Carousel appears only if games are available
       <li data-target="#myCarousel" data-slide-to="2"></li>
     </ol>
     <div class="carousel-inner">
-    {% for game in games %}
+    {% for top_game in carousel_games %}
       <div class="{% cycle "carousel-item active" "carousel-item" "carousel-item" %} row">
-        {% if game.gameimage %}
-        <img class="{% cycle "first-slide" "second-slide" "third-slide" %} img-responsive" src="{{game.gameimage.url}}" alt="{% cycle "First Game" "Second Game" "Third Game" %}" />
+        {% if top_game.gameimage %}
+        <img class="{% cycle "first-slide" "second-slide" "third-slide" %} img-responsive" src="{{top_game.gameimage.url}}" alt="{% cycle "First Game" "Second Game" "Third Game" %}" />
         {% endif %}
         <div class="container">
           <div class="carousel-caption text-left">
               <div class="text-center">
-                <a href="{% url 'game:detail' game=game.id %}" class="btn btn-primary">Play <br \> {{game.title}}</a>
+                <a href="{% url 'game:detail' game=top_game.id %}" class="btn btn-primary">Play <br \> {{top_game.title}}</a>
               </div>
           </div>
         </div>
@@ -36,15 +36,10 @@ Carousel appears only if games are available
       <span class="sr-only">Next</span>
     </a>
   </div>
-  
+
 {% endif %}
-{% comment %}
-  <h1 class="cover-heading">Who are we?</h1>
-  <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
-  <strong>"And most importantly, register yourself and come to play the game"</strong>
-  <p class="lead">
-    <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
-  </p>
-  {% endcomment %}
+<div class="container mb-3">
+    {% include 'gamehub/card.html' %}
+  </div>
 </main>
 {% endblock content %}

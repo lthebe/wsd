@@ -1,0 +1,16 @@
+<div class="row">
+{% for game in games %}
+        <div class="col-sm-3 mb-4">
+            <div class="card w-100 h-100">
+                <img class="card-img-top h-50"  src="{{game.gameimage.url}}" alt="Card image cap">
+                <div class="card-block">
+                    <h4 class="card-title">{{ game.title }}</h4>
+                    <p class="card-text"> Sort description</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Play</small>
+                </div>
+            </div>
+        </div>
+{% endfor %}
+</div>
