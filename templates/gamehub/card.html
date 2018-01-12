@@ -5,11 +5,11 @@
                 <img class="card-img-top h-50"  src="{{game.gameimage.url}}" alt="Card image cap">
                 <div class="card-block">
                     <h4 class="card-title">{{ game.title }}</h4>
-                    <p class="card-text"> Sort description</p>
+                    <p class="card-text h-100"> Sort description <br> In more lines</p>
                 </div>
-                <div class="card-footer">
-                    <small class="text-muted">Play</small>
-                </div>
+                <a href="{% url 'game:detail' game=game.id %}" class="card-footer h-25 text-center text-uppercase font-weight-bold btn-primary">
+                    <small>Play </small>
+                </a>
             </div>
         </div>
 {% endfor %}
