@@ -29,16 +29,19 @@ class Game(models.Model):
         Relations with user models.
     """
 
-    title       = models.TextField(max_length=300, unique=True)
-    developer   = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    url         = models.URLField()
-    price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
-    description = models.TextField()
-    gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
-    viewcount   = models.PositiveIntegerField(default=0)
-    sellcount   = models.PositiveIntegerField(default=0)
-    upload_date = models.DateTimeField(default=timezone.now)
-
+    title         = models.TextField(max_length=300, unique=True)
+    developer     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    url           = models.URLField()
+    price         = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
+    description   = models.TextField()
+    gameimage     = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
+    viewcount     = models.PositiveIntegerField(default=0)
+    sellcount     = models.PositiveIntegerField(default=0)
+    upload_date   = models.DateTimeField(default=timezone.now)
+    
+    ratings       = models.IntegerField(default=0)
+    total_rating  = models.IntegerField(default=0)
+    
 
     class Meta:
            ordering = ['viewcount', 'sellcount']
@@ -49,6 +52,21 @@ class Game(models.Model):
 
     def increment_sellcount(self):
         self.sellcount = F('sellcount') + 1
+        self.save()
+    
+    
+    def add_rating(self, rating):
+        self.ratings = F('ratings') + 1
+        self.total_rating = F('total_rating') + rating
+        self.save()
+    
+    def remove_rating(self, rating):
+        self.ratings = F('ratings') - 1
+        self.total_rating = F('total_rating') + rating
+        self.save()
+    
+    def change_rating(self, change):
+        self.total_rating = F('total_rating') + change
         self.save()
 
     @classmethod
@@ -115,10 +133,19 @@ class GamePlayed(models.Model):
 
     """
 
-    game = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
+    game      = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
     gameState = models.TextField(default="{''}")
-    users = models.ManyToManyField(User, through="PaymentDetail")
+    users     = models.ManyToManyField(User, through="PaymentDetail")
+    rating    = models.IntegerField(default=0)
+    
+    def set_rating(self, rating):
+        if self.rating == 0:
+            self.game.add_rating(rating)
+        else:
+            self.game.change_rating(rating - self.rating)
+        self.rating = rating
+        self.save()
 
     def __str__(self):
         if (self.game):
