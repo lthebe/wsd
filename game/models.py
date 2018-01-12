@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -44,11 +44,11 @@ class Game(models.Model):
            ordering = ['viewcount', 'sellcount']
 
     def increment_viewcount(self):
-        self.viewcount += 1
+        self.viewcount = F('viewcount') + 1
         self.save()
 
     def increment_sellcount(self):
-        self.sellcount += 1
+        self.sellcount = F('sellcount') + 1
         self.save()
 
     @classmethod
