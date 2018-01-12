@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load in_group %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{% url 'accounts:home' %}">GameHub</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +26,9 @@
       <li class="nav-item nav-link">
       {% if request.user.is_authenticated %}
       Welcome {{ request.user.username }}
-        <a href="{% url 'game:upload' %}">Upload game</a>
+        {% if request.user|in_group:"Developer" %}
+          <a href="{% url 'game:upload' %}">Upload game</a>
+        {% endif %}
       </li>
       {% endif %}
       <!-- <li class="nav-item">
