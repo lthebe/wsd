@@ -60,6 +60,7 @@ def search(request):
     - hits: queryset containing all the models for the current page in the query.
     - page: the number of the current page.
     - numpages: the total number of pages found in the query.
+    - pagelist: this is an iterable producing the indexes of pages for the pagination thingy.
     - query: the original query string.
 
     GET Params:
@@ -77,6 +78,7 @@ def search(request):
     """
 
     pagelen = 20
+    npaginate = 4
 
     q = request.GET.get('q', default=None)
     p = int(request.GET.get('p', default=1))
@@ -88,6 +90,16 @@ def search(request):
     qlen = len(qset)
     numpages = (qlen + pagelen - 1) // pagelen
     qset = qset[(p - 1) * pagelen : p * pagelen]
+    
+    #Assemble pagelist. This must be done here because django templates do not
+    #support numeric for loops.
+    nlpages = 8
+    if nlpages // 2 + 1 >= p:
+        pagelist = range(1, nlpages + 2 if nlpages < numpages else numpages + 1)
+    elif p + nlpages // 2 >= numpages:
+        pagelist = range(numpages - nlpages if numpages > nlpages else 1, numpages + 1)
+    else:
+        pagelist = range(p - nlpages // 2, p + nlpages // 2 + 1)
 
     return render(request,
         template_name='game/search.html',
@@ -96,6 +108,7 @@ def search(request):
             'page': p,
             'numpages': numpages,
             'query': q,
+            'pagelist': pagelist
         })
 
 #ONLY Developer can upload the game and of course superuser

@@ -19,3 +19,4 @@ node_modules/
 doc/typedoc/*
 media_cdn/
 gameHub/__pycache__/
+fixtures/
