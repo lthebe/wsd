@@ -23,7 +23,7 @@ def game_player_required(function):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user
         game = Game.objects.get(pk=kwargs['game'])
-        if request.user.is_authenticated and game in list(map(lambda x: x.game, games)):
+        if request.user.is_authenticated and game in [game_played.game for game_played in games]:
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -46,6 +46,18 @@ def profile_owner_required(function):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         user = User.objects.get(pk=kwargs['pk'])
         if request.user.is_authenticated and user.id == request.user.id:
+            return function(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+    return wrap
+
+def group_missing_required(function):
+    """Decorator to permit access to update group if group is missing
+    This is used to protect the view that handles the updating of the group in
+    social login"""
+    def wrap(request, *args, **kwargs):
+        """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
+        if request.user.is_authenticated and not request.user.groups.get():
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied
