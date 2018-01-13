@@ -130,7 +130,10 @@ class HomeView(View):
         games=top_20_games[:3] #choose only three
         return render(request, template_name='gamehub/home.html', context={'games': games})
 
-class ChooseGropuView(View):
+class ChooseGroupView(View):
+    """This is view to let social users update their group when creating an account
+    And it must be protected with group_missing_required decorators.
+    """
     def post(self, request):
         form = GroupChoiceForm(request.POST)
         if form.is_valid():
