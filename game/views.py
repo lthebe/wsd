@@ -246,9 +246,8 @@ class GameUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             new_game = form.save(commit=False)
-            new_game.developer = request.user
-            new_game.save()
-            return redirect('accounts:home') #redirects to the profiledetail view later to do
+            new_game.save(update_fields=['title', 'url', 'price','description','gameimage'])
+            return redirect(reverse('accounts:detail', kwargs={'pk': request.user.id}))
         else:
             return render(request, template_name='game/upload.html', context={'form': form })
     def get(self, request, game):
