@@ -184,15 +184,13 @@ class GameUploadTest(TestCase):
             'description': 'This here is a game',
         })
 
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue(b'Upload successful!' in response.content)
-
         qset = Game.objects.all().filter(title='somegame')
-        self.assertTrue(len(qset) == 1)
         game = qset[0]
         self.assertEquals(game.url, 'http://google.com')
         self.assertEquals(str(game.price), '0.5')
         self.assertEquals(game.description, 'This here is a game')
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['location'], reverse('game:detail', kwargs={'game': game.id}))
 
     def testValidation(self):
         """This tests that the validation in the upload view  works.
@@ -205,9 +203,6 @@ class GameUploadTest(TestCase):
             'price': '0.50',
             'description': 'This here is a game',
         })
-
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue(b'Upload successful!' in response.content)
 
         response = self.client.post(reverse('game:upload'), {
             'title': 'somegame',
