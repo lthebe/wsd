@@ -20,14 +20,14 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import RegisterView, ActivationView, HomeView, ChooseGroupView, ProfileUpdateView, ProfileDetailView
 
-from game.decorators import profile_owner_required, group_missing_required
+from game.decorators import profile_owner_required
 
 app_name = 'accounts'
 
 #accounts use pk to determine the pk whereas games require game
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
-    path('accounts/choosegroup', group_missing_required(ChooseGroupView.as_view()), name="choosegroup" ),
+    path('accounts/choosegroup', ChooseGroupView.as_view(), name="choosegroup" ),
     path('accounts/<int:pk>', profile_owner_required(ProfileDetailView.as_view()), name='detail' ),
     path('accounts/<int:pk>/update', profile_owner_required(ProfileUpdateView.as_view()), name='update'),
     path('accounts/activate/<token>', ActivationView.as_view(), name='activate'),

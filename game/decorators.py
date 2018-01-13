@@ -50,15 +50,3 @@ def profile_owner_required(function):
         else:
             raise PermissionDenied
     return wrap
-
-def group_missing_required(function):
-    """Decorator to permit access to update group if group is missing
-    This is used to protect the view that handles the updating of the group in
-    social login"""
-    def wrap(request, *args, **kwargs):
-        """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
-        if request.user.is_authenticated and not request.user.groups.get():
-            return function(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
-    return wrap
