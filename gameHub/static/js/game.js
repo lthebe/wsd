@@ -14,6 +14,28 @@ $(document).ready(function() {
       $("#gameresult").load(game_highscore_url);
     }, 10000);
 
+    // using jQuery - source Django
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+      }
+      return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+    beforeSend: function(xhr) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+       }
+    });
     if (data.messageType)
       switch (data.messageType) {
         case "SETTING":
@@ -22,36 +44,14 @@ $(document).ready(function() {
           break;
         default:
           var posting = $.post( game_update_url, { data: JSON.stringify(data) });
-          $.ajaxSetup({
-	    beforeSend: function(xhr) {
-		xhr.setRequestHeader("X-CSRFToken", csrftoken);
-	    }
-	  });
-	  // using jQuery - source Django
-	  function getCookie(name) {
-	    var cookieValue = null;
-	    if (document.cookie && document.cookie !== '') {
-		var cookies = document.cookie.split(';');
-		for (var i = 0; i < cookies.length; i++) {
-		    var cookie = jQuery.trim(cookies[i]);
-		    // Does this cookie string begin with the name we want?
-		    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-		        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-		        break;
-		    }
-		}
-	    }
-	    return cookieValue;
-	  }
-	  var csrftoken = getCookie('csrftoken');
-	  posting.done(function( data ) {
+	         posting.done(function( data ) {
             //sends event to the iframe if error or to be load the new data
             if (data.messageType=='LOAD' || data.messageType=='ERROR'){
               var iframe_window = $("#game_iframe")[0].contentWindow;
               iframe_window.postMessage(data, "*");
             }
-          });
-          break;
+           });
+           break;
       }
   });
 });

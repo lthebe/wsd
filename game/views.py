@@ -5,15 +5,12 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import DeleteView, UpdateView
-from django.views.generic import DetailView
 from django.urls import reverse_lazy
-from django.contrib.auth.models import User
 
 from .models import Game, GamePlayed, PaymentDetail
 from .utils import get_checksum
@@ -38,18 +35,15 @@ def details(request, game):
     :statuscode 404: Game not found.
     """
 
-    try:
-        game = Game.objects.get(pk=game)
-        game.increment_viewcount()
-        game_owner = False
-        if request.user.is_authenticated:
-            games = request.user.gameplayed_set.all()
-            if game in [game_played.game for game_played in games]:
-                game_owner = True
-        context = {'game': game, 'game_owner': game_owner}
-        return render(request, template_name='game/game.html', context=context)
-    except:
-        return HttpResponseNotFound('The game you requested could not found!')
+    game = get_object_or_404(Game, pk=game)
+    game.increment_viewcount()
+    game_owner = False
+    if request.user.is_authenticated:
+        games = request.user.gameplayed_set.all()
+        if game in [game_played.game for game_played in games]:
+            game_owner = True
+    context = {'game': game, 'game_owner': game_owner}
+    return render(request, template_name='game/game.html', context=context)
 
 @require_http_methods(('GET', 'HEAD'))
 def search(request):
@@ -168,10 +162,7 @@ def upload(request):
 @require_http_methods(('GET', 'HEAD'))
 @login_required
 def purchase(request, game):
-    try:
-        game = Game.objects.get(pk=game)
-    except:
-        return HttpResponseNotFound()
+    game = get_object_or_404(Game, pk=game)
     games = request.user.gameplayed_set.all()
     if game in [game_owned.game for game_owned in games]:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
@@ -201,7 +192,7 @@ def process_purchase(request):
 @require_http_methods(('GET', 'HEAD'))
 def highscore(request, game):
     if request.is_ajax():
-        game = Game.objects.get(pk=game)
+        game = get_object_or_404(Game, pk=game)
         highscore = GamePlayed.objects.filter(game=game).aggregate(Max('gameScore'))
         return HttpResponse(highscore['gameScore__max'])
 
@@ -217,23 +208,27 @@ def update_played_game(request, game, user):
         game_played = GamePlayed.objects.get(users__pk=user, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
-        if data_dict['messageType'] == 'SAVE':
-            game_played.gameState = data
-            #update highscores if score of saved game is higher
-            if data_dict['gameState']['score'] > game_played.gameScore:
-                game_played.gameScore = data_dict['gameState']['score']
-            game_played.save()
-        if data_dict['messageType'] == 'SCORE':
-            game_played.gameScore = data_dict['score']
-            game_played.save()
-        if data_dict['messageType'] == 'LOAD_REQUEST':
-            try:
+        try:
+            if data_dict['messageType'] == 'SAVE':
+                game_played.gameState = data
+                #update highscores if score of saved game is higher
+                if data_dict['gameState']['score'] > game_played.gameScore:
+                    game_played.gameScore = data_dict['gameState']['score']
+                    #raise NameError('No name found') just to test if the error is catched
+                game_played.save()
+            if data_dict['messageType'] == 'SCORE':
+                game_played.gameScore = data_dict['score']
+                game_played.save()
+            if data_dict['messageType'] == 'LOAD_REQUEST':
                 data = json.loads(game_played.gameState)
                 data['messageType'] = 'LOAD'
                 return HttpResponse(json.dumps(data), content_type="application/json")
-            except:
-                return HttpResponse('error')
-        return HttpResponse('Great Job So Far')
+        except Exception as error:
+            data = {}
+            data['messageType'] = 'ERROR'
+            data['info'] = "Error: {}".format(error)
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        return HttpResponse('success')#views has to return something
     else:
         return HttpResponse('Only ajax')
 
