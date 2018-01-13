@@ -169,25 +169,49 @@ def purchase(request, game):
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
     checksum = get_checksum(message)
-    context =  {'game': game.id, 'checksum': checksum, 'pid': game.id, 'sid': settings.SELLER_ID, 'amount': game.price }
+    context =  {
+        'game': game.id,
+        'checksum': checksum,
+        'pid': game.id,
+        'sid': settings.SELLER_ID,
+        'amount': game.price,
+        'success_url': request.build_absolute_uri(reverse('game:process')),
+        'cancel_url': request.build_absolute_uri(reverse('game:process')),
+        'error_url': request.build_absolute_uri(reverse('game:process')),
+    }
     return render(request, "game/buy.html", context=context)
 
 @require_http_methods(('GET', 'HEAD'))
-def process_purchase(request):
+@login_required
+def process(request):
     pid = request.GET.get('pid')
+    game = get_object_or_404(Game, pk=pid) #in case logedin users access view straingt, Http404
     ref = request.GET.get('ref')
     result = request.GET.get('result')
     checksum = request.GET.get('checksum')
     message = "pid={}&ref={}&result={}&token={}".format(pid, ref, result, settings.PAYMENT_KEY)
     if get_checksum(message) == checksum:
-        buy_game = GamePlayed.objects.create(gameScore=0)
-        buy_game.game = Game.objects.get(pk=pid)
-        buy_game.game.increment_sellcount()
-        buy_game.save()
-        PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
-        return redirect(reverse('game:detail', kwargs={'game':buy_game.game.id}))
+        if result == 'success':
+            buy_game = GamePlayed.objects.create(gameScore=0)
+            buy_game.game = game
+            buy_game.game.increment_sellcount()
+            buy_game.save()
+            PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
+            messages.add_message(request, messages.INFO, 'Thanks for buying!')
+        elif result=='cancel': #handle the cancel
+            subject = 'Contact the prospective buyer!'
+            message = "Hi {0}, a user {1} was trying to buy '{2}', but canceled!".format(
+                game.developer,
+                request.user.email,
+                game.title
+            )
+            game.developer.email_user(subject, message)
+            messages.add_message(request, messages.INFO, 'Sorry to see you go!')
+        else:
+            messages.add_message(request, messages.INFO, 'Payment failure!')
+        return redirect(reverse('game:detail', kwargs={'game':game.id}))
     else:
-        return HttpResponse('sorry, you!')
+        return HttpResponse('Checksum must match')
 
 @require_http_methods(('GET', 'HEAD'))
 def highscore(request, game):
