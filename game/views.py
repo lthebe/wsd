@@ -44,7 +44,7 @@ def details(request, game):
         game_owner = False
         if request.user.is_authenticated:
             games = request.user.gameplayed_set.all()
-            if game in list(map(lambda x: x.game, games)):
+            if game in [game_played.game for game_played in games]:
                 game_owner = True
         context = {'game': game, 'game_owner': game_owner}
         return render(request, template_name='game/game.html', context=context)
@@ -90,7 +90,7 @@ def search(request):
     qlen = len(qset)
     numpages = (qlen + pagelen - 1) // pagelen
     qset = qset[(p - 1) * pagelen : p * pagelen]
-    
+
     #Assemble pagelist. This must be done here because django templates do not
     #support numeric for loops.
     nlpages = 8
@@ -152,8 +152,11 @@ def upload(request):
             played_game = GamePlayed.objects.create(gameScore=0)
             played_game.game = new_game
             played_game.save()
+            #to let the developer play his own game in the platform
+            #it skews up the cost by 1 unit
+            #even though payment is not processed
             PaymentDetail.objects.create(game_played = played_game, cost=new_game.price, user=request.user)
-            return HttpResponse('Upload successful!')
+            return HttpResponseRedirect(reverse('game:detail', kwargs={'game':new_game.id}))
         else:
             request.session['errors'] = form.errors
             return HttpResponseRedirect(reverse('game:upload'))
@@ -170,7 +173,7 @@ def purchase(request, game):
     except:
         return HttpResponseNotFound()
     games = request.user.gameplayed_set.all()
-    if game in list(map(lambda x: x.game, games)):
+    if game in [game_owned.game for game_owned in games]:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
@@ -203,7 +206,6 @@ def highscore(request, game):
         return HttpResponse(highscore['gameScore__max'])
 
 @require_http_methods(('POST', 'HEAD'))
-@csrf_exempt #no csrf for this post
 @game_player_required #only the game player
 def update_played_game(request, game, user):
     """Fetch the game based on the game id and users from GamePlayed tables, &
