@@ -2,6 +2,7 @@ import pdb
 from random import shuffle
 
 from django.shortcuts import render, redirect
+from django.http import Http404
 from django.contrib.auth import login
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -132,6 +133,9 @@ class ChooseGroupView(View):
     """
     def post(self, request):
         form = GroupChoiceForm(request.POST)
+        #any better implementation than this?
+        if 'user_group' not in request.session or request.session['user_group'] != 'temp_value':
+            raise Http404('Not accessible without social login!')
         if form.is_valid():
             # because of FIELDS_STORED_IN_SESSION, this will get copied
             # to the request dictionary when the pipeline is resumed
@@ -139,7 +143,7 @@ class ChooseGroupView(View):
                 messages.add_message(request, messages.INFO, 'You already belong to a group!')
                 return redirect('accounts:home')
             request.session['user_group'] = str(form.cleaned_data['group'])
-            # once we have the password stashed in the session, we can
+            # once we have the user_group stashed in the session, we can
             # tell the pipeline to resume by using the "complete" endpoint
             return redirect(reverse('social:complete', args=["google-oauth2"]))
         else:
@@ -147,4 +151,7 @@ class ChooseGroupView(View):
             return render(request, "accounts/pick_group.html", context={'form': form})
     def get(self, request):
         form = GroupChoiceForm()
-        return render(request, "accounts/pick_group.html", context={'form': form})
+        if 'user_group' in request.session and request.session['user_group'] == 'temp_value':
+            return render(request, "accounts/pick_group.html", context={'form': form})
+        else:
+            raise Http404('Accessible only if you use social login')
