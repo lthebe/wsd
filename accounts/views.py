@@ -122,23 +122,10 @@ class ProfileDetailView(DetailView):
 
 class HomeView(View):
     def get(self, request):
-        # Infinite scrolling view
-        '''
-        numbers_list = range(1, 1000)
-        page = request.GET.get('page', 1)
-        paginator = Paginator(numbers_list, 20)
-        try:
-            numbers = paginator.page(page)
-        except PageNotAnInteger:
-            numbers = paginator.page(1)
-        except EmptyPage:
-            numbers = paginator.page(paginator.num_pages)
-
-        :param request:
-        :return:
-        '''
+        # Creates a lazy queryset, queryset are evaluated when used (no memory waste)
         games = list(Game.objects.all())
         page = request.GET.get('page', 1)
+        # slice the queryset in pages of 12 elements
         paginator = Paginator(games, 12)
         try:
             games = paginator.page(page)
