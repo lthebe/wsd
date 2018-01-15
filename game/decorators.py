@@ -23,7 +23,7 @@ def game_player_required(function):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user
         game = Game.objects.get(pk=kwargs['game'])
-        if request.user.is_authenticated and game in list(map(lambda x: x.game, games)):
+        if request.user.is_authenticated and game in [game_played.game for game_played in games]:
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied

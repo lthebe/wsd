@@ -6,7 +6,7 @@ class RegisterForm(UserCreationForm):
     """Form to register the user. Custom form is used to collect the username
     and email for registration"""
     email = forms.EmailField(max_length=100, help_text='Requried a valid email')
-    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+    developer = forms.BooleanField(label='Register as developer', required=False)
     description = forms.CharField(widget=forms.Textarea)
     nickname = forms.CharField(max_length=20)
     image = forms.ImageField(required=False)
@@ -18,7 +18,7 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'nickname', 'email', 'group', 'password1', 'password2', 'description', 'image')
+        fields = ('username', 'nickname', 'email', 'password1', 'password2', 'description', 'image')
 
 class GroupChoiceForm(forms.Form):
     """GroupChoiceForm is used to register group - basically for the user who
@@ -28,4 +28,4 @@ class GroupChoiceForm(forms.Form):
 class ProfileUpdateForm(RegisterForm):
     def __init__(self, *args, **kwargs):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)
-        del self.fields['group']
+        del self.fields['developer']

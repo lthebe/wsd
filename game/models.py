@@ -1,5 +1,6 @@
 import logging
 import re
+
 from decimal import Decimal
 
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +30,14 @@ class Game(models.Model):
     """
 
     title       = models.TextField(max_length=300, unique=True)
-    developer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    developer   = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     url         = models.URLField()
     price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description = models.TextField()
     gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
-    viewcount = models.PositiveIntegerField(default=0)
-    sellcount = models.PositiveIntegerField(default=0)
+    viewcount   = models.PositiveIntegerField(default=0)
+    sellcount   = models.PositiveIntegerField(default=0)
+    upload_date = models.DateTimeField(default=timezone.now)
 
 
     class Meta:
