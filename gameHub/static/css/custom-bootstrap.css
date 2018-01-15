@@ -45,6 +45,7 @@ footer {
 
 .btn-outline-navbar:hover {
   color: var(--button-hover-nav-color);
+  background-color: var(--button-nav-color);
   border-color: var(--button-hover-nav-color);
 }
 
@@ -83,4 +84,13 @@ footer {
     height:100%;
     margin:0 auto;
     background:#CCC
+}
+
+.card-footer{
+    color: #5a5a5a;
+    text-decoration: none !important;
+}
+
+.card-footer :hover{
+    color: white;
 }
