@@ -1,16 +1,38 @@
-<div class="row">
+<div class="infinite-container">
+    <div class="row infinite-item">
 {% for game in games %}
-        <div class="col-sm-3 mb-4">
-            <div class="card w-100 h-100">
-                <img class="card-img-top h-50"  src="{{game.gameimage.url}}" alt="Card image cap">
-                <div class="card-block">
-                    <h4 class="card-title">{{ game.title }}</h4>
-                    <p class="card-text h-100"> Sort description <br> In more lines</p>
-                </div>
-                <a href="{% url 'game:detail' game=game.id %}" class="card-footer h-25 text-center text-uppercase font-weight-bold btn-primary">
-                    <small>Play </small>
-                </a>
+    <div class="col-sm-3 mb-4">
+        <div class="card w-100 h-100">
+            <img class="card-img-top h-50"  src="{{game.gameimage.url}}" alt="Card image cap">
+            <div class="card-block">
+                <h4 class="card-title">{{ game.title }}</h4>
+                <p class="card-text h-100"> Sort description <br> In more lines</p>
             </div>
+            <a href="{% url 'game:detail' game=game.id %}" class="card-footer h-25 text-center text-uppercase font-weight-bold btn-primary">
+                <small>Play </small>
+            </a>
         </div>
+    </div>
 {% endfor %}
+    </div>
 </div>
+
+{% if games.has_next %}
+    <a class="infinite-more-link" href="?page={{ games.next_page_number }}">More</a>
+{% endif %}
+
+<div class="loading" style="display: none;">
+    Loading...
+</div>
+
+<script>
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('.loading').show();
+      },
+      onAfterPageLoad: function ($items) {
+        $('.loading').hide();
+      }
+    });
+</script>

@@ -17,6 +17,7 @@ from django.core import signing
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.views import View
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
@@ -121,7 +122,30 @@ class ProfileDetailView(DetailView):
 
 class HomeView(View):
     def get(self, request):
+        # Infinite scrolling view
+        '''
+        numbers_list = range(1, 1000)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(numbers_list, 20)
+        try:
+            numbers = paginator.page(page)
+        except PageNotAnInteger:
+            numbers = paginator.page(1)
+        except EmptyPage:
+            numbers = paginator.page(paginator.num_pages)
+
+        :param request:
+        :return:
+        '''
         games = list(Game.objects.all())
+        page = request.GET.get('page', 1)
+        paginator = Paginator(games, 12)
+        try:
+            games = paginator.page(page)
+        except PageNotAnInteger:
+            games = paginator.page(1)
+        except EmptyPage:
+            games = paginator.page(paginator.num_pages)
         top_20_games = list(games[:20])
         shuffle(top_20_games) #shuffle the top 20 games
         carousel_games=top_20_games[:3] #choose only three
