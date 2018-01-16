@@ -37,9 +37,15 @@ Carousel appears only if games are available
     </a>
   </div>
 
-{% endif %}
-<div class="container mb-3">
+  <div class="container mb-3">
     {% include 'gamehub/card.html' %}
   </div>
+    {% else %}
+        <div class="container text-center">
+            <h1>No games uploaded yet</h1>
+            <p class="text">Register into the website and upload your game</p>
+        </div>
+{% endif %}
+
 </main>
 {% endblock content %}

@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     #wsd apps
     'game',
     'accounts',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
