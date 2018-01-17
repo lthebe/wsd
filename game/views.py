@@ -293,7 +293,7 @@ def rate(request, game):
           rating = int(request.POST.get('rating'))
           assert rating >= 1 and rating <= 5
         except:
-          return HttpResponseBadReqeust('Invalid rating provided')
+          return HttpResponseBadRequest('Invalid rating provided')
         
         game_played.set_rating(rating)
         return HttpResponse(str(rating))

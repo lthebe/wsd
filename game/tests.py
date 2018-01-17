@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
 
-from game.models import Game
+from game.models import Game, GamePlayed, PaymentDetail
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ def get_user():
     user = User.objects.create()
     user.save()
     return user
+
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
     by their private keys.
@@ -222,3 +223,73 @@ class GameUploadTest(TestCase):
         response = self.client.get(response['location'])
         self.assertEquals(response.status_code, 200)
         self.assertTrue(b'Game with this Title already exists.' in response.content)
+
+class GameRatingTest(TestCase):
+    
+    def setUp(self):
+        logger.debug('game.GameRatingTest.setUp')
+        self.client = Client()
+        
+        for i in range(1, 5):
+            user = User.objects.create()
+            user.username = 'user' + str(i)
+            user.save()
+        
+        for i in range(1, 5):
+            Game.create(
+                title='game' + str(i),
+                url='http://google.com',
+                developer=user
+            ).save()
+        
+        for i in range(1, 5):
+            user = User.objects.get(username='user' + str(i))
+            for j in range(i, 5):
+                g = Game.objects.get(title='game' + str(j))
+                buy_game = GamePlayed.objects.create(gameScore=0)
+                buy_game.game = g
+                buy_game.game.increment_sellcount()
+                buy_game.save()
+                PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
+    
+    def testResponses(self):
+        user = User.objects.get(username='user2')
+        self.client.force_login(user)
+        
+        #test negative responses
+        game = Game.objects.get(title='game1')
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {
+            'rating': 3
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(reverse('game:rate', args=[10]), {
+            'rating': 3
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 404)
+        game = Game.objects.get(title='game2')
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {
+            'rating': 3
+        })
+        self.assertEqual(response.status_code, 400)
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {})
+        self.assertEqual(response.status_code, 400)
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {
+            'rating': 'foobar'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 400)
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {
+            'rating': 7
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 400)
+        
+        response = self.client.post(reverse('game:rate', args=[game.pk]), {
+            'rating': 3
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'3')
+        game.refresh_from_db()
+        self.assertEqual(game.ratings, 1)
+        self.assertEqual(game.total_rating, 3)
+    
+    #def testRatings(self):
+    #    pass
