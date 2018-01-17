@@ -17,6 +17,13 @@ def get_user():
     user.save()
     return user
 
+def buy_game_for_user(user, game):
+    buy_game = GamePlayed.objects.create(gameScore=0)
+    buy_game.game = game
+    buy_game.game.increment_sellcount()
+    buy_game.save()
+    PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
+
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
     by their private keys.
@@ -235,26 +242,17 @@ class GameRatingTest(TestCase):
             user.username = 'user' + str(i)
             user.save()
         
-        for i in range(1, 5):
+        for i in range(1, 3):
             Game.create(
                 title='game' + str(i),
                 url='http://google.com',
                 developer=user
             ).save()
-        
-        for i in range(1, 5):
-            user = User.objects.get(username='user' + str(i))
-            for j in range(i, 5):
-                g = Game.objects.get(title='game' + str(j))
-                buy_game = GamePlayed.objects.create(gameScore=0)
-                buy_game.game = g
-                buy_game.game.increment_sellcount()
-                buy_game.save()
-                PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
     
     def testResponses(self):
         user = User.objects.get(username='user2')
         self.client.force_login(user)
+        buy_game_for_user(user, Game.objects.get(title='game2'))
         
         #test negative responses
         game = Game.objects.get(title='game1')
@@ -282,6 +280,7 @@ class GameRatingTest(TestCase):
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 400)
         
+        #test positive response
         response = self.client.post(reverse('game:rate', args=[game.pk]), {
             'rating': 3
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -291,5 +290,31 @@ class GameRatingTest(TestCase):
         self.assertEqual(game.ratings, 1)
         self.assertEqual(game.total_rating, 3)
     
-    #def testRatings(self):
-    #    pass
+    def testRatings(self):
+        users = User.objects.all()
+        game = Game.objects.get(title='game1')
+        for user in users:
+            buy_game_for_user(user, game)
+        
+        def setRatings(*args):
+            for i in range(0, len(args)):
+                self.client.force_login(users[i])
+                self.client.post(reverse('game:rate', args=[game.pk]), {
+                    'rating': args[i]
+                }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        
+        setRatings(3)
+        game.refresh_from_db()
+        self.assertEqual(game.get_rating_cleaned(), 6)
+        
+        setRatings(3, 4)
+        game.refresh_from_db()
+        self.assertEqual(game.get_rating_cleaned(), 7)
+        
+        setRatings(3, 4, 4)
+        game.refresh_from_db()
+        self.assertEqual(game.get_rating_cleaned(), 7)
+        
+        setRatings(1, 1, 4, 4)
+        game.refresh_from_db()
+        self.assertEqual(game.get_rating_cleaned(), 5)
