@@ -56,20 +56,36 @@ class Game(models.Model):
     
     
     def add_rating(self, rating):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
         self.ratings = F('ratings') + 1
         self.total_rating = F('total_rating') + rating
         self.save()
     
     def remove_rating(self, rating):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
         self.ratings = F('ratings') - 1
         self.total_rating = F('total_rating') + rating
         self.save()
     
     def change_rating(self, change):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
         self.total_rating = F('total_rating') + change
         self.save()
     
     def get_rating_cleaned(self):
+        """Returns the ratings as they should be read by the game/rating.html
+        template.
+        
+        The game/rating template requires the rating to be given times a factor of
+        two to permit half stars to be given as an integer. Examples, 10 is 5 stars,
+        5 is 2 and a half star.
+        """
         if self.ratings > 0:
             return int((self.total_rating / self.ratings) * 2 + 0.5)
         else:
@@ -146,6 +162,8 @@ class GamePlayed(models.Model):
     rating    = models.IntegerField(default=0)
     
     def set_rating(self, rating):
+        """Gives a rating from a user to a game.
+        """
         if self.rating == 0:
             self.game.add_rating(rating)
         else:

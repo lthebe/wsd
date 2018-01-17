@@ -20,7 +20,12 @@ def group_required(*groups):
     return user_passes_test(in_groups)
 
 def game_player_required(function):
-    """Decorator to permit only the gameowner to update the game"""
+    """Decorator to permit only the gameowner to update the game.
+    
+    The game should be passed into the function as a url parameter named 'game'.
+    If the game is not found in the database, Http404 is raised. If the user does
+    not own the game, PermissionDenied is raised.
+    """
     def wrap(request, *args, **kwargs):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user

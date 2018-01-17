@@ -13,11 +13,15 @@ logger = logging.getLogger(__name__)
 
 # Create your tests here.
 def get_user():
+    """Creates and returns a new user
+    """
     user = User.objects.create()
     user.save()
     return user
 
 def buy_game_for_user(user, game):
+    """Buys a game for a user. Takes as argument a User and a Game instance.
+    """
     buy_game = GamePlayed.objects.create(gameScore=0)
     buy_game.game = game
     buy_game.game.increment_sellcount()
@@ -232,6 +236,8 @@ class GameUploadTest(TestCase):
         self.assertTrue(b'Game with this Title already exists.' in response.content)
 
 class GameRatingTest(TestCase):
+    """Tests the rating feature.
+    """
     
     def setUp(self):
         logger.debug('game.GameRatingTest.setUp')
@@ -250,6 +256,8 @@ class GameRatingTest(TestCase):
             ).save()
     
     def testResponses(self):
+        """Tests the failure responses, as well as that giving ratings works.
+        """
         user = User.objects.get(username='user2')
         self.client.force_login(user)
         buy_game_for_user(user, Game.objects.get(title='game2'))
@@ -291,6 +299,8 @@ class GameRatingTest(TestCase):
         self.assertEqual(game.total_rating, 3)
     
     def testRatings(self):
+        """Tests that Game.get_rating_clean works.
+        """
         users = User.objects.all()
         game = Game.objects.get(title='game1')
         for user in users:

@@ -284,6 +284,11 @@ class GameDeleteView( DeleteView):
 @csrf_exempt
 @game_player_required
 def rate(request, game):
+    """Adds a rating for a game for the currently logged in user, through ajax.
+    
+    The primary key is passed as a url parameter. The rating, between 1 and 5, is
+    passed as a POST parameter.
+    """
     if request.is_ajax():
         game_played = GamePlayed.objects.get(
             users__pk=request.user.pk,
