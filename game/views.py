@@ -1,5 +1,8 @@
+import pdb
+
 import logging
 import json
+
 from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -271,20 +274,25 @@ class GameDeleteView( DeleteView):
         return get_object_or_404(Game, pk=self.kwargs['game'])
 
 @require_http_methods(('POST'))
+@csrf_exempt
 @game_player_required
 def rate(request, game):
     if request.is_ajax():
-        rating = request.POST.get('rating')
-        if rating < 1 or rating > 5:
-            return HttpResponseBadRequest('Invalid rating provided')
-        return HttpResponse('Success')
+        try:
+          rating = int(request.POST.get('rating'))
+          assert rating >= 1 and rating <= 5
+        except:
+          return HttpResponseBadReqeust('Invalid rating provided')
         
         try:
-          game_played = GamePlayed.object.get(users__pk=request.user.pk, game__id=game)
+          game_played = GamePlayed.objects.get(
+            users__pk=request.user.pk,
+            game__id=game
+          )
         except:
           return HttpResponseNotFound()
         
         game_played.set_rating(rating)
-        return HttpResponse('Success')
+        return HttpResponse(str(rating))
     else:
         return HttpResponseBadRequest('Only ajax')
