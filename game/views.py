@@ -207,14 +207,14 @@ def highscore(request, game):
 @require_http_methods(('POST', 'HEAD'))
 @csrf_exempt #no csrf for this post
 @game_player_required #only the game player
-def update_played_game(request, game, user):
+def update_played_game(request, game):
     """Fetch the game based on the game id and users from GamePlayed tables, &
     responds based on the messageType received in json data passed with ajax
     request. If the messageType is 'LOAD_REQUEST', it constructs the json data
     and send as response. So, it is with when ERROR messageType is received.
     """
     if request.is_ajax():
-        game_played = GamePlayed.objects.get(users__pk=user, game__id=game)
+        game_played = GamePlayed.objects.get(users__pk=request.user.pk, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
         if data_dict['messageType'] == 'SAVE':
@@ -232,7 +232,7 @@ def update_played_game(request, game, user):
                 data['messageType'] = 'LOAD'
                 return HttpResponse(json.dumps(data), content_type="application/json")
             except:
-                return HttpResponse('error')
+                return HttpResponseBadRequest('error')
         return HttpResponse('Great Job So Far')
     else:
         return HttpResponseBadRequest('Only ajax')
@@ -269,3 +269,21 @@ class GameDeleteView( DeleteView):
 
     def get_object(self):
         return get_object_or_404(Game, pk=self.kwargs['game'])
+
+@require_http_methods(('GET', 'HEAD'))
+@game_player_required
+def rate(request, game, rating):
+    if request.is_ajax():
+        if rating < 1 or rating > 5:
+            return HttpResponseBadRequest('Invalid rating provided')
+        return HttpResponse('Success')
+        
+        try:
+          game_played = GamePlayed.object.get(users__pk=request.user.pk, game__id=game)
+        except:
+          return HttpResponseNotFound()
+        
+        game_played.set_rating(rating)
+        return HttpResponse('Success')
+    else:
+        return HttpResponseBadRequest('Only ajax')
