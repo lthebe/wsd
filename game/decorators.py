@@ -1,6 +1,6 @@
-
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 
 from .models import Game
 from django.contrib.auth.models import User
@@ -22,7 +22,10 @@ def game_player_required(function):
     def wrap(request, *args, **kwargs):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user
-        game = Game.objects.get(pk=kwargs['game'])
+        try:
+            game = Game.objects.get(pk=kwargs['game'])
+        except:
+            raise Http404
         if request.user.is_authenticated and game in list(map(lambda x: x.game, games)):
             return function(request, *args, **kwargs)
         else:

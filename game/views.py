@@ -285,19 +285,15 @@ class GameDeleteView( DeleteView):
 @game_player_required
 def rate(request, game):
     if request.is_ajax():
+        game_played = GamePlayed.objects.get(
+            users__pk=request.user.pk,
+            game__id=game
+        )
         try:
           rating = int(request.POST.get('rating'))
           assert rating >= 1 and rating <= 5
         except:
           return HttpResponseBadReqeust('Invalid rating provided')
-        
-        try:
-          game_played = GamePlayed.objects.get(
-            users__pk=request.user.pk,
-            game__id=game
-          )
-        except:
-          return HttpResponseNotFound()
         
         game_played.set_rating(rating)
         return HttpResponse(str(rating))
