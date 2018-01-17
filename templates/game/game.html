@@ -31,7 +31,8 @@
   <div class="row">
     {% if game_owner %}
       <input type="hidden" id="game_highscore_url" value="{% url 'game:highscore' game=game.id %}" />
-      <input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id user=request.user.id %}" />
+      <input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id %}" />
+      <input type="hidden" id="game_rate_url" value="{% url 'game:rate' game=game.id %}" />
       {% comment %}
         The SETTINGS message in the game sends the width and height to the platform and would be rendered accordingly
       {% endcomment %}
