@@ -270,10 +270,11 @@ class GameDeleteView( DeleteView):
     def get_object(self):
         return get_object_or_404(Game, pk=self.kwargs['game'])
 
-@require_http_methods(('GET', 'HEAD'))
+@require_http_methods(('POST'))
 @game_player_required
-def rate(request, game, rating):
+def rate(request, game):
     if request.is_ajax():
+        rating = request.POST.get('r')
         if rating < 1 or rating > 5:
             return HttpResponseBadRequest('Invalid rating provided')
         return HttpResponse('Success')

@@ -33,5 +33,5 @@ urlpatterns = [
     path('games/<int:game>/<int:user>/update', views.update_played_game, name='update'),
     path('games/process_purchase', views.process_purchase, name='process'),
     path('games/upload/', views.upload, name='upload'),
-    path('games/<int:game>/rate/<int:rating>', views.rate, name='rate'),
+    path('games/<int:game>/rate', views.rate, name='rate'),
 ]
