@@ -4,29 +4,50 @@
 <div class="center_div">
     <form class="well form-horizontal" method="POST" enctype="multipart/form-data">
         <fieldset>
-            <legend><h2><b>Registration Form</b></h2></legend><br>
+            <h2><b>Registration Form</b></h2><br>
             {% csrf_token %}
 
             {% for hidden_field in form.hidden_fields %}
                 {{ hidden_field }}
             {% endfor %}
 
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                </div>
+            {% endif %}
+
             {% for field in form.visible_fields %}
                 <div class="form-group">
                     {{ field.label_tag }}
-                    {% render_field field class="form-control" %}
+                    {% if form.is_bound %}
+                      {% if field.errors %}
+                        {% render_field field class="form-control is-invalid" %}
+                        {% for error in field.errors %}
+                          <div class="invalid-feedback">
+                            {{ error }}
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        {% render_field field class="form-control is-valid" %}
+                      {% endif %}
+                    {% else %}
+                      {% render_field field class="form-control" %}
+                    {% endif %}
+
                     {% if field.help_text %}
                         <small class="form-text text-muted">{{ field.help_text }}</small>
                     {% endif %}
                 </div>
             {% endfor %}
-            <div class="form-group">
-                <label class="col-md-4 control-label"></label>
-                <div class="col-md-4"><br><button type="submit" class="btn btn-success" >Register</button></div>
-            </div>
+            <button type="submit" class="btn btn-primary" >Register</button>
         </fieldset>
     </form>
-    <legend><h2><b>Social Login</b></h2></legend><br>
-    <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
+    <div>
+        <h2><b>Social Login</b></h2><br>
+        <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
+    </div>
 </div>
 {% endblock %}
