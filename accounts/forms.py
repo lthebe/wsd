@@ -28,4 +28,4 @@ class GroupChoiceForm(forms.Form):
 class ProfileUpdateForm(RegisterForm):
     def __init__(self, *args, **kwargs):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)
-        del self.fields['group']
+        del self.fields['developer']

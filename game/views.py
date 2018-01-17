@@ -8,15 +8,12 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import DeleteView, UpdateView
-from django.views.generic import DetailView
 from django.urls import reverse_lazy
-from django.contrib.auth.models import User
 
 from .models import Game, GamePlayed, PaymentDetail
 from .utils import get_checksum
@@ -41,10 +38,7 @@ def details(request, game):
     :statuscode 404: Game not found.
     """
 
-    try:
-        game = Game.objects.get(pk=game)
-    except:
-        return HttpResponseNotFound('The game you requested could not found!')
+    game = get_object_or_404(Game, pk=game)
     game.increment_viewcount()
     
     context = {
@@ -100,7 +94,7 @@ def search(request):
     qlen = len(qset)
     numpages = (qlen + pagelen - 1) // pagelen
     qset = qset[(p - 1) * pagelen : p * pagelen]
-    
+
     #Assemble pagelist. This must be done here because django templates do not
     #support numeric for loops.
     nlpages = 8
@@ -162,8 +156,11 @@ def upload(request):
             played_game = GamePlayed.objects.create(gameScore=0)
             played_game.game = new_game
             played_game.save()
+            #to let the developer play his own game in the platform
+            #it skews up the cost by 1 unit
+            #even though payment is not processed
             PaymentDetail.objects.create(game_played = played_game, cost=new_game.price, user=request.user)
-            return HttpResponse('Upload successful!')
+            return HttpResponseRedirect(reverse('game:detail', kwargs={'game':new_game.id}))
         else:
             request.session['errors'] = form.errors
             return HttpResponseRedirect(reverse('game:upload'))
@@ -175,47 +172,67 @@ def upload(request):
 @require_http_methods(('GET', 'HEAD'))
 @login_required
 def purchase(request, game):
-    try:
-        game = Game.objects.get(pk=game)
-    except:
-        return HttpResponseNotFound()
+    game = get_object_or_404(Game, pk=game)
     games = request.user.gameplayed_set.all()
-    if game in list(map(lambda x: x.game, games)):
+    if game in [game_owned.game for game_owned in games]:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
     message = "pid={}&sid={}&amount={}&token={}".format(game.id, settings.SELLER_ID, game.price, settings.PAYMENT_KEY)
     checksum = get_checksum(message)
-    context =  {'game': game.id, 'checksum': checksum, 'pid': game.id, 'sid': settings.SELLER_ID, 'amount': game.price }
+    context =  {
+        'game': game.id,
+        'checksum': checksum,
+        'pid': game.id,
+        'sid': settings.SELLER_ID,
+        'amount': game.price,
+        'success_url': request.build_absolute_uri(reverse('game:process')),
+        'cancel_url': request.build_absolute_uri(reverse('game:process')),
+        'error_url': request.build_absolute_uri(reverse('game:process')),
+    }
     return render(request, "game/buy.html", context=context)
 
 @require_http_methods(('GET', 'HEAD'))
-def process_purchase(request):
+@login_required
+def process(request):
     pid = request.GET.get('pid')
+    game = get_object_or_404(Game, pk=pid) #in case logedin users access view straingt, Http404
     ref = request.GET.get('ref')
     result = request.GET.get('result')
     checksum = request.GET.get('checksum')
     message = "pid={}&ref={}&result={}&token={}".format(pid, ref, result, settings.PAYMENT_KEY)
     if get_checksum(message) == checksum:
-        buy_game = GamePlayed.objects.create(gameScore=0)
-        buy_game.game = Game.objects.get(pk=pid)
-        buy_game.game.increment_sellcount()
-        buy_game.save()
-        PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
-        return redirect(reverse('game:detail', kwargs={'game':buy_game.game.id}))
+        if result == 'success':
+            buy_game = GamePlayed.objects.create(gameScore=0)
+            buy_game.game = game
+            buy_game.game.increment_sellcount()
+            buy_game.save()
+            PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
+            messages.add_message(request, messages.INFO, 'Thanks for buying!')
+        elif result=='cancel': #handle the cancel
+            subject = 'Contact the prospective buyer!'
+            message = "Hi {0}, a user {1} was trying to buy '{2}', but canceled!".format(
+                game.developer,
+                request.user.email,
+                game.title
+            )
+            game.developer.email_user(subject, message)
+            messages.add_message(request, messages.INFO, 'Sorry to see you go!')
+        else:
+            messages.add_message(request, messages.INFO, 'Payment failure!')
+        return redirect(reverse('game:detail', kwargs={'game':game.id}))
     else:
-        return HttpResponse('sorry, you!')
+        return HttpResponse('Checksum must match')
 
 @require_http_methods(('GET', 'HEAD'))
 def highscore(request, game):
     if request.is_ajax():
-        game = Game.objects.get(pk=game)
+        game = get_object_or_404(Game, pk=game)
         highscore = GamePlayed.objects.filter(game=game).aggregate(Max('gameScore'))
         return HttpResponse(highscore['gameScore__max'])
     else:
         return HttpResponseBadRequest('Only ajax')
 
 @require_http_methods(('POST', 'HEAD'))
-@csrf_exempt #no csrf for this post
 @game_player_required #only the game player
 def update_played_game(request, game):
     """Fetch the game based on the game id and users from GamePlayed tables, &
@@ -227,23 +244,27 @@ def update_played_game(request, game):
         game_played = GamePlayed.objects.get(users__pk=request.user.pk, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
-        if data_dict['messageType'] == 'SAVE':
-            game_played.gameState = data
-            #update highscores if score of saved game is higher
-            if data_dict['gameState']['score'] > game_played.gameScore:
-                game_played.gameScore = data_dict['gameState']['score']
-            game_played.save()
-        if data_dict['messageType'] == 'SCORE':
-            game_played.gameScore = data_dict['score']
-            game_played.save()
-        if data_dict['messageType'] == 'LOAD_REQUEST':
-            try:
+        try:
+            if data_dict['messageType'] == 'SAVE':
+                game_played.gameState = data
+                #update highscores if score of saved game is higher
+                if data_dict['gameState']['score'] > game_played.gameScore:
+                    game_played.gameScore = data_dict['gameState']['score']
+                    #raise NameError('No name found') just to test if the error is catched
+                game_played.save()
+            if data_dict['messageType'] == 'SCORE':
+                game_played.gameScore = data_dict['score']
+                game_played.save()
+            if data_dict['messageType'] == 'LOAD_REQUEST':
                 data = json.loads(game_played.gameState)
                 data['messageType'] = 'LOAD'
                 return HttpResponse(json.dumps(data), content_type="application/json")
-            except:
-                return HttpResponseBadRequest('error')
-        return HttpResponse('Great Job So Far')
+        except Exception as error:
+            data = {}
+            data['messageType'] = 'ERROR'
+            data['info'] = "Error: {}".format(error)
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        return HttpResponse('success')#views has to return something
     else:
         return HttpResponseBadRequest('Only ajax')
 
@@ -256,9 +277,8 @@ class GameUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             new_game = form.save(commit=False)
-            new_game.developer = request.user
-            new_game.save()
-            return redirect('accounts:home') #redirects to the profiledetail view later to do
+            new_game.save(update_fields=['title', 'url', 'price','description','gameimage'])
+            return redirect(reverse('accounts:detail', kwargs={'pk': request.user.id}))
         else:
             return render(request, template_name='game/upload.html', context={'form': form })
     def get(self, request, game):
