@@ -201,6 +201,8 @@ def highscore(request, game):
         game = Game.objects.get(pk=game)
         highscore = GamePlayed.objects.filter(game=game).aggregate(Max('gameScore'))
         return HttpResponse(highscore['gameScore__max'])
+    else:
+        return HttpResponseBadRequest('Only ajax')
 
 @require_http_methods(('POST', 'HEAD'))
 @csrf_exempt #no csrf for this post
@@ -233,7 +235,7 @@ def update_played_game(request, game, user):
                 return HttpResponse('error')
         return HttpResponse('Great Job So Far')
     else:
-        return HttpResponse('Only ajax')
+        return HttpResponseBadRequest('Only ajax')
 
 class GameUpdateView(UpdateView):
     model = Game
