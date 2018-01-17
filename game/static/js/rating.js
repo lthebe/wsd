@@ -12,11 +12,11 @@ $(document).ready(function(){
       var r = parseInt(data);
       $(".rating-star")
         .filter(":lt(" + r + ")")
-        .children("p")
+        .children("span")
         .addClass("star-full");
       $(".rating-star")
         .filter(":gt(" + (r - 1) + ")")
-        .children("p")
+        .children("span")
         .removeClass("star-full");
     });
   });
