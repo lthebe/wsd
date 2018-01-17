@@ -1,7 +1,14 @@
 {% extends 'gamehub/base.html' %}
+{% load staticfiles %}
 
 {% block styles %}
 <style>
+
+.rating-star > .star-full:before {
+  position: absolute;
+  font-family: FontAwesome;
+  content: "\f005";
+}
 
 </style>
 {% endblock %}
@@ -36,9 +43,21 @@
     {% endif %}
   </div>
   {% if user.is_authenticated %}
-    <div class="row">
+    <div class="row ratings">
       <p>Rate this game: </p>
-      <div class="rating">
+      <div class="rating-star" id="rate-1">
+        <p><i class="fa fa-star-o"></i></p>
+      </div>
+      <div class="rating-star" id="rate-2">
+        <p><i class="fa fa-star-o"></i></p>
+      </div>
+      <div class="rating-star" id="rate-3">
+        <p><i class="fa fa-star-o"></i></p>
+      </div>
+      <div class="rating-star" id="rate-4">
+        <p><i class="fa fa-star-o"></i></p>
+      </div>
+      <div class="rating-star" id="rate-5">
         <p><i class="fa fa-star-o"></i></p>
       </div>
     </div>
@@ -56,4 +75,8 @@
 {% if game.gameimage %}
   <meta property="og:image" content="{{game.gameimage.url}}" />
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/game_star.js' %}"></script>
 {% endblock %}
