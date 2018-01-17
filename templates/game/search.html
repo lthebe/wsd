@@ -1,5 +1,11 @@
 {% extends 'gamehub/base.html' %}
+{% load staticfiles %}
 {% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/rating.css' %}">
+{% endblock %}
+
 {% block content %}
 <main role="main" class="inner cover">
   {% if numpages > 0 %}
@@ -19,6 +25,9 @@
             <div class="col-md-10">
               <h5>{{ hit.title }}</h5>
               <p>by {{ hit.developer.username }} • {{ hit.sellcount | intword }} sold • uploaded {{ hit.upload_date | timesince }} ago</p>
+              <div class="row ml-1">
+                {% include "game/rating.html" with starId=forloop.counter stars=hit.get_rating_cleaned %}
+              </div>
               <h6>{{ hit.price | floatformat:2 }}$</h6>
             </div>
           </div>

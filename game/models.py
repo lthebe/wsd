@@ -69,8 +69,11 @@ class Game(models.Model):
         self.total_rating = F('total_rating') + change
         self.save()
     
-    def get_rating(self):
-        return (self.total_rating / self.ratings) if self.ratings > 0 else 0
+    def get_rating_cleaned(self):
+        if self.ratings > 0:
+            return int((self.total_rating / self.ratings) * 2 + 0.5)
+        else:
+            return 0
 
     @classmethod
     def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, viewcount=0):

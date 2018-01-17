@@ -3,13 +3,13 @@
 {% for i in 5|range_from:"1,2" %}
   <div class="rating-star" id="{{ starId }}{{ i }}">
     {% if stars > i %}
-    <p class="star-full">
+    <span class="star-full">
     {% elif stars == i %}
-    <p class="star-half">
+    <span class="star-half">
     {% else %}
-    <p>
+    <span>
     {% endif %}
       <i class="fa fa-star-o"></i>
-    </p>
+    </span>
   </div>
 {% endfor %}

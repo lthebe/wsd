@@ -50,7 +50,7 @@ def details(request, game):
     context = {
         'game': game,
         'game_owner': False,
-        'rating': int(game.get_rating() * 2 + 0.5)
+        'rating': game.get_rating_cleaned()
     }
     
     if request.user.is_authenticated:
