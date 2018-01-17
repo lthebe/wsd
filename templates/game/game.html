@@ -2,15 +2,7 @@
 {% load staticfiles %}
 
 {% block styles %}
-<style>
-
-.rating-star > .star-full:before {
-  position: absolute;
-  font-family: FontAwesome;
-  content: "\f005";
-}
-
-</style>
+<link rel="stylesheet" type="text/css" href="{% static 'css/rating.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -46,21 +38,7 @@
   {% if user.is_authenticated %}
     <div class="row ratings">
       <p>Rate this game: </p>
-      <div class="rating-star" id="rate-1">
-        <p><i class="fa fa-star-o"></i></p>
-      </div>
-      <div class="rating-star" id="rate-2">
-        <p><i class="fa fa-star-o"></i></p>
-      </div>
-      <div class="rating-star" id="rate-3">
-        <p><i class="fa fa-star-o"></i></p>
-      </div>
-      <div class="rating-star" id="rate-4">
-        <p><i class="fa fa-star-o"></i></p>
-      </div>
-      <div class="rating-star" id="rate-5">
-        <p><i class="fa fa-star-o"></i></p>
-      </div>
+      {% include "game/rating.html" with starId="rate-" %}
     </div>
   {% endif %}
 </div>
