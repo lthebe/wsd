@@ -6,7 +6,7 @@ $(document).ready(function(){
   "use strict";
   
   $(".rating-star").click(function(){
-    var r = parseInt(this.id[5]);
+    var r = (parseInt(this.id[5]) + 1) / 2;
     var posting = $.post(rate_url, {rating: r});
     posting.done(function(data){
       var r = parseInt(data);

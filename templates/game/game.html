@@ -35,12 +35,12 @@
       </div>
     {% endif %}
   </div>
-  {% if user.is_authenticated %}
     <div class="row ratings">
-      <p>Rate this game: </p>
-      {% include "game/rating.html" with starId="rate-" %}
+      {% if user.is_authenticated %}
+        <p>Rate this game: </p>
+      {% endif %}
+      {% include "game/rating.html" with starId="rate-" stars=rating %}
     </div>
-  {% endif %}
 </div>
 {% endblock %}
 {% comment %}

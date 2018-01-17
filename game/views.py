@@ -46,12 +46,19 @@ def details(request, game):
     except:
         return HttpResponseNotFound('The game you requested could not found!')
     game.increment_viewcount()
-    game_owner = False
+    
+    context = {
+        'game': game,
+        'game_owner': False,
+        'rating': int(game.get_rating() * 2 + 0.5)
+    }
+    
     if request.user.is_authenticated:
-        games = request.user.gameplayed_set.all()
-        if game in list(map(lambda x: x.game, games)):
-            game_owner = True
-    context = {'game': game, 'game_owner': game_owner}
+        gp = request.user.gameplayed_set.all().filter(game=game)
+        if len(gp) == 1:
+            context['game_owner'] = True
+            context['rating'] = gp[0].rating * 2
+    
     return render(request, template_name='game/game.html', context=context)
 
 @require_http_methods(('GET', 'HEAD'))
