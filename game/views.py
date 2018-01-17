@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic.edit import DeleteView, UpdateView
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 
 from .models import Game, GamePlayed, PaymentDetail
