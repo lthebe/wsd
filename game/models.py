@@ -12,10 +12,12 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
-from PIL import Image
+from PIL import Image, ImageOps
 import os.path
 from io import BytesIO
 from django.core.files.base import ContentFile
+
+from gameHub.settings import THUMB_SIZE, CAROUS_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +66,14 @@ class Game(models.Model):
         self.save()
 
     @staticmethod
-    def make_thumbnail(original_game):
-        thumb = Image.open(original_game.gameimage) # Open PIL image
-        thumb.thumbnail((400, 400), Image.ANTIALIAS) # Resize image
-        thumb_name = user_directory_path_thumb(original_game, 'thumb_' + original_game.gameimage.name)
+    def resize_image(game, type='CAROUSEL'):
+        thumb = Image.open(game.gameimage) # Open PIL image
+        if type is 'CAROUSEL':
+            thumb = ImageOps.fit(thumb, CAROUS_SIZE, Image.ANTIALIAS)  # Resize image
+            thumb_name = user_directory_path(game, game.gameimage.name)
+        else:
+            thumb = ImageOps.fit(thumb, THUMB_SIZE, Image.ANTIALIAS)  # Resize image
+            thumb_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         thumb_extension = os.path.splitext(thumb_name)[1]
         if thumb_extension in ['.jpg', '.jpeg']:
             FTYPE = 'JPEG'

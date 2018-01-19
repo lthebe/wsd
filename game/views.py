@@ -146,7 +146,8 @@ def upload(request):
             """
             # new_game.gamethumb = type(Game.make_thumbnail(new_game.gameimage))
             try:
-                new_game.gamethumb = Game.make_thumbnail(new_game)
+                new_game.gameimage = Game.resize_image(new_game, type='CAROUSEL')
+                new_game.gamethumb = Game.resize_image(new_game, type='THUMB')
                 new_game.save()
             #adds the developer as a player allowing to play game without buying
                 played_game = GamePlayed.objects.create(gameScore=0)

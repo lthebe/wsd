@@ -1,17 +1,13 @@
 <div class="infinite-container">
     <div class="row infinite-item">
 {% for game in games %}
-    <div class="col-sm-3 mb-4">
-        <div class="card w-100 h-100">
-            <img class="card-img-top h-50"  src="{{game.gameimage.url}}" alt="Card image cap">
-            <div class="card-block h-25">
-                <h4 class="card-title">{{ game.title }}</h4>
-                <p class="card-text"> Sort description <br> In more lines</p>
-            </div>
+    <div class="col-sm-3 mb-4 pl-1 pr-1">
+            <img class="img-thumbnail"  src="{{game.gamethumb.url}}" alt="Card image cap">
+        {% comment %}
             <a href="{% url 'game:detail' game=game.id %}" class="card-footer h-25 text-center text-uppercase font-weight-bold btn-primary">
                 <small>Play </small>
             </a>
-        </div>
+        {%  endcomment %}
     </div>
 {% endfor %}
     </div>

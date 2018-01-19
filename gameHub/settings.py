@@ -276,3 +276,7 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(PROJECT_ROOT), "media_cdn")
+# Thumbnails dimensions
+THUMB_SIZE = (500,400)
+# Carousel dimensions
+CAROUS_SIZE = (1280, 720)
