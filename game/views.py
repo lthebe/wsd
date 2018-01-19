@@ -141,11 +141,20 @@ def upload(request):
         if form.is_valid():
             new_game = form.save(commit=False)
             new_game.developer = request.user
-            new_game.save()
+            """
+            Test
+            """
+            # new_game.gamethumb = type(Game.make_thumbnail(new_game.gameimage))
+            try:
+                new_game.gamethumb = Game.make_thumbnail(new_game)
+                new_game.save()
             #adds the developer as a player allowing to play game without buying
-            played_game = GamePlayed.objects.create(gameScore=0)
-            played_game.game = new_game
-            played_game.save()
+                played_game = GamePlayed.objects.create(gameScore=0)
+                played_game.game = new_game
+                played_game.save()
+            except:
+                "Unexpected error:"
+                raise
             #to let the developer play his own game in the platform
             #it skews up the cost by 1 unit
             #even though payment is not processed

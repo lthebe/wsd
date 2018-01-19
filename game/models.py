@@ -4,11 +4,18 @@ import re
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
+from PIL import Image
+import os.path
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +24,10 @@ logger = logging.getLogger(__name__)
 #https://stackoverflow.com/questions/34239877/django-save-user-uploads-in-seperate-folders
 def user_directory_path(instance, filename):
     return 'user_{0}/game/{1}'.format(instance.developer.id, filename)
+
+def user_directory_path_thumb(instance, filename):
+    return 'user_{0}/game/thumb/{1}'.format(instance.developer.id, filename)
+
 
 class Game(models.Model):
     """Game model
@@ -35,6 +46,7 @@ class Game(models.Model):
     price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description = models.TextField()
     gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
+    gamethumb   = models.ImageField(null=True, blank=True, upload_to=user_directory_path_thumb)
     viewcount   = models.PositiveIntegerField(default=0)
     sellcount   = models.PositiveIntegerField(default=0)
     upload_date = models.DateTimeField(default=timezone.now)
@@ -51,8 +63,29 @@ class Game(models.Model):
         self.sellcount += 1
         self.save()
 
+    @staticmethod
+    def make_thumbnail(original_game):
+        thumb = Image.open(original_game.gameimage) # Open PIL image
+        thumb.thumbnail((400, 400), Image.ANTIALIAS) # Resize image
+        thumb_name = user_directory_path_thumb(original_game, 'thumb_' + original_game.gameimage.name)
+        thumb_extension = os.path.splitext(thumb_name)[1]
+        if thumb_extension in ['.jpg', '.jpeg']:
+            FTYPE = 'JPEG'
+        elif thumb_extension == '.gif':
+            FTYPE = 'GIF'
+        elif thumb_extension == '.png':
+            FTYPE = 'PNG'
+        else:
+            # ToDo Find correct exception
+            raise Exception
+
+        tmp_thumb = BytesIO()
+        thumb.save(tmp_thumb, FTYPE)
+        tmp_thumb.seek(0)
+        return InMemoryUploadedFile(tmp_thumb, None, thumb_name, FTYPE, tmp_thumb.tell(), None)
+
     @classmethod
-    def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, viewcount=0):
+    def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, gamethumb=None,viewcount=0):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
@@ -64,6 +97,7 @@ class Game(models.Model):
             developer = developer,
             description=description,
             gameimage=gameimage,
+            gamethumb=gamethumb,
             viewcount=viewcount
         )
         return game
