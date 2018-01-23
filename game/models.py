@@ -17,7 +17,7 @@ import os.path
 from io import BytesIO
 from django.core.files.base import ContentFile
 
-from gameHub.settings import THUMB_SIZE, CAROUS_SIZE
+from gameHub.settings import ImageSizeEnum
 
 logger = logging.getLogger(__name__)
 
@@ -66,29 +66,30 @@ class Game(models.Model):
         self.save()
 
     @staticmethod
-    def resize_image(game, type='CAROUSEL'):
-        thumb = Image.open(game.gameimage) # Open PIL image
-        if type is 'CAROUSEL':
-            thumb = ImageOps.fit(thumb, CAROUS_SIZE, Image.ANTIALIAS)  # Resize image
-            thumb_name = user_directory_path(game, game.gameimage.name)
+    def resize_image(game, size):
+        if not isinstance(size, ImageSizeEnum):
+            raise ValueError
+        # PIL Python Image Library
+        image_pil = ImageOps.fit(Image.open(game.gameimage), size.value, Image.ANTIALIAS)  # Resize image
+        if size != ImageSizeEnum.COVER.name:
+            image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         else:
-            thumb = ImageOps.fit(thumb, THUMB_SIZE, Image.ANTIALIAS)  # Resize image
-            thumb_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
-        thumb_extension = os.path.splitext(thumb_name)[1]
-        if thumb_extension in ['.jpg', '.jpeg']:
+            image_name = user_directory_path(game, game.gameimage.name)
+        image_extension = os.path.splitext(image_name)[1]
+        if image_extension in ['.jpg', '.jpeg']:
             FTYPE = 'JPEG'
-        elif thumb_extension == '.gif':
+        elif image_extension == '.gif':
             FTYPE = 'GIF'
-        elif thumb_extension == '.png':
+        elif image_extension == '.png':
             FTYPE = 'PNG'
         else:
             # ToDo Find correct exception
-            raise Exception
-
-        tmp_thumb = BytesIO()
-        thumb.save(tmp_thumb, FTYPE)
-        tmp_thumb.seek(0)
-        return InMemoryUploadedFile(tmp_thumb, None, thumb_name, FTYPE, tmp_thumb.tell(), None)
+            raise ValueError
+        image_stream = BytesIO()
+        image_pil.save(image_stream, FTYPE)
+        image_stream.seek(0)
+        resize_image = InMemoryUploadedFile(image_stream, None, image_name, FTYPE, image_stream.tell(), None)
+        return resize_image
 
     @classmethod
     def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, gamethumb=None,viewcount=0):

@@ -15,7 +15,7 @@ Carousel appears only if games are available
     {% for top_game in carousel_games %}
       <div class="{% cycle "carousel-item active" "carousel-item" "carousel-item" %} row">
         {% if top_game.gameimage %}
-        <img class="{% cycle "first-slide" "second-slide" "third-slide" %} img-responsive" src="{{top_game.gameimage.url}}" alt="{% cycle "First Game" "Second Game" "Third Game" %}" />
+        <img class="{% cycle "first-slide" "second-slide" "third-slide" %}" src="{{top_game.gameimage.url}}" alt="{% cycle "First Game" "Second Game" "Third Game" %}" />
         {% endif %}
         <div class="container">
           <div class="carousel-caption text-left">
