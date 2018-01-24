@@ -139,7 +139,9 @@ footer {
     text-decoration: none;
 }
 
-.carousel-item, .carousel-item img{
+
+.carousel-item.active,
+.carousel-item img{
     max-width: 100%;
     height: auto;
     position: relative;
