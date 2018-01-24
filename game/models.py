@@ -69,7 +69,7 @@ class Game(models.Model):
     def resize_image(game, size):
         if not isinstance(size, ImageSizeEnum):
             raise ValueError
-        if size != ImageSizeEnum.COVER.name:
+        if size == ImageSizeEnum.THUMBNAIL.name:
             image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         else:
             image_name = user_directory_path(game, game.gameimage.name)
