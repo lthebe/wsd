@@ -1,100 +1,53 @@
 {% extends 'gamehub/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
-  <form class="well form-horizontal" method="POST" enctype="multipart/form-data">
-    <fieldset>
-    <legend><center><h2><b>Registration Form</b></h2></center></legend><br>
-    {% csrf_token %}
-    <div class="form-group">
-      {{ form.username.errors }}
-    <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label">UserName:</label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    <!--<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>-->
-    {{form.username}}
-    </div>
-    </div>
-    </div>
+<div class="center_div">
+    <form class="well form-horizontal" method="POST" enctype="multipart/form-data">
+        <fieldset>
+            <h2><b>Registration Form</b></h2><br>
+            {% csrf_token %}
 
-    <div class="form-group">
-      {{ form.nickname.errors }}
-    <label for="{{ form.nickname.id_for_label }}" class="col-md-4 control-label">Nickname: </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.nickname}}
-    </div>
-    </div>
-    </div>
+            {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+            {% endfor %}
 
-    <div class="form-group">
-      {{ form.email.errors }}
-    <label for="{{ form.email.id_for_label }}" class="col-md-4 control-label">Email: </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.email}}
-    </div>
-    </div>
-    </div>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                </div>
+            {% endif %}
 
-    <div class="form-group">
-      {{ form.password1.errors }}
-    <label for="{{ form.password1.id_for_label }}" class="col-md-4 control-label">Password: </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.password1}}
-    </div>
-    </div>
-    </div>
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% if form.is_bound %}
+                      {% if field.errors %}
+                        {% render_field field class="form-control is-invalid" %}
+                        {% for error in field.errors %}
+                          <div class="invalid-feedback">
+                            {{ error }}
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        {% render_field field class="form-control is-valid" %}
+                      {% endif %}
+                    {% else %}
+                      {% render_field field class="form-control" %}
+                    {% endif %}
 
-    <div class="form-group">
-      {{ form.password2.errors }}
-    <label for="{{ form.password2.id_for_label }}" class="col-md-4 control-label">Confirm Password:  </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.password2}}
-    </div>
-    </div>
-    </div>
-    
-    <div class="form-group">
-      {{ form.developer.errors }}
-    <div class="col-md-8 inputGroupContainer">
-    <label for="{{ form.developer.id_for_label }}">dev </label>
-    {{ form.developer }}
-    </div>
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" >Register</button>
+        </fieldset>
+    </form>
     <div>
-    
+        <h2><b>Social Login</b></h2><br>
+        <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
     </div>
-    </div>
-
-    <div class="form-group">
-      {{ form.description.errors }}
-    <label for="{{ form.description.id_for_label }}" class="col-md-4 control-label">About you: </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.description}}
-    </div>
-    </div>
-    </div>
-
-    <div class="form-group">
-      {{ form.image.errors }}
-    <label for="{{ form.image.id_for_label }}" class="col-md-4 control-label">Profile Picture: </label>
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-    {{form.image}}
-    </div>
-    </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-md-4 control-label"></label>
-    <div class="col-md-4"><br><button type="submit" class="btn btn-success" >Register</button>
-    </div>
-    </div>
-  </fieldset>
-  </form>
-    <legend><center><h2><b>Social Login</b></h2></center></legend><br>
-    <center>
-     <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
-   </center>
+</div>
 {% endblock %}

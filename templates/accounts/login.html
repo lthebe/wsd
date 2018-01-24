@@ -1,33 +1,32 @@
 {% extends 'gamehub/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
-{% if next %}
-<form class="form-inline" action="{% url 'accounts:login' %}?next={{next}}" method="POST" >
-{%else%}
-<form class="form-inline" method="POST" action="{% url 'accounts:login' %}">
-{% endif %}
-   {% csrf_token %}
-  <div class="form-group">
-    {{ form.username.errors }}
-    <label for="{{ form.username.id_for_label }}" ><span class="label label-info">Username: </span></label>
-    {{ form.username }}
-  </div>
-  <div class="form-group mx-sm-3">
-    {{ form.password.errors }}
-    <label for="{{ form.password.id_for_label }}"><span class="label label-info">Password: </span> </label>
-    {{ form.password }}
-  </div>
-  <button type="submit" class="btn btn-primary">Login</button>
-  {{ form.non_field_errors }}
+    {% if next %}
+        <form action="{% url 'accounts:login' %}?next={{next}}" method="POST" >
+    {%else%}
+        <form method="POST" action="{% url 'accounts:login' %}">
+    {% endif %}
+    {% csrf_token %}
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+        </div>
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+        {{ form.non_field_errors }}
 
-</form>
-<div>
-   <a href="{% url 'accounts:register' %}">Register Account</a><br>
-</div>
-<hr />
+    </form>
+    <div>
+        <a href="{% url 'accounts:register' %}">Register Account</a><br>
+    </div>
+    <hr />
 
-
-<div>
-  <h2>Social Login</h2>
-   <a href="{% url 'social:begin' 'google-oauth2' %}">Google</a><br>
-</div>
+    <div>
+        <h2>Social Login</h2>
+        <a href="{% url 'social:begin' 'google-oauth2' %}"><button class="btn btn-success">Google</button></a><br>
+    </div>
 {% endblock %}

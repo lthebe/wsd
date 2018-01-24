@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import dj_database_url
+from enum import Enum
 #save the secret data in .env and load with config
 #for heroku, you can set for the app config variables in heroku sites
 #as heroku can not read .env file
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     #wsd apps
     'game',
     'accounts',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -275,3 +277,10 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(PROJECT_ROOT), "media_cdn")
+
+
+class ImageSizeEnum(Enum):
+    # Cover dimension
+    COVER = (1280, 720)
+    # Thumbnail dimension
+    THUMBNAIL = (500,400)
