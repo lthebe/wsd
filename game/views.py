@@ -13,7 +13,6 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic.edit import DeleteView, UpdateView
-from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 
 from .models import Game, GamePlayed, PaymentDetail
@@ -302,7 +301,6 @@ class GameDeleteView( DeleteView):
         return get_object_or_404(Game, pk=self.kwargs['game'])
 
 @require_http_methods(('POST'))
-@csrf_exempt
 @game_player_required
 def rate(request, game):
     """Adds a rating for a game for the currently logged in user, through ajax.
