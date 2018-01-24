@@ -69,13 +69,18 @@ class Game(models.Model):
     def resize_image(game, size):
         if not isinstance(size, ImageSizeEnum):
             raise ValueError
-        # PIL Python Image Library
-        image_pil = ImageOps.fit(Image.open(game.gameimage), size.value, Image.ANTIALIAS)  # Resize image
         if size != ImageSizeEnum.COVER.name:
             image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         else:
             image_name = user_directory_path(game, game.gameimage.name)
-        image_extension = os.path.splitext(image_name)[1]
+        image_name, image_extension = os.path.splitext(image_name)
+        # PIL Python Image Library
+        image_pil = Image.open(game.gameimage)
+        # Check correct image extension, ex. user renamed .png to .jpg
+        if image_extension in ['.jpg', '.jpeg'] and image_pil.mode in ('RGBA', 'LA'):
+            image_extension = '.png'
+        image_name = image_name + image_extension # Save img with correct extension
+        image_resize = ImageOps.fit(image_pil, size.value, Image.ANTIALIAS)  # Resize image
         if image_extension in ['.jpg', '.jpeg']:
             FTYPE = 'JPEG'
         elif image_extension == '.gif':
@@ -86,7 +91,7 @@ class Game(models.Model):
             # ToDo Find correct exception
             raise ValueError
         image_stream = BytesIO()
-        image_pil.save(image_stream, FTYPE)
+        image_resize.save(image_stream, FTYPE)
         image_stream.seek(0)
         resize_image = InMemoryUploadedFile(image_stream, None, image_name, FTYPE, image_stream.tell(), None)
         return resize_image
