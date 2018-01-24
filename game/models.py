@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, F
 from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
 from PIL import Image, ImageOps
@@ -42,28 +42,66 @@ class Game(models.Model):
         Relations with user models.
     """
 
-    title       = models.TextField(max_length=300, unique=True)
-    developer   = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    url         = models.URLField()
-    price       = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
-    description = models.TextField()
-    gameimage   = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
-    gamethumb   = models.ImageField(null=True, blank=True, upload_to=user_directory_path_thumb)
-    viewcount   = models.PositiveIntegerField(default=0)
-    sellcount   = models.PositiveIntegerField(default=0)
-    upload_date = models.DateTimeField(default=timezone.now)
-
+    title         = models.TextField(max_length=300, unique=True)
+    developer     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    url           = models.URLField()
+    price         = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
+    description   = models.TextField()
+    gameimage     = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
+    gamethumb     = models.ImageField(null=True, blank=True, upload_to=user_directory_path_thumb)
+    viewcount     = models.PositiveIntegerField(default=0)
+    sellcount     = models.PositiveIntegerField(default=0)
+    upload_date   = models.DateTimeField(default=timezone.now)
+    ratings       = models.PositiveIntegerField(default=0)
+    total_rating  = models.PositiveIntegerField(default=0)
 
     class Meta:
            ordering = ['viewcount', 'sellcount']
 
     def increment_viewcount(self):
-        self.viewcount += 1
+        self.viewcount = F('viewcount') + 1
         self.save()
 
     def increment_sellcount(self):
-        self.sellcount += 1
+        self.sellcount = F('sellcount') + 1
         self.save()
+    
+    
+    def add_rating(self, rating):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
+        self.ratings = F('ratings') + 1
+        self.total_rating = F('total_rating') + rating
+        self.save()
+    
+    def remove_rating(self, rating):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
+        self.ratings = F('ratings') - 1
+        self.total_rating = F('total_rating') + rating
+        self.save()
+    
+    def change_rating(self, change):
+        """
+        .. note:: Use GamePlayed.set_rating rather than calling this function directly.
+        """
+        self.total_rating = F('total_rating') + change
+        self.save()
+    
+    def get_rating_cleaned(self):
+        """Returns the ratings as they should be read by the game/rating.html
+        template.
+        
+        The game/rating template requires the rating to be given times a factor of
+        two to permit half stars to be given as an integer. Examples, 10 is 5 stars,
+        5 is 2 and a half star.
+        """
+        if self.ratings > 0:
+            return int((self.total_rating / self.ratings) * 2 + 0.5)
+        else:
+            return 0
 
     @staticmethod
     def resize_image(game, size):
@@ -156,10 +194,21 @@ class GamePlayed(models.Model):
 
     """
 
-    game = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
+    game      = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
     gameState = models.TextField(default="{''}")
-    users = models.ManyToManyField(User, through="PaymentDetail")
+    users     = models.ManyToManyField(User, through="PaymentDetail")
+    rating    = models.IntegerField(default=0)
+    
+    def set_rating(self, rating):
+        """Gives a rating from a user to a game.
+        """
+        if self.rating == 0:
+            self.game.add_rating(rating)
+        else:
+            self.game.change_rating(rating - self.rating)
+        self.rating = rating
+        self.save()
 
     def __str__(self):
         if (self.game):

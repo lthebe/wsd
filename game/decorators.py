@@ -1,6 +1,8 @@
+import pdb
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 
 from .models import Game
 from django.contrib.auth.models import User
@@ -18,11 +20,19 @@ def group_required(*groups):
     return user_passes_test(in_groups)
 
 def game_player_required(function):
-    """Decorator to permit only the gameowner to update the game"""
+    """Decorator to permit only the gameowner to update the game.
+    
+    The game should be passed into the function as a url parameter named 'game'.
+    If the game is not found in the database, Http404 is raised. If the user does
+    not own the game, PermissionDenied is raised.
+    """
     def wrap(request, *args, **kwargs):
         """Wrapper returns the decorated function if permitted, else returns PermissionDenied"""
         games = request.user.gameplayed_set.all() #games played by the user
-        game = Game.objects.get(pk=kwargs['game'])
+        try:
+            game = Game.objects.get(pk=kwargs['game'])
+        except:
+            raise Http404
         if request.user.is_authenticated and game in [game_played.game for game_played in games]:
             return function(request, *args, **kwargs)
         else:
