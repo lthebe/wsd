@@ -1,28 +1,8 @@
 {% extends 'gamehub/base.html' %}
-{% load widget_tweaks %}
 {% block content %}
 <main role="main" class="inner cover">
-  {% if errors %}
-    {% for key, value in errors.items %}
-      {% for error in value %}
-        {{ error }}
-      {% endfor %}
-    {% endfor %}
-  {% endif %}
   <form method="post" enctype='multipart/form-data'>
-      {% csrf_token %}
-      {% for hidden_field in form.hidden_fields %}
-          {{ hidden_field }}
-      {% endfor %}
-      {% for field in form.visible_fields %}
-          <div class="form-group">
-              {{ field.label_tag }}
-              {% render_field field class="form-control" %}
-              {% if field.help_text %}
-                  <small class="form-text text-muted">{{ field.help_text }}</small>
-              {% endif %}
-          </div>
-      {% endfor %}
+      {% include 'accounts/form.html' %}
       <button type="submit" class="btn btn-primary" >Upload Game</button>
   </form>
 </main>

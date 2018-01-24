@@ -1,8 +1,8 @@
 {% extends 'gamehub/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
 <form method="post" enctype='multipart/form-data'>
-  {% csrf_token %}
-  {{ form.as_p }}
+  {% include 'accounts/form.html' %}
   <input type="submit"/>
 </form>
 {% endblock %}
