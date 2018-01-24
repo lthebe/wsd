@@ -4,11 +4,20 @@ import re
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q, F
+from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
+from PIL import Image, ImageOps
+import os.path
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+from gameHub.settings import ImageSizeEnum
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +26,10 @@ logger = logging.getLogger(__name__)
 #https://stackoverflow.com/questions/34239877/django-save-user-uploads-in-seperate-folders
 def user_directory_path(instance, filename):
     return 'user_{0}/game/{1}'.format(instance.developer.id, filename)
+
+def user_directory_path_thumb(instance, filename):
+    return 'user_{0}/game/thumb/{1}'.format(instance.developer.id, filename)
+
 
 class Game(models.Model):
     """Game model
@@ -35,13 +48,12 @@ class Game(models.Model):
     price         = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     description   = models.TextField()
     gameimage     = models.ImageField(null=True, blank=True, upload_to=user_directory_path)
+    gamethumb     = models.ImageField(null=True, blank=True, upload_to=user_directory_path_thumb)
     viewcount     = models.PositiveIntegerField(default=0)
     sellcount     = models.PositiveIntegerField(default=0)
     upload_date   = models.DateTimeField(default=timezone.now)
-    
-    ratings       = models.IntegerField(default=0)
-    total_rating  = models.IntegerField(default=0)
-    
+    ratings       = models.PositiveIntegerField(default=0)
+    total_rating  = models.PositiveIntegerField(default=0)
 
     class Meta:
            ordering = ['viewcount', 'sellcount']
@@ -91,8 +103,34 @@ class Game(models.Model):
         else:
             return 0
 
+    @staticmethod
+    def resize_image(game, size):
+        if not isinstance(size, ImageSizeEnum):
+            raise ValueError
+        # PIL Python Image Library
+        image_pil = ImageOps.fit(Image.open(game.gameimage), size.value, Image.ANTIALIAS)  # Resize image
+        if size != ImageSizeEnum.COVER.name:
+            image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
+        else:
+            image_name = user_directory_path(game, game.gameimage.name)
+        image_extension = os.path.splitext(image_name)[1]
+        if image_extension in ['.jpg', '.jpeg']:
+            FTYPE = 'JPEG'
+        elif image_extension == '.gif':
+            FTYPE = 'GIF'
+        elif image_extension == '.png':
+            FTYPE = 'PNG'
+        else:
+            # ToDo Find correct exception
+            raise ValueError
+        image_stream = BytesIO()
+        image_pil.save(image_stream, FTYPE)
+        image_stream.seek(0)
+        resize_image = InMemoryUploadedFile(image_stream, None, image_name, FTYPE, image_stream.tell(), None)
+        return resize_image
+
     @classmethod
-    def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, viewcount=0):
+    def create(cls, title, url, developer, price = 0.0, description='', gameimage=None, gamethumb=None,viewcount=0):
         """Creates an object. Use this function instead of calling the class
         constructor.
         """
@@ -104,6 +142,7 @@ class Game(models.Model):
             developer = developer,
             description=description,
             gameimage=gameimage,
+            gamethumb=gamethumb,
             viewcount=viewcount
         )
         return game

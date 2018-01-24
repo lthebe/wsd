@@ -6,42 +6,58 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1>{{game.name}}</h1>
-  {% if game.gameimage %}
-    <img src="{{game.gameimage.url}}" class="img-responsive" />
-  {% endif %}
-  <p>{{game.description}}</p>
-  <p>
-    <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
-    {% with request as request %}
-      {% with game as game %}
-        {% include 'game/socialshare.html' %}
-      {% endwith %}
-    {% endwith %}
-  </p>
-  <div class="row">
-    {% if game_owner %}
-      <input type="hidden" id="game_highscore_url" value="{% url 'game:highscore' game=game.id %}" />
-      <input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id %}" />
-      <input type="hidden" id="game_rate_url" value="{% url 'game:rate' game=game.id %}" />
-      {% comment %}
-        The SETTINGS message in the game sends the width and height to the platform and would be rendered accordingly
-      {% endcomment %}
-      <iframe id="game_iframe" src="{{game.url}}" width="100" height="100"></iframe>
-      <div>
-        <strong>Highest Gamescore is:</strong>
-        <p id="gameresult">loading...</p>
-      </div>
+<!-- <div class="container"> -->
+<div class="panel-default">
+  <div class="panel-heading">
+    {% if game.gameimage %}
+    <img src="{{game.gameimage.url}}" class="img-responsive" style="width: 100%" />
     {% endif %}
   </div>
+  <div class="panel-body">
+    <h1 class="text-center text-uppercase">{{game.title}}</h1>
+    <p>
+      {{game.description}}
+    </p>
+    <p>
+      {% if not game_owner %}
+        <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
+      {% endif %}
+    </p>
+    <div class="d-block text-center">
+      {% if game_owner %}
+        <input type="hidden" id="game_highscore_url" value="{% url 'game:highscore' game=game.id %}" />
+        <input type="hidden" id="game_update_url" value="{% url 'game:update' game=game.id %}" />
+        <input type="hidden" id="game_rate_url" value="{% url 'game:rate' game=game.id %}" />
+        {% comment %}
+          The SETTINGS message in the game sends the width and height to the platform and would be rendered accordingly
+        {% endcomment %}
+        <div class="wrapper">
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe id="game_iframe" src="{{game.url}}"></iframe>
+          </div>
+        </div>
+        <div>
+          <strong>Highest Gamescore is:</strong>
+          <p id="gameresult">
+            loading...
+          </p>
+        </div>
+      {% endif %}
+    </div>
     <div class="row ratings">
       {% if user.is_authenticated %}
         <p>Rate this game: </p>
       {% endif %}
       {% include "game/rating.html" with starId="rate-" stars=rating %}
     </div>
+    {% with request as request %}
+      {% with game as game %}
+        {% include 'game/socialshare.html' %}
+      {% endwith %}
+    {% endwith %}
+  </div>
 </div>
+<!-- </div>-->
 {% endblock %}
 {% comment %}
   Meta Data for opengraphsearch would be included in the game!

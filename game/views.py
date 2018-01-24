@@ -15,10 +15,12 @@ from django.contrib import messages
 from django.views.generic.edit import DeleteView, UpdateView
 from django.urls import reverse_lazy
 
+from gameHub.settings import ImageSizeEnum
 from .models import Game, GamePlayed, PaymentDetail
 from .utils import get_checksum
 from .forms import UploadGameForm
 from .decorators import group_required, game_player_required
+
 import accounts.urls
 
 logger = logging.getLogger(__name__)
@@ -151,11 +153,18 @@ def upload(request):
         if form.is_valid():
             new_game = form.save(commit=False)
             new_game.developer = request.user
-            new_game.save()
+            try:
+                if new_game.gameimage:
+                    new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
+                    new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
+                new_game.save()
             #adds the developer as a player allowing to play game without buying
-            played_game = GamePlayed.objects.create(gameScore=0)
-            played_game.game = new_game
-            played_game.save()
+                played_game = GamePlayed.objects.create(gameScore=0)
+                played_game.game = new_game
+                played_game.save()
+            except ValueError: # enum exception
+                # Todo how to render an exception to the view?
+                raise ValueError
             #to let the developer play his own game in the platform
             #it skews up the cost by 1 unit
             #even though payment is not processed
