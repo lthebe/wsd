@@ -1,5 +1,8 @@
+import pdb
+
 import logging
 import json
+
 from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -39,12 +42,19 @@ def details(request, game):
 
     game = get_object_or_404(Game, pk=game)
     game.increment_viewcount()
-    game_owner = False
+    
+    context = {
+        'game': game,
+        'game_owner': False,
+        'rating': game.get_rating_cleaned()
+    }
+    
     if request.user.is_authenticated:
-        games = request.user.gameplayed_set.all()
-        if game in [game_played.game for game_played in games]:
-            game_owner = True
-    context = {'game': game, 'game_owner': game_owner}
+        gp = request.user.gameplayed_set.all().filter(game=game)
+        if len(gp) == 1:
+            context['game_owner'] = True
+            context['rating'] = gp[0].rating * 2
+    
     return render(request, template_name='game/game.html', context=context)
 
 @require_http_methods(('GET', 'HEAD'))
@@ -228,17 +238,19 @@ def highscore(request, game):
         game = get_object_or_404(Game, pk=game)
         highscore = GamePlayed.objects.filter(game=game).aggregate(Max('gameScore'))
         return HttpResponse(highscore['gameScore__max'])
+    else:
+        return HttpResponseBadRequest('Only ajax')
 
 @require_http_methods(('POST', 'HEAD'))
 @game_player_required #only the game player
-def update_played_game(request, game, user):
+def update_played_game(request, game):
     """Fetch the game based on the game id and users from GamePlayed tables, &
     responds based on the messageType received in json data passed with ajax
     request. If the messageType is 'LOAD_REQUEST', it constructs the json data
     and send as response. So, it is with when ERROR messageType is received.
     """
     if request.is_ajax():
-        game_played = GamePlayed.objects.get(users__pk=user, game__id=game)
+        game_played = GamePlayed.objects.get(users__pk=request.user.pk, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
         try:
@@ -263,7 +275,7 @@ def update_played_game(request, game, user):
             return HttpResponse(json.dumps(data), content_type="application/json")
         return HttpResponse('success')#views has to return something
     else:
-        return HttpResponse('Only ajax')
+        return HttpResponseBadRequest('Only ajax')
 
 class GameUpdateView(UpdateView):
     model = Game
@@ -296,3 +308,27 @@ class GameDeleteView( DeleteView):
 
     def get_object(self):
         return get_object_or_404(Game, pk=self.kwargs['game'])
+
+@require_http_methods(('POST'))
+@game_player_required
+def rate(request, game):
+    """Adds a rating for a game for the currently logged in user, through ajax.
+    
+    The primary key is passed as a url parameter. The rating, between 1 and 5, is
+    passed as a POST parameter.
+    """
+    if request.is_ajax():
+        game_played = GamePlayed.objects.get(
+            users__pk=request.user.pk,
+            game__id=game
+        )
+        try:
+          rating = int(request.POST.get('rating'))
+          assert rating >= 1 and rating <= 5
+        except:
+          return HttpResponseBadRequest('Invalid rating provided')
+        
+        game_played.set_rating(rating)
+        return HttpResponse(str(rating))
+    else:
+        return HttpResponseBadRequest('Only ajax')

@@ -15,8 +15,14 @@
     <title>{% block title %}GameHub{% endblock title %}</title>
     <!--boostrap css-->
     <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
+
+    <!--fontawesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/custom-bootstrap.css' %}" rel="stylesheet">
+
+    {% block styles %}
+    {% endblock styles %}
   </head>
 
   <body>

@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load in_group %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{% url 'accounts:home' %}">GameHub</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,14 +24,13 @@
         </div>
       </li>
       {% if request.user.is_authenticated %}
-          <li class="nav-item nav-link">
-      Welcome {{ request.user.username }}
-        <a href="{% url 'game:upload' %}">Upload game</a>
+        <li class="nav-item nav-link">
+          Welcome {{ request.user.username }}
+          {% if request.user|in_group:"Developer" %}
+            <a href="{% url 'game:upload' %}">Upload game</a>
+          {% endif %}
+        </li>
       {% endif %}
-      </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>-->
     </ul>
     <form class="form-inline my-2 my-lg-0" action="{% url 'game:search' %}" method="get">
       <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search">

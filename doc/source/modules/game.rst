@@ -19,6 +19,9 @@ Contents:
   game/forms
   game/signals
   game/utils
+  game/decorators
+  
+  game/templatetags
     
 Indices and tables
 ==================
