@@ -3,50 +3,64 @@
     <h1 class="text-center text-uppercase text-dark">
         {{object}}
     </h1>
-    <div class="border">
-        {% if object.profile.image %}
-            <img src="{{object.profile.image.url}}"/>
-        {% endif %}
-    </div>
-    <div class="text-center">
-        <h2>Played Games</h2>
-    </div>
-
-    <ul>
-        {% for played_game in played_games %}
-            <li>
-              <strong>{{played_game}}</strong>
-              {% if played_game.game.id %}
-              <a href="{% url 'game:detail' game=played_game.game.id %}">Play</a>
-              {% endif %}
-            </li>
-        {% empty %}
-            <li>Sorry, buy some games to play or develop!</li>
-        {% endfor %}
-    </ul>
-    {% if developed_games %}
-        <div class="text-center">
-            <h2>Developed Games</h2>
+    <div class="container">
+        <div>
+            {% if object.profile.image %}
+                <img class="d-block mx-auto border p-2 img-fluid" src="{{object.profile.image.url}}"/>
+            {% endif %}
         </div>
-        <ul>
+        <div>
+            <h4 class="text-dark">Description:</h4>
+            <div>{{ object.profile.description }}</div>
+        </div>
+
+        <div class="text-center mt-2">
+            <h2>Played Games</h2>
+        </div>
+        <div class="row">
+        {% for played_game in played_games %}
+
+                <div class="col-sm-3 mt-2">
+                    {% with  played_game.game as game%}
+                        {% include 'gamehub/game_thumb.html'%}
+                    {% endwith %}
+                </div>
+                <div class="col-sm-3 mt-2">
+                    {{ played_game.gameState }}
+                </div>
+
+        {% empty %}
+            <h5>Sorry, buy some games to play or develop!</h5>
+        {% endfor %}
+        </div>
+        {% if developed_games %}
+            <div class="text-center">
+                <h2>Developed Games</h2>
+            </div>
             {% for developed_game in developed_games %}
-                <li>
-                    <h3>{{ developed_game.title }} - {{developed_game.viewcount}} views - {{developed_game.sellcount}} sells</h3>
-                    <a class="btn btn-primary"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
-                    <a class="btn btn-primary" href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
-                    <div>
-                    <strong>Statistics</strong>
+                <div class="row border-row">
+                    <div class="col-sm-3 mt-2">
+                        <h3>{{ developed_game.title }}</h3>
+                        <h5>{{developed_game.viewcount}} views - {{developed_game.sellcount}} sells</h5>
+                        <div class="btn-group-sm">
+                            <a class="btn btn-primary mt-1"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
+                            <a class="btn btn-primary mt-1" href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
+                        </div>
+                    </div>
                     {% for game in developed_game.gameplayed_set.all %}
                         {% for payment in game.paymentdetail_set.all %}
-                            <p>Price: {{payment.cost}}, Date: {{payment.selldate}} purchased by {{payment.user}}</p>
+                            <div class="col-sm-3 mt-2">
+                                <span class="text-primary">Price: </span><span>{{payment.cost}}</span><br>
+                                <span class="text-primary">Date: </span><span>{{payment.selldate}}</span><br>
+                                <span class="text-primary">Purchased by </span><span>{{payment.user}}</span><br>
+                            </div>
                         {% endfor %}
                     {% endfor %}
                 </div>
-                </li>
             {% empty %}
-                <li>Sorry, write some game and earn money!</li>
+                <h3>Sorry, write some game and earn money!</h3>
             {% endfor %}
-        </ul>
-    {% endif %}
-    <a href="{% url 'accounts:update' request.user.id %}"><button class="btn btn-success">Update Profile</button></a>
+        {% endif %}
+        <a href="{% url 'accounts:update' request.user.id %}"><button class="mt-2 btn btn-success">Update Profile</button></a>
+    </div>
 {% endblock %}
