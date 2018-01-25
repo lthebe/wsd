@@ -16,7 +16,7 @@ from django.contrib.auth.models import User, Group
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
+from gameHub.settings import ImageSizeEnum
 from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
 from game.models import Game
 # Create your views here.
@@ -30,7 +30,11 @@ class RegisterView(CreateView):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
-            user.profile.image = form.cleaned_data.get('image')
+            tmp_img = form.cleaned_data.get('image')
+            if tmp_img is not None:
+                user.profile.image = Game.resize_image( tmp_img, tmp_img.name, ImageSizeEnum.PROFILE)
+            else:
+                user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
             if form.cleaned_data.get('developer'):
@@ -86,7 +90,11 @@ class ProfileUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             user = form.save(commit=False)
-            user.profile.image = form.cleaned_data.get('image')
+            tmp_img = form.cleaned_data.get('image')
+            if tmp_img is not None:
+                user.profile.image = Game.resize_image(tmp_img, tmp_img.name, ImageSizeEnum.PROFILE)
+            else:
+                user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
             user.save()

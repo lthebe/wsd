@@ -104,16 +104,12 @@ class Game(models.Model):
             return 0
 
     @staticmethod
-    def resize_image(game, size):
+    def resize_image(image, name, size):
         if not isinstance(size, ImageSizeEnum):
             raise ValueError
-        if size == ImageSizeEnum.THUMBNAIL.name:
-            image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
-        else:
-            image_name = user_directory_path(game, game.gameimage.name)
-        image_name, image_extension = os.path.splitext(image_name)
+        image_name, image_extension = os.path.splitext(name)
         # PIL Python Image Library
-        image_pil = Image.open(game.gameimage)
+        image_pil = Image.open(image)
         # Check correct image extension, ex. user renamed .png to .jpg
         if image_extension in ['.jpg', '.jpeg'] and image_pil.mode in ('RGBA', 'LA'):
             image_extension = '.png'

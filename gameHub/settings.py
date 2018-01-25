@@ -280,7 +280,6 @@ MEDIA_ROOT = os.path.join(os.path.dirname(PROJECT_ROOT), "media_cdn")
 
 
 class ImageSizeEnum(Enum):
-    # Cover dimension
     COVER = (1280, 720)
-    # Thumbnail dimension
     THUMBNAIL = (500,400)
+    PROFILE = (400, 400)

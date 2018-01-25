@@ -155,8 +155,8 @@ def upload(request):
             new_game.developer = request.user
             try:
                 if new_game.gameimage:
-                    new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
-                    new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
+                    new_game.gameimage = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.COVER)
+                    new_game.gamethumb = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.THUMBNAIL)
                 new_game.save()
             #adds the developer as a player allowing to play game without buying
                 played_game = GamePlayed.objects.create(gameScore=0)
