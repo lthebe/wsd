@@ -1,6 +1,7 @@
 {% extends 'gamehub/base.html' %}
 {% load staticfiles %}
 {% load humanize %}
+{% load owns_game %}
 
 {% block styles %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/rating.css' %}">
@@ -41,7 +42,11 @@
           <div class="row">
             <div class="col-md-2 offset-5">
               {% if user.is_authenticated %}
-                <a href="{% url 'game:purchase' game=hit.pk %}" class="btn btn-primary" role="button">Buy Game!</a>
+                {% if user|owns_game:hit %}
+                  <a href="{% url 'game:detail' game=hit.pk %}" class="btn btn-primary" role="button">Play Game!</a>
+                {% else %}
+                  <a href="{% url 'game:purchase' game=hit.pk %}" class="btn btn-primary" role="button">Buy Game!</a>
+                {% endif %}
               {% else %}
                 <a href="{% url 'accounts:login' %}" class="btn btn-primary" role="button">Login to buy this game.</a>
               {% endif %}
