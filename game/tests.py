@@ -12,10 +12,10 @@ from game.models import Game, GamePlayed, PaymentDetail
 logger = logging.getLogger(__name__)
 
 # Create your tests here.
-def get_user():
+def get_user(name=''):
     """Creates and returns a new user
     """
-    user = User.objects.create()
+    user = User.objects.create(username=name)
     user.save()
     return user
 
@@ -27,6 +27,17 @@ def buy_game_for_user(user, game):
     buy_game.game.increment_sellcount()
     buy_game.save()
     PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
+
+def rate_game_for_user(user, game, rating):
+    """Rates a game for a user.
+    
+    Args:
+        user - The user model instance
+        game - The game model instance
+        rating - the rating, as an integer in the interval [1,5]
+    """
+    gameplayed = user.gameplayed_set.filter(game=game)[0]
+    gameplayed.set_rating(rating)
 
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
@@ -78,7 +89,8 @@ class GameSearchTest(TestCase):
         Game.create('another game', '', description='this game also has a title', developer=user).save()
 
     def testEmptyQuery(self):
-        """Tests if an empty query returns all games in the database"""
+        """Tests if an empty query returns all games in the database.
+        """
 
         qset = Game.search(None)
         self.assertEquals(len(qset), len(Game.objects.all()))
@@ -121,6 +133,33 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 2)
         qset = Game.search('game')
         self.assertEquals(len(qset), 4)
+    
+    def testPriority(self):
+        """Tests that the games in a search query are given in the correct order
+        determined by their popularity.
+        """
+        
+        users = [get_user('{}'.format(x)) for x in range(3)]
+        games = [
+            Game.objects.get(title='game1'),
+            Game.objects.get(title='game2'),
+            Game.objects.get(title='title'),
+            Game.objects.get(title='another game'),
+        ]
+        for i in range(3):
+            buy_game_for_user(users[i], games[1])
+            buy_game_for_user(users[i], games[2])
+            buy_game_for_user(users[i], games[3])
+        
+        rate_game_for_user(users[0], games[2], 4)
+        rate_game_for_user(users[0], games[3], 2)
+        rate_game_for_user(users[1], games[3], 3)
+        
+        qset = Game.search('game')
+        self.assertEquals(qset[0].pk, games[2].pk)
+        self.assertEquals(qset[1].pk, games[3].pk)
+        self.assertEquals(qset[2].pk, games[1].pk)
+        self.assertEquals(qset[3].pk, games[0].pk)
 
 class SearchViewTest(TestCase):
     """Tests for the search view.
