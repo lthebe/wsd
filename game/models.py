@@ -59,7 +59,12 @@ class Game(models.Model):
     class Meta:
         ordering = ['viewcount', 'sellcount']
     
-    def calculate_popularity(self):
+    def calculate_popularity(avg_rating):
+        """Calculates the popularity of a game. The popularity is used by the search
+        function to order the query results.
+        
+        .. note:: This function should be called by the methods which alter the popularity. Do not call it directly.
+        """
         if self.ratings is 0:
             self.popularity = self.sellcount * 1.0
         else:
@@ -171,7 +176,7 @@ class Game(models.Model):
         """
 
         if q is None:
-            return cls.objects.all()
+            return cls.objects.all().order_by('-popularity')
         else:
             qwords = map(lambda m: m[0] if len(m[0]) > 0 else m[1],
                 re.findall(r'"(.+)"|(\S+)', q))
@@ -181,7 +186,7 @@ class Game(models.Model):
                     Q(title__contains=word) |
                     Q(description__contains=word))
 
-            return cls.objects.all().filter(query).order_by('popularity')
+            return cls.objects.all().filter(query).order_by('-popularity')
 
     def __str__(self):
         return 'Game {0}, title: {1}, url: {2}'.format(
