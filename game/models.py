@@ -1,5 +1,6 @@
 import logging
 import re
+import pdb
 
 from decimal import Decimal
 
@@ -59,7 +60,7 @@ class Game(models.Model):
     class Meta:
         ordering = ['viewcount', 'sellcount']
     
-    def calculate_popularity(avg_rating):
+    def calculate_popularity(self):
         """Calculates the popularity of a game. The popularity is used by the search
         function to order the query results.
         
@@ -86,6 +87,10 @@ class Game(models.Model):
         """
         self.ratings = F('ratings') + 1
         self.total_rating = F('total_rating') + rating
+        self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
         self.calculate_popularity()
         self.save()
     
@@ -95,6 +100,10 @@ class Game(models.Model):
         """
         self.ratings = F('ratings') - 1
         self.total_rating = F('total_rating') + rating
+        self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
         self.calculate_popularity()
         self.save()
     
@@ -103,6 +112,10 @@ class Game(models.Model):
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
         """
         self.total_rating = F('total_rating') + change
+        self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
         self.calculate_popularity()
         self.save()
     
