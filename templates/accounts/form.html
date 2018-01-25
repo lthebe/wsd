@@ -4,6 +4,8 @@
     {{ hidden_field }}
 {% endfor %}
 
+<!-- Inform users about errors -->
+
 {% if form.non_field_errors %}
     <div class="alert alert-danger" role="alert">
     {% for error in form.non_field_errors %}
@@ -11,6 +13,18 @@
     {% endfor %}
     </div>
 {% endif %}
+
+{% if errors %}
+    <div class="alert alert-danger" role="alert">
+    {% for key, value in errors.items %}
+        {% for error in value %}
+            {{ error }}
+        {% endfor %}
+    {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Form layout valid across the application, future support for bound form -->
 
 {% for field in form.visible_fields %}
     <div class="form-group">

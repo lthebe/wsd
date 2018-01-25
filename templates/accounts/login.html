@@ -1,5 +1,4 @@
 {% extends 'gamehub/base.html' %}
-{% load widget_tweaks %}
 {% block content %}
     {% if next %}
         <form action="{% url 'accounts:login' %}?next={{next}}" method="POST" >
