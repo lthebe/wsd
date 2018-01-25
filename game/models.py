@@ -181,7 +181,7 @@ class Game(models.Model):
                     Q(title__contains=word) |
                     Q(description__contains=word))
 
-            return cls.objects.all().filter(query)
+            return cls.objects.all().filter(query).order_by('popularity')
 
     def __str__(self):
         return 'Game {0}, title: {1}, url: {2}'.format(
