@@ -54,16 +54,24 @@ class Game(models.Model):
     upload_date   = models.DateTimeField(default=timezone.now)
     ratings       = models.PositiveIntegerField(default=0)
     total_rating  = models.PositiveIntegerField(default=0)
+    popularity    = models.FloatField(default=0.0)
 
     class Meta:
-           ordering = ['viewcount', 'sellcount']
-
+        ordering = ['viewcount', 'sellcount']
+    
+    def calculate_popularity(self):
+        if self.ratings is 0:
+            self.popularity = self.sellcount * 1.0
+        else:
+            self.popularity = self.sellcount * (self.total_rating / self.ratings)
+        
     def increment_viewcount(self):
         self.viewcount = F('viewcount') + 1
         self.save()
 
     def increment_sellcount(self):
         self.sellcount = F('sellcount') + 1
+        self.calculate_popularity()
         self.save()
     
     
@@ -73,6 +81,7 @@ class Game(models.Model):
         """
         self.ratings = F('ratings') + 1
         self.total_rating = F('total_rating') + rating
+        self.calculate_popularity()
         self.save()
     
     def remove_rating(self, rating):
@@ -81,6 +90,7 @@ class Game(models.Model):
         """
         self.ratings = F('ratings') - 1
         self.total_rating = F('total_rating') + rating
+        self.calculate_popularity()
         self.save()
     
     def change_rating(self, change):
@@ -88,6 +98,7 @@ class Game(models.Model):
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
         """
         self.total_rating = F('total_rating') + change
+        self.calculate_popularity()
         self.save()
     
     def get_rating_cleaned(self):
