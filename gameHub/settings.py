@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'game',
     'accounts',
     'widget_tweaks',
+    'api',
 ]
 
 MIDDLEWARE = [

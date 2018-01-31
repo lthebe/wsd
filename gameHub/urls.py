@@ -23,6 +23,7 @@ urlpatterns = [
     path('oauth/', include('social_django.urls', namespace='social')),
     path('', include('accounts.urls', namespace='accounts')),
     path('', include('game.urls', namespace='game')),
+    path('api/', include('api.urls', namespace='api'))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
