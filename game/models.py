@@ -1,5 +1,6 @@
 import logging
 import re
+import pdb
 
 from decimal import Decimal
 
@@ -54,16 +55,29 @@ class Game(models.Model):
     upload_date   = models.DateTimeField(default=timezone.now)
     ratings       = models.PositiveIntegerField(default=0)
     total_rating  = models.PositiveIntegerField(default=0)
+    popularity    = models.FloatField(default=0.0)
 
     class Meta:
-           ordering = ['viewcount', 'sellcount']
-
+        ordering = ['viewcount', 'sellcount']
+    
+    def calculate_popularity(self):
+        """Calculates the popularity of a game. The popularity is used by the search
+        function to order the query results.
+        
+        .. note:: This function should be called by the methods which alter the popularity. Do not call it directly.
+        """
+        if self.ratings is 0:
+            self.popularity = self.sellcount * 1.0
+        else:
+            self.popularity = self.sellcount * (self.total_rating / self.ratings)
+        
     def increment_viewcount(self):
         self.viewcount = F('viewcount') + 1
         self.save()
 
     def increment_sellcount(self):
         self.sellcount = F('sellcount') + 1
+        self.calculate_popularity()
         self.save()
     
     
@@ -74,6 +88,11 @@ class Game(models.Model):
         self.ratings = F('ratings') + 1
         self.total_rating = F('total_rating') + rating
         self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
+        self.calculate_popularity()
+        self.save()
     
     def remove_rating(self, rating):
         """
@@ -82,12 +101,22 @@ class Game(models.Model):
         self.ratings = F('ratings') - 1
         self.total_rating = F('total_rating') + rating
         self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
+        self.calculate_popularity()
+        self.save()
     
     def change_rating(self, change):
         """
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
         """
         self.total_rating = F('total_rating') + change
+        self.save()
+        #double save here is neccessary since calculate_popularity requires float
+        #arithmetic. F expressions forces it to SQL which does integer arithmetic
+        self.refresh_from_db()
+        self.calculate_popularity()
         self.save()
     
     def get_rating_cleaned(self):
@@ -161,7 +190,7 @@ class Game(models.Model):
         """
 
         if q is None:
-            return cls.objects.all()
+            return cls.objects.all().order_by('-popularity')
         else:
             qwords = map(lambda m: m[0] if len(m[0]) > 0 else m[1],
                 re.findall(r'"(.+)"|(\S+)', q))
@@ -171,7 +200,7 @@ class Game(models.Model):
                     Q(title__contains=word) |
                     Q(description__contains=word))
 
-            return cls.objects.all().filter(query)
+            return cls.objects.all().filter(query).order_by('-popularity')
 
     def __str__(self):
         return 'Game {0}, title: {1}, url: {2}'.format(
