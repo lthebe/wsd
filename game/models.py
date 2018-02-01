@@ -119,6 +119,15 @@ class Game(models.Model):
         self.calculate_popularity()
         self.save()
     
+    def get_rating(self):
+        """Returns the calculated rating. Simply total_rating / ratings, or 0 if no
+        ratings have been given.
+        """
+        if self.ratings > 0:
+            return self.total_rating / self.ratings
+        else:
+            return 0
+    
     def get_rating_cleaned(self):
         """Returns the ratings as they should be read by the game/rating.html
         template.

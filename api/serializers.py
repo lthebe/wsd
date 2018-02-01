@@ -15,8 +15,19 @@ class GameSerializer(serializers.ModelSerializer):
         many=False,
         read_only=True
     )
+    average_rating = serializers.FloatField(source='get_rating', read_only=True)
     
     class Meta:
         model = Game
-        fields = ('title', 'developer', 'url', 'price')
-        depth = 1
+        fields = (
+            'title',
+            'developer',
+            'url',
+            'price',
+            'description',
+            'viewcount',
+            'sellcount',
+            'upload_date',
+            'average_rating',
+            'popularity',
+        )
