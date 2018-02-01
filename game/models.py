@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q, F
+from django.db.models import Q, F, Sum
 from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
 from PIL import Image, ImageOps
@@ -140,6 +140,13 @@ class Game(models.Model):
             return int((self.total_rating / self.ratings) * 2 + 0.5)
         else:
             return 0
+    
+    def get_revenue(self):
+        """Returns the total revenue of this game
+        """
+        return PaymentDetail.objects.all().filter(
+            game_played__game=self
+        ).aggregate(Sum('cost'))['cost__sum']
 
     @staticmethod
     def resize_image(game, size):

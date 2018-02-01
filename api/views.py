@@ -41,3 +41,12 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     lookup_field = 'title'
+    
+    @detail_route(methods=['get'])
+    def buyers(self, request, title=None):
+        game = self.get_object()
+        serializer = UserSerializer(
+            User.objects.all().filter(gameplayed__game=game),
+            many=True
+        )
+        return Response(serializer.data)
