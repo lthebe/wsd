@@ -30,6 +30,12 @@ class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.get(name='Developer').user_set.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    
+    @detail_route(methods=['get'])
+    def games(self, request, username=None):
+        user = self.get_object()
+        serializer = GameSerializer(user.game_set, many=True)
+        return Response(serializer.data)
 
 class GameViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Game.objects.all()
