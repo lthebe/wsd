@@ -9,14 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 class GameSerializer(serializers.ModelSerializer):
-    
-    developer = serializers.SlugRelatedField(
-        slug_field='username',
-        many=False,
-        read_only=True
-    )
-    average_rating = serializers.FloatField(source='get_rating', read_only=True)
-    
     class Meta:
         model = Game
         fields = (
@@ -31,3 +23,10 @@ class GameSerializer(serializers.ModelSerializer):
             'average_rating',
             'popularity',
         )
+    
+    developer = serializers.SlugRelatedField(
+        slug_field='username',
+        many=False,
+        read_only=True
+    )
+    average_rating = serializers.FloatField(source='get_rating', read_only=True)

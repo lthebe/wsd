@@ -9,6 +9,7 @@ app_name = 'api'
 
 router = routers.SimpleRouter()
 router.register(r'users', views.UserViewSet)
+router.register(r'developers', views.DeveloperViewSet)
 router.register(r'games', views.GameViewSet)
 
 urlpatterns = router.urls
