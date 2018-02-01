@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from game.models import Game
+from game.models import Game, GamePlayed, PaymentDetail
 from accounts.models import Profile
 
 from rest_framework import serializers
@@ -39,3 +39,14 @@ class GameSerializer(serializers.ModelSerializer):
         read_only=True
     )
     average_rating = serializers.FloatField(source='get_rating', read_only=True)
+
+class GamePlayedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GamePlayed
+        fields = ('game', 'gameScore', 'rating')
+    
+    game = serializers.SlugRelatedField(
+        slug_field='title',
+        many=False,
+        read_only=True
+    )

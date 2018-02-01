@@ -228,7 +228,7 @@ class GamePlayed(models.Model):
     a middle model could be used in many to many relationship
     as referred to README.md for database schema.
 
-    :members: game, gameScore, gameState, users
+    :members: game, gameScore, gameState, users, rating
 
     """
 
