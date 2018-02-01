@@ -1,4 +1,6 @@
-from django.shortcuts import render
+import logging
+
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User, Group
 
 from rest_framework import viewsets
@@ -6,6 +8,8 @@ from rest_framework import viewsets
 from game.models import Game
 
 from .serializers import UserSerializer, GameSerializer
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 

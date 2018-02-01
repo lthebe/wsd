@@ -1,12 +1,21 @@
 from django.contrib.auth.models import User
+
 from game.models import Game
+from accounts.models import Profile
 
 from rest_framework import serializers
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('nickname', 'description', 'image')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ('username', 'profile')
+    
+    profile = ProfileSerializer(many=False, read_only=True)
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
