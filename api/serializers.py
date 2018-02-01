@@ -35,6 +35,18 @@ class GameSerializer(serializers.ModelSerializer):
             'average_rating',
             'revenue',
         )
+        ordering_fields=(
+            'title',
+            'developer',
+            'price',
+            'description',
+            'viewcount',
+            'sellcount',
+            'upload_date',
+            'popularity',
+            'average_rating',
+            'revenue'
+        )
     
     developer = serializers.SlugRelatedField(
         slug_field='username',
