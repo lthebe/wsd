@@ -18,7 +18,8 @@ Examples:
 """
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .views import RegisterView, ActivationView, HomeView, ChooseGroupView, ProfileUpdateView, ProfileDetailView
+from .views import RegisterView, ActivationView, HomeView, ChooseGroupView, ProfileUpdateView, ProfileDetailView, \
+    ProfileStatisticsView
 
 from game.decorators import profile_owner_required
 
@@ -34,4 +35,5 @@ urlpatterns = [
     path('accounts/register', RegisterView.as_view(template_name='accounts/register.html', success_url='home'), name='register'),
     path('accounts/login', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('accounts/logout', auth_views.LogoutView.as_view(next_page='accounts:login'), name='logout'),
+    path('accounts/<int:pk>/<int:game>', profile_owner_required(ProfileStatisticsView.as_view()), name='statistics')
 ]

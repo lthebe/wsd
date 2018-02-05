@@ -1,0 +1,19 @@
+{% extends 'gamehub/base.html' %}
+{% block content %}
+    <h1 class="text-center text-uppercase text-dark">
+        {{object}}
+    </h1>
+    <div class="container">
+        {% if gameplayed %}
+            {% for payment in gameplayed %}
+                <div class="col-sm-3 mt-2">
+                    <span class="text-primary">Price: </span><span>{{payment.cost}}</span><br>
+                    <span class="text-primary">Date: </span><span>{{payment.selldate}}</span><br>
+                    <span class="text-primary">Purchased by </span><span>{{payment.user}}</span><br>
+                </div>
+            {% endfor %}
+        {% else %}
+            No GAmeplayed
+        {% endif %}
+    </div>
+{% endblock %}

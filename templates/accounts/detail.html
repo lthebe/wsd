@@ -26,7 +26,9 @@
                     {% endwith %}
                 </div>
                 <div class="col-sm-3 mt-2">
-                    {{ played_game.gameState }}
+                    {% if played_game.gameState %}
+                        {{ played_game.gameState|safe }}
+                    {% endif %}
                 </div>
 
         {% empty %}
@@ -37,17 +39,28 @@
             <div class="text-center">
                 <h2>Developed Games</h2>
             </div>
+            <div class="row border-row">
             {% for developed_game in developed_games %}
-                <div class="row border-row">
+
                     <div class="col-sm-3 mt-2">
                         <h3>{{ developed_game.title }}</h3>
-                        <h5>{{developed_game.viewcount}} views - {{developed_game.sellcount}} sells</h5>
+                        <img class="embed-responsive"  src="{{developed_game.gamethumb.url}}" alt="Card image cap">
                         <div class="btn-group-sm">
                             <a class="btn btn-primary mt-1"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
                             <a class="btn btn-primary mt-1" href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
                         </div>
                     </div>
+                    <div class="col-sm-3 mt-2">
+                        <h4>Stats</h4>
+                        <div><span class="text-primary">Total view: </span><span>{{developed_game.viewcount}}</span></div>
+                        <div><span class="text-primary">Total sells: </span><span>{{developed_game.sellcount}}</span></div>
+                        <div><span class="text-primary">Game price: </span><span>{{developed_game.price}}</span></div>
+                        <div><span class="text-primary">Game earnings: </span><span>{{developed_game.total_earn}}</span></div>
+                        <a class="btn btn-primary mt-1" href="{% url 'accounts:statistics' request.user.id developed_game.id%}">Info</a>
+
+                    </div>
                     {% for game in developed_game.gameplayed_set.all %}
+                        {% comment %}
                         {% for payment in game.paymentdetail_set.all %}
                             <div class="col-sm-3 mt-2">
                                 <span class="text-primary">Price: </span><span>{{payment.cost}}</span><br>
@@ -55,11 +68,14 @@
                                 <span class="text-primary">Purchased by </span><span>{{payment.user}}</span><br>
                             </div>
                         {% endfor %}
+                        {% endcomment %}
+
                     {% endfor %}
-                </div>
+
             {% empty %}
                 <h3>Sorry, write some game and earn money!</h3>
             {% endfor %}
+            </div>
         {% endif %}
         <a href="{% url 'accounts:update' request.user.id %}"><button class="mt-2 btn btn-success">Update Profile</button></a>
     </div>

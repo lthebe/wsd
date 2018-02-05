@@ -1,6 +1,7 @@
 import pdb
 from random import shuffle
 
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.contrib.auth import login
@@ -18,7 +19,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from gameHub.settings import ImageSizeEnum
 from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
-from game.models import Game
+from game.models import Game, PaymentDetail, GamePlayed
+
+
 # Create your views here.
 
 class RegisterView(CreateView):
@@ -124,9 +127,19 @@ class ProfileDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
         #add what is needed in profiledetails
-        context['developed_games'] = Game.objects.filter(developer=self.request.user)
+        developed_games = Game.objects.filter(developer=self.request.user)
+        for game in developed_games:
+            game.total_earn = game.sellcount * game.price
+        context['developed_games'] = developed_games
         context['played_games'] = self.request.user.gameplayed_set.all()
         return context
+
+
+class ProfileStatisticsView(View):
+    def get(self, request, pk, game):
+        gameplayed = GamePlayed.objects.filter(game_id=game)
+        return render(request, template_name='accounts/statistic_details.html', context={'game':gameplayed})
+
 
 
 class HomeView(View):
