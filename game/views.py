@@ -153,22 +153,19 @@ def upload(request):
         if form.is_valid():
             new_game = form.save(commit=False)
             new_game.developer = request.user
-            try:
-                if new_game.gameimage:
+            if new_game.gameimage:
+                try:
                     new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
                     new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
-                new_game.save()
+                except ValueError: # enum exception
+                    # Todo how to render an exception to the view?
+                    raise ValueError
             #adds the developer as a player allowing to play game without buying
-                played_game = GamePlayed.objects.create(gameScore=0)
-                played_game.game = new_game
-                played_game.save()
-            except ValueError: # enum exception
-                # Todo how to render an exception to the view?
-                raise ValueError
-            #to let the developer play his own game in the platform
-            #it skews up the cost by 1 unit
-            #even though payment is not processed
-            PaymentDetail.objects.create(game_played = played_game, cost=new_game.price, user=request.user)
+            new_game.save()
+            played_game = GamePlayed.objects.create(gameScore=0)
+            played_game.game = new_game
+            played_game.user = request.user
+            played_game.save()
             return HttpResponseRedirect(reverse('game:detail', kwargs={'game':new_game.id}))
         else:
             request.session['errors'] = form.errors
@@ -287,7 +284,10 @@ class GameUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             new_game = form.save(commit=False)
-            new_game.save(update_fields=['title', 'url', 'price','description','gameimage'])
+            if new_game.gameimage:
+                new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
+                new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
+            new_game.save(update_fields=['title', 'url', 'price','description','gameimage', 'gamethumb'])
             return redirect(reverse('accounts:detail', kwargs={'pk': request.user.id}))
         else:
             return render(request, template_name='game/upload.html', context={'form': form })

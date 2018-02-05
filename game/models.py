@@ -138,7 +138,8 @@ class Game(models.Model):
             raise ValueError
         # PIL Python Image Library
         image_pil = ImageOps.fit(Image.open(game.gameimage), size.value, Image.ANTIALIAS)  # Resize image
-        if size != ImageSizeEnum.COVER.name:
+        #unless specified, no thumbnail
+        if size is ImageSizeEnum.THUMBNAIL:
             image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         else:
             image_name = user_directory_path(game, game.gameimage.name)
