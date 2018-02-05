@@ -24,13 +24,14 @@ def buy_game_for_user(user, game):
     """
     buy_game = GamePlayed.objects.create(gameScore=0)
     buy_game.game = game
+    buy_game.user = user
     buy_game.game.increment_sellcount()
     buy_game.save()
     PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
 
 def rate_game_for_user(user, game, rating):
     """Rates a game for a user.
-    
+
     Args:
         user - The user model instance
         game - The game model instance
@@ -133,12 +134,12 @@ class GameSearchTest(TestCase):
         self.assertEquals(len(qset), 2)
         qset = Game.search('game')
         self.assertEquals(len(qset), 4)
-    
+
     def testPriority(self):
         """Tests that the games in a search query are given in the correct order
         determined by their popularity.
         """
-        
+
         users = [get_user('{}'.format(x)) for x in range(3)]
         games = [
             Game.objects.get(title='game1'),
@@ -150,11 +151,11 @@ class GameSearchTest(TestCase):
             buy_game_for_user(users[i], games[1])
             buy_game_for_user(users[i], games[2])
             buy_game_for_user(users[i], games[3])
-        
+
         rate_game_for_user(users[0], games[2], 4)
         rate_game_for_user(users[0], games[3], 2)
         rate_game_for_user(users[1], games[3], 3)
-        
+
         qset = Game.search('game')
         self.assertEquals(qset[0].pk, games[2].pk)
         self.assertEquals(qset[1].pk, games[3].pk)
@@ -272,30 +273,30 @@ class GameUploadTest(TestCase):
 class GameRatingTest(TestCase):
     """Tests the rating feature.
     """
-    
+
     def setUp(self):
         logger.debug('game.GameRatingTest.setUp')
         self.client = Client()
-        
+
         for i in range(1, 5):
             user = User.objects.create()
             user.username = 'user' + str(i)
             user.save()
-        
+
         for i in range(1, 3):
             Game.create(
                 title='game' + str(i),
                 url='http://google.com',
                 developer=user
             ).save()
-    
+
     def testResponses(self):
         """Tests the failure responses, as well as that giving ratings works.
         """
         user = User.objects.get(username='user2')
         self.client.force_login(user)
         buy_game_for_user(user, Game.objects.get(title='game2'))
-        
+
         #test negative responses
         game = Game.objects.get(title='game1')
         response = self.client.post(reverse('game:rate', args=[game.pk]), {
@@ -321,7 +322,7 @@ class GameRatingTest(TestCase):
             'rating': 7
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 400)
-        
+
         #test positive response
         response = self.client.post(reverse('game:rate', args=[game.pk]), {
             'rating': 3
@@ -331,7 +332,7 @@ class GameRatingTest(TestCase):
         game.refresh_from_db()
         self.assertEqual(game.ratings, 1)
         self.assertEqual(game.total_rating, 3)
-    
+
     def testRatings(self):
         """Tests that Game.get_rating_clean works.
         """
@@ -339,26 +340,26 @@ class GameRatingTest(TestCase):
         game = Game.objects.get(title='game1')
         for user in users:
             buy_game_for_user(user, game)
-        
+
         def setRatings(*args):
             for i in range(0, len(args)):
                 self.client.force_login(users[i])
                 self.client.post(reverse('game:rate', args=[game.pk]), {
                     'rating': args[i]
                 }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        
+
         setRatings(3)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 6)
-        
+
         setRatings(3, 4)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 7)
-        
+
         setRatings(3, 4, 4)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 7)
-        
+
         setRatings(1, 1, 4, 4)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 5)

@@ -183,7 +183,6 @@ def upload(request):
 def purchase(request, game):
     game = get_object_or_404(Game, pk=game)
     games = request.user.gameplayed_set.all()
-    print (games)
     if game in [game_owned.game for game_owned in games]:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
