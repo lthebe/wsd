@@ -42,19 +42,19 @@ def details(request, game):
 
     game = get_object_or_404(Game, pk=game)
     game.increment_viewcount()
-    
+
     context = {
         'game': game,
         'game_owner': False,
         'rating': game.get_rating_cleaned()
     }
-    
+
     if request.user.is_authenticated:
         gp = request.user.gameplayed_set.all().filter(game=game)
         if len(gp) == 1:
             context['game_owner'] = True
             context['rating'] = gp[0].rating * 2
-    
+
     return render(request, template_name='game/game.html', context=context)
 
 @require_http_methods(('GET', 'HEAD'))
@@ -183,6 +183,7 @@ def upload(request):
 def purchase(request, game):
     game = get_object_or_404(Game, pk=game)
     games = request.user.gameplayed_set.all()
+    print (games)
     if game in [game_owned.game for game_owned in games]:
         messages.add_message(request, messages.INFO, 'You have already purchased the game!')
         return redirect(reverse('game:detail', kwargs={'game':game.id}))
@@ -213,6 +214,7 @@ def process(request):
         if result == 'success':
             buy_game = GamePlayed.objects.create(gameScore=0)
             buy_game.game = game
+            buy_game.user = request.user
             buy_game.game.increment_sellcount()
             buy_game.save()
             PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
@@ -250,7 +252,7 @@ def update_played_game(request, game):
     and send as response. So, it is with when ERROR messageType is received.
     """
     if request.is_ajax():
-        game_played = GamePlayed.objects.get(users__pk=request.user.pk, game__id=game)
+        game_played = GamePlayed.objects.get(user__pk=request.user.pk, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
         try:
@@ -313,13 +315,13 @@ class GameDeleteView( DeleteView):
 @game_player_required
 def rate(request, game):
     """Adds a rating for a game for the currently logged in user, through ajax.
-    
+
     The primary key is passed as a url parameter. The rating, between 1 and 5, is
     passed as a POST parameter.
     """
     if request.is_ajax():
         game_played = GamePlayed.objects.get(
-            users__pk=request.user.pk,
+            user__pk=request.user.pk,
             game__id=game
         )
         try:
@@ -327,7 +329,7 @@ def rate(request, game):
           assert rating >= 1 and rating <= 5
         except:
           return HttpResponseBadRequest('Invalid rating provided')
-        
+
         game_played.set_rating(rating)
         return HttpResponse(str(rating))
     else:
