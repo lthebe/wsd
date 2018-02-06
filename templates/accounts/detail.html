@@ -28,10 +28,12 @@
       <a href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
       <div>
       <strong>Statistics</strong>
-      {% for game in developed_game.gameplayed_set.all %}
-        {% for payment in game.paymentdetail_set.all %}
-          <p>Price: {{payment.cost}}, Date: {{payment.selldate}} purchased by {{payment.user}}</p>
-        {% endfor %}
+      {% for played_game in developed_game.gameplayed_set.all %}
+        {{played_game.paymentdetail.cost}} <- (cost)
+        {{played_game.paymentdetail}} <- (payment detail)
+        {{played_game.paymentdetail.selldate}} <- (sold)
+        {{playded_game.paymentdetail.user}} <- (bought by)
+        <hr />
       {% endfor %}
     </div>
     </li>
