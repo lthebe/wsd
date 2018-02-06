@@ -19,7 +19,6 @@
         </div>
         <div class="row">
         {% for played_game in played_games %}
-
                 <div class="col-sm-3 mt-2">
                     {% with  played_game.game as game%}
                         {% include 'gamehub/game_thumb.html'%}
@@ -27,10 +26,15 @@
                 </div>
                 <div class="col-sm-3 mt-2">
                     {% if played_game.gameState %}
-                        {{ played_game.gameState|safe }}
+                        <div><span class="text-primary pt-2">Score: </span><span>{{played_game.score}}</span></div>
+                        <div class="text-primary pt-2">Played Items: </div>
+                        <div class="pre-scrollable h-25">
+                        {% for item in  played_game.playedItems%}
+                            {{item}}
+                        {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
-
         {% empty %}
             <h5>Sorry, buy some games to play or develop!</h5>
         {% endfor %}
@@ -43,7 +47,7 @@
 
             {% for developed_game in developed_games %}
                     <div class="col-sm-3 mt-2">
-                        <h3>{{ developed_game.title }}</h3>
+                        <h3 class="inline text-nowrap w-100">{{ developed_game.title }}</h3>
                         <img class="embed-responsive"  src="{{developed_game.gamethumb.url}}" alt="Card image cap">
                         <div class="btn-group-sm">
                             <a class="btn btn-primary mt-1"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
@@ -58,8 +62,6 @@
                         <div><span class="text-primary">Game earnings: </span><span>{{developed_game.total_earn}}</span></div>
                         <a class="btn btn-primary mt-1" href="{% url 'accounts:statistics' request.user.id developed_game.id%}">Info</a>
                     </div>
-
-
             {% empty %}
                 <h3>Sorry, write some game and earn money!</h3>
             {% endfor %}

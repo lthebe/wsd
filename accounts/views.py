@@ -1,6 +1,7 @@
 import pdb
 from random import shuffle
 
+import ast
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.http import Http404
@@ -128,10 +129,21 @@ class ProfileDetailView(DetailView):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
         #add what is needed in profiledetails
         developed_games = Game.objects.filter(developer=self.request.user)
+        played_games = self.request.user.gameplayed_set.all()
+        for played_game in played_games:
+            try:
+                dictionary=ast.literal_eval(played_game.gameState)
+                dictionary = dictionary['gameState']
+                played_game.score =  dictionary['score']
+                played_game.playedItems = dictionary['playerItems']
+
+                #played_game.score = dictionary['score']
+            except TypeError:
+                played_game.gameState = 'No Stats'
         for game in developed_games:
             game.total_earn = game.sellcount * game.price
         context['developed_games'] = developed_games
-        context['played_games'] = self.request.user.gameplayed_set.all()
+        context['played_games'] = played_games
         return context
 
 
