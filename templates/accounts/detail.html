@@ -1,3 +1,4 @@
+
 {% extends 'gamehub/base.html' %}
 {% block content %}
     <h1 class="text-center text-uppercase text-dark">
@@ -40,8 +41,8 @@
                 <h2>Developed Games</h2>
             </div>
             <div class="row border-row">
-            {% for developed_game in developed_games %}
 
+            {% for developed_game in developed_games %}
                     <div class="col-sm-3 mt-2">
                         <h3>{{ developed_game.title }}</h3>
                         <img class="embed-responsive"  src="{{developed_game.gamethumb.url}}" alt="Card image cap">
@@ -57,20 +58,8 @@
                         <div><span class="text-primary">Game price: </span><span>{{developed_game.price}}</span></div>
                         <div><span class="text-primary">Game earnings: </span><span>{{developed_game.total_earn}}</span></div>
                         <a class="btn btn-primary mt-1" href="{% url 'accounts:statistics' request.user.id developed_game.id%}">Info</a>
-
                     </div>
-                    {% for game in developed_game.gameplayed_set.all %}
-                        {% comment %}
-                        {% for payment in game.paymentdetail_set.all %}
-                            <div class="col-sm-3 mt-2">
-                                <span class="text-primary">Price: </span><span>{{payment.cost}}</span><br>
-                                <span class="text-primary">Date: </span><span>{{payment.selldate}}</span><br>
-                                <span class="text-primary">Purchased by </span><span>{{payment.user}}</span><br>
-                            </div>
-                        {% endfor %}
-                        {% endcomment %}
 
-                    {% endfor %}
 
             {% empty %}
                 <h3>Sorry, write some game and earn money!</h3>
@@ -80,3 +69,53 @@
         <a href="{% url 'accounts:update' request.user.id %}"><button class="mt-2 btn btn-success">Update Profile</button></a>
     </div>
 {% endblock %}
+
+
+
+{% comment %}
+
+{% extends 'gamehub/base.html' %}
+{% block content %}
+{{object}}
+{% if object.profile.image %}
+  <img src={{object.profile.image.url}} class='img-responsive' />
+{% endif %}
+<br />
+<h1>Played Games</h1>
+<ul>
+{% for played_game in played_games %}
+    <li>
+      <strong>{{played_game}}</strong>
+      {% if played_game.game.id %}
+      <a href="{% url 'game:detail' game=played_game.game.id %}">Play</a>
+      {% endif %}
+    </li>
+{% empty %}
+    <li>Sorry, buy some games to play or develop!</li>
+{% endfor %}
+</ul>
+{% if developed_games %}
+<h1>Developed Games</h1>
+<ul>
+{% for developed_game in developed_games %}
+    <li>
+      <h1>{{ developed_game.title }} - {{developed_game.viewcount}} views - {{developed_game.sellcount}} sells</h1>
+      <a href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
+      <a href="{% url 'game:game_update' game=developed_game.id %}">Update</a>
+      <div>
+      <strong>Statistics</strong>
+      {% for game in developed_game.gameplayed_set.all %}
+          <p>Price: {{game.paymentdetail.cost}}, Date: {{game.paymentdetail.selldate}} purchased by {{game.paymentdetail.user}}</p>
+      {% endfor %}
+    </div>
+    </li>
+{% empty %}
+    <li>Sorry, write some game and earn money!</li>
+{% endfor %}
+</ul>
+{% endif %}
+<a href="{% url 'accounts:update' request.user.id %}"><button class="btn btn-success">Update Profile</button></a>
+{% endblock %}
+
+{% endcomment %}
+

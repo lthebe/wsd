@@ -136,10 +136,8 @@ class ProfileDetailView(DetailView):
 
 
 class ProfileStatisticsView(View):
-    def get(self, request, pk, game):
-        gameplayed = GamePlayed.objects.filter(game_id=game)
-        return render(request, template_name='accounts/statistic_details.html', context={'game':gameplayed})
-
+    def get(self, request, **args):
+        return render(request, template_name='accounts/statistic_details.html', context={'game': Game.objects.get(id=args.get('game'))})
 
 
 class HomeView(View):
