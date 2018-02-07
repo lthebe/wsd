@@ -144,10 +144,12 @@ class Game(models.Model):
     def get_revenue(self):
         """Returns the total revenue of this game
         """
-        return PaymentDetail.objects.all().filter(
-            game_played__game=self
-        ).aggregate(Sum('cost'))['cost__sum']
-
+        payment_set = PaymentDetail.objects.all().filter(game_played__game=self)
+        if payment_set:
+            return payment_set.aggregate(Sum('cost'))['cost__sum']
+        else:
+            return Decimal(0.0)
+    
     @staticmethod
     def resize_image(game, size):
         if not isinstance(size, ImageSizeEnum):

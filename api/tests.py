@@ -92,7 +92,7 @@ class DevelopedGamesTest(TestCase):
                     url='http://foobar.fi',
                     developer=developer
                 ).save()
-        
+    
     def testGamesList(self):
         
         response = self.client.get(reverse('api:game-list'), None, format='json')
