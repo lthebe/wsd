@@ -41,6 +41,23 @@ class UsersTest(TestCase):
         
         content = self.parser.parse(BytesIO(response.content))
         self.assertEquals(len(content), 8)
-        print(response.content)
+        
+        username_list = list(map(lambda user: user.username, User.objects.all()))
+        for user in content:
+            self.assertTrue(user['username'] in username_list)
+    
+    def testDeveloperList(self):
+        
+        response = self.client.get(reverse('api:developer-list'), None, format='json')
+        self.assertEquals(response.status_code, 200)
+        
+        content = self.parser.parse(BytesIO(response.content))
+        self.assertEquals(len(content), 3)
+        
+        developer_list = list(map(
+            lambda user: user.username,
+            Group.objects.get(name='Developer').user_set.all()
+        ))
+        for user in content:
+            self.assertTrue(user['username'] in developer_list)
 
-# Create your tests here.
