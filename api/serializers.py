@@ -54,12 +54,6 @@ class GameSerializer(serializers.ModelSerializer):
         read_only=True
     )
     average_rating = serializers.FloatField(source='get_rating', read_only=True)
-    revenue = serializers.DecimalField(
-        source='get_revenue',
-        read_only=True,
-        decimal_places=2,
-        max_digits=10
-    )
 
 class GamePlayedSerializer(serializers.ModelSerializer):
     class Meta:

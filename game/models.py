@@ -56,6 +56,7 @@ class Game(models.Model):
     ratings       = models.PositiveIntegerField(default=0)
     total_rating  = models.PositiveIntegerField(default=0)
     popularity    = models.FloatField(default=0.0)
+    revenue       = models.DecimalField(decimal_places=2, max_digits=10, default=Decimal('0.00'))
 
     class Meta:
         ordering = ['viewcount', 'sellcount']
@@ -75,9 +76,11 @@ class Game(models.Model):
         self.viewcount = F('viewcount') + 1
         self.save()
 
-    def increment_sellcount(self):
+    def increment_sellcount(self, **kwargs):
         self.sellcount = F('sellcount') + 1
         self.calculate_popularity()
+        if 'price' in kwargs:
+            self.revenue = F('revenue') + kwargs['price']
         self.save()
     
     
@@ -140,15 +143,6 @@ class Game(models.Model):
             return int((self.total_rating / self.ratings) * 2 + 0.5)
         else:
             return 0
-    
-    def get_revenue(self):
-        """Returns the total revenue of this game
-        """
-        payment_set = PaymentDetail.objects.all().filter(game_played__game=self)
-        if payment_set:
-            return payment_set.aggregate(Sum('cost'))['cost__sum']
-        else:
-            return Decimal(0.0)
     
     @staticmethod
     def resize_image(game, size):

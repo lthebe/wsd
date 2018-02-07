@@ -396,6 +396,6 @@ class StatisticsTest(TestCase):
     def testRevenue(self):
         
         games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
-        self.assertEquals(games[0].get_revenue(), Decimal(1.5))
-        self.assertEquals(games[1].get_revenue(), Decimal(4.5))
-        self.assertEquals(games[2].get_revenue(), Decimal(12.5))
+        self.assertEquals(games[0].revenue, Decimal(1.5))
+        self.assertEquals(games[1].revenue, Decimal(4.5))
+        self.assertEquals(games[2].revenue, Decimal(12.5))

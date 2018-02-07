@@ -168,7 +168,7 @@ def upload(request):
             #to let the developer play his own game in the platform
             #it skews up the cost by 1 unit
             #even though payment is not processed
-            PaymentDetail.objects.create(game_played = played_game, cost=new_game.price, user=request.user)
+            PaymentDetail.objects.create(game_played = played_game, cost=0.0, user=request.user)
             return HttpResponseRedirect(reverse('game:detail', kwargs={'game':new_game.id}))
         else:
             request.session['errors'] = form.errors
@@ -213,7 +213,6 @@ def process(request):
         if result == 'success':
             buy_game = GamePlayed.objects.create(gameScore=0)
             buy_game.game = game
-            buy_game.game.increment_sellcount()
             buy_game.save()
             PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
             messages.add_message(request, messages.INFO, 'Thanks for buying!')
