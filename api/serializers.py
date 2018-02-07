@@ -79,3 +79,16 @@ class GamePlayedSerializer(serializers.ModelSerializer):
         many=False,
         read_only=True
     )
+
+class UserGamePlayedSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = GamePlayed
+        fields = ('user', 'gameScore', 'rating')
+        ordering_fields = ('user', 'gameScore', 'rating')
+    
+    user = serializers.SlugRelatedField(
+        slug_field='username',
+        many=False,
+        read_only=True
+    )

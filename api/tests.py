@@ -193,9 +193,9 @@ class BoughtGamesTest(TestCase):
             
             content = self.parser.parse(BytesIO(response.content))
             
-            got_buyers = {user['username'] for user in content}
+            got_buyers = {user['user'] for user in content}
             has_buyers = {
-                gameplayed.users.all()[0].username
+                gameplayed.user.username
                 for gameplayed in game.gameplayed_set.all()
             }
             

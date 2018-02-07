@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from game.models import Game, GamePlayed
 
-from .serializers import UserSerializer, GameSerializer, GamePlayedSerializer
+from .serializers import  UserSerializer, GameSerializer, GamePlayedSerializer, UserGamePlayedSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -86,8 +86,8 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
         UserSerializer.
         """
         game = self.get_object()
-        serializer = UserSerializer(
-            User.objects.all().filter(gameplayed__game=game),
+        serializer = UserGamePlayedSerializer(
+            GamePlayed.objects.all().filter(game=game),
             many=True
         )
         return Response(serializer.data)

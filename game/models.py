@@ -60,18 +60,18 @@ class Game(models.Model):
 
     class Meta:
         ordering = ['viewcount', 'sellcount']
-    
+
     def calculate_popularity(self):
         """Calculates the popularity of a game. The popularity is used by the search
         function to order the query results.
-        
+
         .. note:: This function should be called by the methods which alter the popularity. Do not call it directly.
         """
         if self.ratings is 0:
             self.popularity = self.sellcount * 1.0
         else:
             self.popularity = self.sellcount * (self.total_rating / self.ratings)
-        
+
     def increment_viewcount(self):
         """Increments the viewcount. This method should be used instead of directly
         modifying model instances to avoid race conditions, and ensure that all the
@@ -96,8 +96,8 @@ class Game(models.Model):
         if 'price' in kwargs:
             self.revenue = F('revenue') + kwargs['price']
         self.save()
-    
-    
+
+
     def add_rating(self, rating):
         """
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
@@ -110,7 +110,7 @@ class Game(models.Model):
         self.refresh_from_db()
         self.calculate_popularity()
         self.save()
-    
+
     def remove_rating(self, rating):
         """
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
@@ -123,7 +123,7 @@ class Game(models.Model):
         self.refresh_from_db()
         self.calculate_popularity()
         self.save()
-    
+
     def change_rating(self, change):
         """
         .. note:: Use GamePlayed.set_rating rather than calling this function directly.
@@ -148,7 +148,7 @@ class Game(models.Model):
     def get_rating_cleaned(self):
         """Returns the ratings as they should be read by the game/rating.html
         template.
-        
+
         The game/rating template requires the rating to be given times a factor of
         two to permit half stars to be given as an integer. Examples, 10 is 5 stars,
         5 is 2 and a half star.
@@ -164,7 +164,8 @@ class Game(models.Model):
             raise ValueError
         # PIL Python Image Library
         image_pil = ImageOps.fit(Image.open(game.gameimage), size.value, Image.ANTIALIAS)  # Resize image
-        if size != ImageSizeEnum.COVER.name:
+        #unless specified, no thumbnail
+        if size is ImageSizeEnum.THUMBNAIL:
             image_name = user_directory_path_thumb(game, 'thumb_' + game.gameimage.name)
         else:
             image_name = user_directory_path(game, game.gameimage.name)
@@ -252,9 +253,12 @@ class GamePlayed(models.Model):
     game      = models.ForeignKey(Game, null=True, on_delete=models.SET_NULL)
     gameScore = models.IntegerField()
     gameState = models.TextField(default="{''}")
-    users     = models.ManyToManyField(User, through="PaymentDetail")
+    user     = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     rating    = models.IntegerField(default=0)
-    
+
+    class Meta:
+        unique_together = ("game", "user")
+
     def set_rating(self, rating):
         """Gives a rating from a user to a game.
         """
@@ -286,7 +290,7 @@ class PaymentDetail(models.Model):
     -selldate is the date of purchase
 
     """
-    game_played = models.ForeignKey(GamePlayed, null=True, on_delete=models.SET_NULL)
+    game_played = models.OneToOneField(GamePlayed, null=True, on_delete=models.SET_NULL)
     cost = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('0.01'))])
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     selldate = models.DateTimeField(auto_now=False, auto_now_add=True)

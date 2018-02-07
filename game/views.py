@@ -42,19 +42,19 @@ def details(request, game):
 
     game = get_object_or_404(Game, pk=game)
     game.increment_viewcount()
-    
+
     context = {
         'game': game,
         'game_owner': False,
         'rating': game.get_rating_cleaned()
     }
-    
+
     if request.user.is_authenticated:
         gp = request.user.gameplayed_set.all().filter(game=game)
         if len(gp) == 1:
             context['game_owner'] = True
             context['rating'] = gp[0].rating * 2
-    
+
     return render(request, template_name='game/game.html', context=context)
 
 @require_http_methods(('GET', 'HEAD'))
@@ -153,22 +153,19 @@ def upload(request):
         if form.is_valid():
             new_game = form.save(commit=False)
             new_game.developer = request.user
-            try:
-                if new_game.gameimage:
+            if new_game.gameimage:
+                try:
                     new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
                     new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
-                new_game.save()
+                except ValueError: # enum exception
+                    # Todo how to render an exception to the view?
+                    raise ValueError
             #adds the developer as a player allowing to play game without buying
-                played_game = GamePlayed.objects.create(gameScore=0)
-                played_game.game = new_game
-                played_game.save()
-            except ValueError: # enum exception
-                # Todo how to render an exception to the view?
-                raise ValueError
-            #to let the developer play his own game in the platform
-            #it skews up the cost by 1 unit
-            #even though payment is not processed
-            PaymentDetail.objects.create(game_played = played_game, cost=0.0, user=request.user)
+            new_game.save()
+            played_game = GamePlayed.objects.create(gameScore=0)
+            played_game.game = new_game
+            played_game.user = request.user
+            played_game.save()
             return HttpResponseRedirect(reverse('game:detail', kwargs={'game':new_game.id}))
         else:
             request.session['errors'] = form.errors
@@ -213,6 +210,7 @@ def process(request):
         if result == 'success':
             buy_game = GamePlayed.objects.create(gameScore=0)
             buy_game.game = game
+            buy_game.user = request.user
             buy_game.save()
             PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
             messages.add_message(request, messages.INFO, 'Thanks for buying!')
@@ -249,7 +247,7 @@ def update_played_game(request, game):
     and send as response. So, it is with when ERROR messageType is received.
     """
     if request.is_ajax():
-        game_played = GamePlayed.objects.get(users__pk=request.user.pk, game__id=game)
+        game_played = GamePlayed.objects.get(user__pk=request.user.pk, game__id=game)
         data = request.POST.get('data')
         data_dict = json.loads(data)
         try:
@@ -285,7 +283,10 @@ class GameUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             new_game = form.save(commit=False)
-            new_game.save(update_fields=['title', 'url', 'price','description','gameimage'])
+            if new_game.gameimage:
+                new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
+                new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
+            new_game.save(update_fields=['title', 'url', 'price','description','gameimage', 'gamethumb'])
             return redirect(reverse('accounts:detail', kwargs={'pk': request.user.id}))
         else:
             return render(request, template_name='game/upload.html', context={'form': form })
@@ -312,13 +313,13 @@ class GameDeleteView( DeleteView):
 @game_player_required
 def rate(request, game):
     """Adds a rating for a game for the currently logged in user, through ajax.
-    
+
     The primary key is passed as a url parameter. The rating, between 1 and 5, is
     passed as a POST parameter.
     """
     if request.is_ajax():
         game_played = GamePlayed.objects.get(
-            users__pk=request.user.pk,
+            user__pk=request.user.pk,
             game__id=game
         )
         try:
@@ -326,7 +327,7 @@ def rate(request, game):
           assert rating >= 1 and rating <= 5
         except:
           return HttpResponseBadRequest('Invalid rating provided')
-        
+
         game_played.set_rating(rating)
         return HttpResponse(str(rating))
     else:
