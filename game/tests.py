@@ -2,6 +2,7 @@ import pdb
 import logging
 
 from functools import reduce
+from decimal import Decimal
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -343,3 +344,58 @@ class GameRatingTest(TestCase):
         setRatings(1, 1, 4, 4)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 5)
+
+class StatisticsTest(TestCase):
+    
+    def setUp(self):
+        
+        logger.debug('StatisticsTest.setUp')
+        
+        dev_group = Group.objects.get(name='Developer')
+        ply_group = Group.objects.get(name='Player')
+        
+        developer = User.objects.create(username='dev')
+        developer.save()
+        dev_group.user_set.add(developer)
+        
+        users = []
+        
+        for i in range(5):
+            user = User.objects.create(username='ply{}'.format(i))
+            user.save()
+            ply_group.user_set.add(user)
+            users.append(user)
+        
+        games = []
+        
+        for i in range(3):
+            game = Game.create(
+                title='game{}'.format(i),
+                url='http://foobar.fi',
+                developer=developer,
+                price=(i + 0.5)
+            )
+            game.save()
+            games.append(game)
+        
+        for user in users[:3]:
+            buy_game_for_user(user, games[0])
+            buy_game_for_user(user, games[1])
+            rate_game_for_user(user, games[0], 3)
+            rate_game_for_user(user, games[1], 4)
+        for user in users:
+            buy_game_for_user(user, games[2])
+            rate_game_for_user(user, games[2], 3)
+    
+    def testPopularity(self):
+      
+        games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
+        self.assertTrue(games[0].popularity < games[1].popularity)
+        self.assertTrue(games[0].popularity < games[2].popularity)
+    
+    def testRevenue(self):
+        
+        games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
+        self.assertEquals(games[0].get_revenue(), Decimal(1.5))
+        self.assertEquals(games[1].get_revenue(), Decimal(4.5))
+        self.assertEquals(games[2].get_revenue(), Decimal(12.5))
