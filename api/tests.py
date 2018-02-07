@@ -8,9 +8,18 @@ from django.utils.six import BytesIO
 from rest_framework.test import APIClient
 from rest_framework.parsers import JSONParser
 
-from game.models import Game
+from game.models import Game, GamePlayed, PaymentDetail
 
 logger = logging.getLogger(__name__)
+
+def buy_game_for_user(user, game):
+    """Buys a game for a user. Takes as argument a User and a Game instance.
+    """
+    buy_game = GamePlayed.objects.create(gameScore=0)
+    buy_game.game = game
+    buy_game.game.increment_sellcount()
+    buy_game.save()
+    PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
 
 class UsersTest(TestCase):
     
@@ -123,3 +132,73 @@ class DevelopedGamesTest(TestCase):
             }
             
             self.assertTrue(got_games == has_games)
+
+class BoughtGamesTest(TestCase):
+    
+    def setUp(self):
+        
+        logger.debug('BoughtGamesTest.setUp')
+        
+        self.parser = JSONParser()
+        self.client = APIClient()
+        
+        dev_group = Group.objects.get(name='Developer')
+        ply_group = Group.objects.get(name='Player')
+        
+        developer = User.objects.create(username='dev')
+        developer.save()
+        dev_group.user_set.add(developer)
+        
+        for i in range(3):
+            user = User.objects.create(username='ply{}'.format(i))
+            user.save()
+            ply_group.user_set.add(user)
+        
+        for i in range(4):
+            game = Game.create(
+                title='game{}'.format(i),
+                url='http://foobar.fi',
+                developer=developer
+            )
+            game.save()
+            
+            for j in range(i):
+                user = User.objects.get(username='ply{}'.format(j))
+                buy_game_for_user(user, game)
+    
+    def testUserGameList(self):
+        
+        for user in Group.objects.get(name='Player').user_set.all():
+            response = self.client.get(
+                reverse('api:user-games', args=[user.username]),
+                None, format='json'
+            )
+            self.assertEquals(response.status_code, 200)
+            
+            content = self.parser.parse(BytesIO(response.content))
+            
+            got_games = {game['game'] for game in content}
+            has_games = {
+                gameplayed.game.title for gameplayed in user.gameplayed_set.all()
+            }
+            
+            self.assertTrue(got_games == has_games)
+    
+    def testGameBuyersList(self):
+        
+        for game in Game.objects.all():
+            response = self.client.get(
+                reverse('api:game-buyers', args=[game.title]),
+                None, format='json'
+            )
+            self.assertEquals(response.status_code, 200)
+            
+            content = self.parser.parse(BytesIO(response.content))
+            
+            got_buyers = {user['username'] for user in content}
+            has_buyers = {
+                gameplayed.users.all()[0].username
+                for gameplayed in game.gameplayed_set.all()
+            }
+            
+            self.assertTrue(got_buyers == has_buyers)
