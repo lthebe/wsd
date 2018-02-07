@@ -9,17 +9,9 @@ from rest_framework.test import APIClient
 from rest_framework.parsers import JSONParser
 
 from game.models import Game, GamePlayed, PaymentDetail
+from game.models_helper import buy_game_for_user
 
 logger = logging.getLogger(__name__)
-
-def buy_game_for_user(user, game):
-    """Buys a game for a user. Takes as argument a User and a Game instance.
-    """
-    buy_game = GamePlayed.objects.create(gameScore=0)
-    buy_game.game = game
-    buy_game.game.increment_sellcount()
-    buy_game.save()
-    PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
 
 class UsersTest(TestCase):
     

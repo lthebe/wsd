@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User, Group
 
 from game.models import Game, GamePlayed, PaymentDetail
+from game.models_helper import buy_game_for_user, rate_game_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -18,26 +19,6 @@ def get_user(name=''):
     user = User.objects.create(username=name)
     user.save()
     return user
-
-def buy_game_for_user(user, game):
-    """Buys a game for a user. Takes as argument a User and a Game instance.
-    """
-    buy_game = GamePlayed.objects.create(gameScore=0)
-    buy_game.game = game
-    buy_game.game.increment_sellcount()
-    buy_game.save()
-    PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
-
-def rate_game_for_user(user, game, rating):
-    """Rates a game for a user.
-    
-    Args:
-        user - The user model instance
-        game - The game model instance
-        rating - the rating, as an integer in the interval [1,5]
-    """
-    gameplayed = user.gameplayed_set.filter(game=game)[0]
-    gameplayed.set_rating(rating)
 
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
