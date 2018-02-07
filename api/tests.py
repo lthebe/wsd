@@ -14,6 +14,8 @@ from game.models_helper import buy_game_for_user
 logger = logging.getLogger(__name__)
 
 class UsersTest(TestCase):
+    """Test querying of users and developers
+    """
     
     def setUp(self):
         
@@ -69,6 +71,8 @@ class UsersTest(TestCase):
         #    self.assertTrue(user['username'] in developer_list)
 
 class DevelopedGamesTest(TestCase):
+    """Tests the querying of games, and information from the developers.
+    """
     
     def setUp(self):
         
@@ -126,6 +130,8 @@ class DevelopedGamesTest(TestCase):
             self.assertTrue(got_games == has_games)
 
 class BoughtGamesTest(TestCase):
+    """Tests the querying of games bought by users and the lists of buyers by game.
+    """
     
     def setUp(self):
         

@@ -346,6 +346,8 @@ class GameRatingTest(TestCase):
         self.assertEqual(game.get_rating_cleaned(), 5)
 
 class StatisticsTest(TestCase):
+    """Tests the statistics methods of the Game model.
+    """
     
     def setUp(self):
         
@@ -388,12 +390,18 @@ class StatisticsTest(TestCase):
             rate_game_for_user(user, games[2], 3)
     
     def testPopularity(self):
+        """Simple test for the popularity feature. This only ensures that games
+        which should obviously have a higher popularity do, such as having better
+        ratings or more buyers, all other things being equal.
+        """
       
         games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
         self.assertTrue(games[0].popularity < games[1].popularity)
         self.assertTrue(games[0].popularity < games[2].popularity)
     
     def testRevenue(self):
+        """Tests the the revenue of games is stored correctly.
+        """
         
         games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
         self.assertEquals(games[0].revenue, Decimal(1.5))

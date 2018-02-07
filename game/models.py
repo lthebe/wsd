@@ -73,10 +73,24 @@ class Game(models.Model):
             self.popularity = self.sellcount * (self.total_rating / self.ratings)
         
     def increment_viewcount(self):
+        """Increments the viewcount. This method should be used instead of directly
+        modifying model instances to avoid race conditions, and ensure that all the
+        required modifications are made to the instance.
+        """
         self.viewcount = F('viewcount') + 1
         self.save()
 
     def increment_sellcount(self, **kwargs):
+        """Increments the sellcount. This method should be used instead of directly
+        modifying model instances to avoid race conditions, and ensure that all the
+        required modifications are made to the instance.
+        
+        This method is automatically called by a signal handler when a PaymentDetail
+        object is saved.
+        
+        Args:
+            price - The price the game was bought for (optional)
+        """
         self.sellcount = F('sellcount') + 1
         self.calculate_popularity()
         if 'price' in kwargs:

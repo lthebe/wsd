@@ -16,34 +16,75 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Allows for querying users. Based on UserSerializer.
+    
+    This viewset has a games view which gives the bought games for a player.
+    
+    serializer:
+        GameSerializer
+    queryset:
+        All users
+    """
+    
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
     
     @detail_route(methods=['get'])
     def games(self, request, username=None):
+        """Detail view for querying the games bought by a player. Serialized with
+        GamePlayedSerializer
+        """
         user = self.get_object()
         serializer = GamePlayedSerializer(user.gameplayed_set, many=True)
         return Response(serializer.data)
 
 class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
+    """Same as UserViewSet, with a few notable differences.
+    
+    This viewset uses a queryset of only developers, as opposed to UserViewSet which
+    includes all user accounts.
+    
+    The games method of this viewset queries the games developed by a developer. To
+    get the games the developer account has bought, use games view for users.
+    
+    serializer:
+        GameSerializer
+    queryset:
+        All users belonging to the 'Developer' group
+    """
+    
     queryset = Group.objects.get(name='Developer').user_set.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
     
     @detail_route(methods=['get'])
     def games(self, request, username=None):
+        """Detail view for querying the games developed by a developer, serializer
+        with GameSerializer
+        """
         user = self.get_object()
         serializer = GameSerializer(user.game_set, many=True)
         return Response(serializer.data)
 
 class GameViewSet(viewsets.ReadOnlyModelViewSet):
+    """Allows for querying the games, with all statistics included.
+    
+    serializer:
+        GameSerializer
+    queryset:
+        All games.
+    """
+    
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     lookup_field = 'title'
     
     @detail_route(methods=['get'])
     def buyers(self, request, title=None):
+        """Detail view for querying the users who have bought a game, serialized with
+        UserSerializer.
+        """
         game = self.get_object()
         serializer = UserSerializer(
             User.objects.all().filter(gameplayed__game=game),
