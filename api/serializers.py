@@ -68,7 +68,9 @@ class GameSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(source='get_rating', read_only=True)
 
 class GamePlayedSerializer(serializers.ModelSerializer):
-    
+    """Serializes GamePlayed instances for the user-games view. Includes the title of
+    the game.
+    """
     class Meta:
         model = GamePlayed
         fields = ('game', 'gameScore', 'rating')
@@ -81,7 +83,9 @@ class GamePlayedSerializer(serializers.ModelSerializer):
     )
 
 class UserGamePlayedSerializer(serializers.ModelSerializer):
-    
+    """Serializes GamePlayed instances for the game-buyers view. Includes the username
+    of the buyer.
+    """
     class Meta:
         model = GamePlayed
         fields = ('user', 'gameScore', 'rating')
