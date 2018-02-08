@@ -2,7 +2,7 @@ var $el, $ps, $up, totalHeight;
 
 $(".description-box .btn").click(function() {
 
-  totalHeight = 0
+  totalHeight = 0;
 
   $el = $(this);
   $p  = $el.parent();

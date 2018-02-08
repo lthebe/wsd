@@ -11,7 +11,10 @@
         </div>
         <div>
             <h4 class="text-dark">Description:</h4>
-            <div>{{ object.profile.description }}</div>
+            <div class="description-box">
+                <p>{{ object.profile.description }}</p>
+                <p class="read-more"><a href="#" class="btn btn-primary">Read More</a></p>
+            </div>
         </div>
 
         <div class="text-center mt-2">
@@ -34,7 +37,7 @@
                             {{item}}
                         {% endfor %}
                         </div>
-                    {% else %} 
+                    {% else %}
                         <div>No scores yet</div>
                     {% endif %}
                 </div>
