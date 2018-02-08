@@ -1,3 +1,4 @@
+{% if game %}
 <a class="game-reference" href="{% url 'game:detail' game=game.id %}">
     <div class="thumbnail p-1">
         <p class="inline text-nowrap text-center mb-0 w-100">{{ game.title }}</p>
@@ -15,3 +16,4 @@
         {% endif %}
     </div>
 </a>
+{% endif %}

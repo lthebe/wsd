@@ -19,13 +19,14 @@
         </div>
         <div class="row">
         {% for played_game in played_games %}
+            {% if played_game.game %}
                 <div class="col-sm-3 mt-2">
                     {% with  played_game.game as game%}
                         {% include 'gamehub/game_thumb.html'%}
                     {% endwith %}
                 </div>
                 <div class="col-sm-3 mt-2">
-                    {% if played_game.gameState %}
+                    {% if played_game.score != null %}
                         <div><span class="text-primary pt-2">Score: </span><span>{{played_game.score}}</span></div>
                         <div class="text-primary pt-2">Played Items: </div>
                         <div class="pre-scrollable h-25">
@@ -33,8 +34,11 @@
                             {{item}}
                         {% endfor %}
                         </div>
+                    {% else %} 
+                        <div>No scores yet</div>
                     {% endif %}
                 </div>
+            {% endif %}
         {% empty %}
             <h5>Sorry, buy some games to play or develop!</h5>
         {% endfor %}
