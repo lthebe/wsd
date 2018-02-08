@@ -11,6 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('nickname', 'description', 'image')
+        ordering_fields = ('nickname', 'description')
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializes users.
@@ -21,6 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'profile')
+        ordering_fields = ('username',)
     
     profile = ProfileSerializer(many=False, read_only=True)
 
@@ -49,14 +51,12 @@ class GameSerializer(serializers.ModelSerializer):
         )
         ordering_fields=(
             'title',
-            'developer',
             'price',
             'description',
             'viewcount',
             'sellcount',
             'upload_date',
             'popularity',
-            'average_rating',
             'revenue'
         )
     
@@ -74,7 +74,7 @@ class GamePlayedSerializer(serializers.ModelSerializer):
     class Meta:
         model = GamePlayed
         fields = ('game', 'gameScore', 'rating')
-        ordering_fields = ('game', 'gameScore', 'rating')
+        ordering_fields = ('gameScore', 'rating')
     
     game = serializers.SlugRelatedField(
         slug_field='title',
@@ -89,7 +89,7 @@ class UserGamePlayedSerializer(serializers.ModelSerializer):
     class Meta:
         model = GamePlayed
         fields = ('user', 'gameScore', 'rating')
-        ordering_fields = ('user', 'gameScore', 'rating')
+        ordering_fields = ('gameScore', 'rating')
     
     user = serializers.SlugRelatedField(
         slug_field='username',

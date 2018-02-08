@@ -3,7 +3,7 @@ import logging
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User, Group
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
@@ -13,7 +13,21 @@ from .serializers import  UserSerializer, GameSerializer, GamePlayedSerializer, 
 
 logger = logging.getLogger(__name__)
 
-# Create your views here.
+def order_by_filter(request, qset, serializer_class):
+    """Orders a queryset based on the url param 'order_by'. Supports both regular
+    sorting and reverse sorting with a '-' sign before the name to order by.
+    
+    Fields that can be ordered by must be declared in Meta.ordering_fields in the
+    serializer class.
+    """
+    order_by = request.query_params.get('order_by', None)
+    if order_by is not None:
+        if (order_by in serializer_class.Meta.ordering_fields
+        or (order_by[0] == '-'
+        and order_by[1:] in serializer_class.Meta.ordering_fields)):
+            qset = qset.order_by(order_by)
+    return qset
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """Allows for querying users. Based on UserSerializer.
@@ -26,9 +40,15 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         All users
     """
     
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    
+    def get_queryset(self):
+        return order_by_filter(
+            self.request,
+            User.objects.all(),
+            self.serializer_class
+        )
     
     @detail_route(methods=['get'])
     def games(self, request, username=None):
@@ -54,9 +74,15 @@ class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
         All users belonging to the 'Developer' group
     """
     
-    queryset = Group.objects.get(name='Developer').user_set.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    
+    def get_queryset(self):
+        return order_by_filter(
+            self.request,
+            Group.objects.get(name='Developer').user_set.all(),
+            self.serializer_class
+        )
     
     @detail_route(methods=['get'])
     def games(self, request, username=None):
@@ -76,9 +102,15 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
         All games.
     """
     
-    queryset = Game.objects.all()
     serializer_class = GameSerializer
     lookup_field = 'title'
+    
+    def get_queryset(self):
+        return order_by_filter(
+            self.request,
+            Game.objects.all(),
+            self.serializer_class
+        )
     
     @detail_route(methods=['get'])
     def buyers(self, request, title=None):
