@@ -203,6 +203,13 @@ class BoughtGamesTest(TestCase):
 
 
 class SortByTest(TestCase):
+    """Tests the sorting feature of the api views. Only a few views and sorting
+    options are tested.
+    
+    The two tests currently are selected since the implementation of these sorting
+    methods are significantly different. The implementation of sorting for other
+    views are fairly similar to these two methods.
+    """
     
     def setUp(self):
         
@@ -236,6 +243,8 @@ class SortByTest(TestCase):
                 buy_game_for_user(user, game)
     
     def testGameRevenue(self):
+        """Tests sorting by revenue.
+        """
         
         response = self.client.get(
             reverse('api:game-list'),
@@ -258,6 +267,8 @@ class SortByTest(TestCase):
             self.assertEquals(content[i]['title'], 'game{}'.format(3 - i))
     
     def testHighscore(self):
+        """Test sorting by game score.
+        """
         
         game = Game.objects.get(title='game0')
         gameplayeds = game.gameplayed_set

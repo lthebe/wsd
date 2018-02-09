@@ -56,7 +56,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         GamePlayedSerializer
         """
         user = self.get_object()
-        serializer = GamePlayedSerializer(user.gameplayed_set, many=True)
+        qset = order_by_filter(request, user.gameplayed_set, GamePlayedSerializer)
+        serializer = GamePlayedSerializer(qset, many=True)
         return Response(serializer.data)
 
 class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
@@ -90,7 +91,8 @@ class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
         with GameSerializer
         """
         user = self.get_object()
-        serializer = GameSerializer(user.game_set, many=True)
+        qset = order_by_filter(request, user.game_set, GameSerializer)
+        serializer = GameSerializer(qset, many=True)
         return Response(serializer.data)
 
 class GameViewSet(viewsets.ReadOnlyModelViewSet):
@@ -118,8 +120,10 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
         UserSerializer.
         """
         game = self.get_object()
-        serializer = UserGamePlayedSerializer(
+        qset = order_by_filter(
+            request,
             GamePlayed.objects.all().filter(game=game),
-            many=True
+            UserGamePlayedSerializer
         )
+        serializer = UserGamePlayedSerializer(qset, many=True)
         return Response(serializer.data)
