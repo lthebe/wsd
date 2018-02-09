@@ -200,3 +200,90 @@ class BoughtGamesTest(TestCase):
             }
             
             self.assertTrue(got_buyers == has_buyers)
+
+
+class SortByTest(TestCase):
+    
+    def setUp(self):
+        
+        logger.debug('SortByTest.setUp')
+        
+        self.client = APIClient()
+        self.parser = JSONParser()
+        
+        dev_group = Group.objects.get(name='Developer')
+        ply_group = Group.objects.get(name='Player')
+        
+        developer = User.objects.create(username='dev')
+        developer.save()
+        dev_group.user_set.add(developer)
+        
+        for i in range(4):
+            user = User.objects.create(username='ply{}'.format(i))
+            user.save()
+            ply_group.user_set.add(user)
+        
+        for i in range(4):
+            game = Game.create(
+                title='game{}'.format(i),
+                url='http://foobar.fi',
+                developer=developer,
+                price=0.5*i
+            )
+            game.save()
+            
+            for user in ply_group.user_set.all():
+                buy_game_for_user(user, game)
+    
+    def testGameRevenue(self):
+        
+        response = self.client.get(
+            reverse('api:game-list'),
+            {'order_by': 'revenue'},
+            format='json'
+        )
+        self.assertEquals(response.status_code, 200)
+        content = self.parser.parse(BytesIO(response.content))
+        for i in range(4):
+            self.assertEquals(content[i]['title'], 'game{}'.format(i))
+        
+        response = self.client.get(
+            reverse('api:game-list'),
+            {'order_by': '-revenue'},
+            format='json'
+        )
+        self.assertEquals(response.status_code, 200)
+        content = self.parser.parse(BytesIO(response.content))
+        for i in range(4):
+            self.assertEquals(content[i]['title'], 'game{}'.format(3 - i))
+    
+    def testHighscore(self):
+        
+        game = Game.objects.get(title='game0')
+        gameplayeds = game.gameplayed_set
+        ply_group = Group.objects.get(name='Player')
+        for i in range(4):
+            user = ply_group.user_set.get(username='ply{}'.format(i))
+            gameplayed = gameplayeds.get(user=user)
+            gameplayed.gameScore = i
+            gameplayed.save()
+        
+        response = self.client.get(
+            reverse('api:game-buyers', args=['game0']),
+            {'order_by': 'gameScore'},
+            format='json'
+        )
+        self.assertEquals(response.status_code, 200)
+        content = self.parser.parse(BytesIO(response.content))
+        for i in range(4):
+            self.assertEquals(content[i]['user'], 'ply{}'.format(i))
+        
+        response = self.client.get(
+            reverse('api:game-buyers', args=['game0']),
+            {'order_by': '-gameScore'},
+            format='json'
+        )
+        self.assertEquals(response.status_code, 200)
+        content = self.parser.parse(BytesIO(response.content))
+        for i in range(4):
+            self.assertEquals(content[i]['user'], 'ply{}'.format(3 - i))
