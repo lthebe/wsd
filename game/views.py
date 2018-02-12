@@ -211,7 +211,6 @@ def process(request):
             buy_game = GamePlayed.objects.create(gameScore=0)
             buy_game.game = game
             buy_game.user = request.user
-            buy_game.game.increment_sellcount()
             buy_game.save()
             PaymentDetail.objects.create(game_played = buy_game, cost=buy_game.game.price, user=request.user)
             messages.add_message(request, messages.INFO, 'Thanks for buying!')

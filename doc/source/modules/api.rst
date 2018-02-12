@@ -10,20 +10,11 @@ Contents:
 .. toctree::
   :maxdepth: 2
   
-  game/admin
-  game/models
-  game/tests
-  game/views
-  game/apps
-  game/urls
-  game/forms
-  game/signals
-  game/utils
-  game/decorators
-  game/models_helper
+  api/models
+  api/serializers
+  api/views
+  api/tests
   
-  game/templatetags
-    
 Indices and tables
 ==================
 

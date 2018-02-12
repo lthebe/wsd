@@ -76,10 +76,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'social_django',
+    'widget_tweaks',
+    'rest_framework',
     #wsd apps
     'game',
     'accounts',
-    'widget_tweaks',
+    'api',
 ]
 
 MIDDLEWARE = [

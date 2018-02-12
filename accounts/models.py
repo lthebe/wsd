@@ -13,11 +13,22 @@ class Profile(models.Model):
     nickname = models.CharField(max_length=20, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(null=True, upload_to = user_directory_path, default = 'default_profile_pic.jpg', blank=True)
-
+    
+    @classmethod
+    def create(cls, name, nickname='', description='', image=None):
+        profile = cls(
+            user=User.objects.get_or_create(username=name),
+            nickname=nickname,
+            description=description,
+            image=image
+        )
+        return profile
+    
     def __str__(self):
         return '{0} owns profile'.format(
             self.user.username,
         )
+
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
