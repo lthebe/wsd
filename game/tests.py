@@ -2,12 +2,14 @@ import pdb
 import logging
 
 from functools import reduce
+from decimal import Decimal
 
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
 
 from game.models import Game, GamePlayed, PaymentDetail
+from game.models_helper import buy_game_for_user, rate_game_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -18,27 +20,6 @@ def get_user(name=''):
     user = User.objects.create(username=name)
     user.save()
     return user
-
-def buy_game_for_user(user, game):
-    """Buys a game for a user. Takes as argument a User and a Game instance.
-    """
-    buy_game = GamePlayed.objects.create(gameScore=0)
-    buy_game.game = game
-    buy_game.user = user
-    buy_game.game.increment_sellcount()
-    buy_game.save()
-    PaymentDetail.objects.create(game_played=buy_game, cost=buy_game.game.price, user=user)
-
-def rate_game_for_user(user, game, rating):
-    """Rates a game for a user.
-
-    Args:
-        user - The user model instance
-        game - The game model instance
-        rating - the rating, as an integer in the interval [1,5]
-    """
-    gameplayed = user.gameplayed_set.filter(game=game)[0]
-    gameplayed.set_rating(rating)
 
 class BuyViewTest(TestCase):
     """Tests the buy view responses. This really is just a test of finding the games
@@ -363,3 +344,66 @@ class GameRatingTest(TestCase):
         setRatings(1, 1, 4, 4)
         game.refresh_from_db()
         self.assertEqual(game.get_rating_cleaned(), 5)
+
+class StatisticsTest(TestCase):
+    """Tests the statistics methods of the Game model.
+    """
+    
+    def setUp(self):
+        
+        logger.debug('StatisticsTest.setUp')
+        
+        dev_group = Group.objects.get(name='Developer')
+        ply_group = Group.objects.get(name='Player')
+        
+        developer = User.objects.create(username='dev')
+        developer.save()
+        dev_group.user_set.add(developer)
+        
+        users = []
+        
+        for i in range(5):
+            user = User.objects.create(username='ply{}'.format(i))
+            user.save()
+            ply_group.user_set.add(user)
+            users.append(user)
+        
+        games = []
+        
+        for i in range(3):
+            game = Game.create(
+                title='game{}'.format(i),
+                url='http://foobar.fi',
+                developer=developer,
+                price=(i + 0.5)
+            )
+            game.save()
+            games.append(game)
+        
+        for user in users[:3]:
+            buy_game_for_user(user, games[0])
+            buy_game_for_user(user, games[1])
+            rate_game_for_user(user, games[0], 3)
+            rate_game_for_user(user, games[1], 4)
+        for user in users:
+            buy_game_for_user(user, games[2])
+            rate_game_for_user(user, games[2], 3)
+    
+    def testPopularity(self):
+        """Simple test for the popularity feature. This only ensures that games
+        which should obviously have a higher popularity do, such as having better
+        ratings or more buyers, all other things being equal.
+        """
+      
+        games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
+        self.assertTrue(games[0].popularity < games[1].popularity)
+        self.assertTrue(games[0].popularity < games[2].popularity)
+    
+    def testRevenue(self):
+        """Tests the the revenue of games is stored correctly.
+        """
+        
+        games = [Game.objects.get(title='game{}'.format(i)) for i in range(3)]
+        self.assertEquals(games[0].revenue, Decimal(1.5))
+        self.assertEquals(games[1].revenue, Decimal(4.5))
+        self.assertEquals(games[2].revenue, Decimal(12.5))

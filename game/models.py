@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q, F
+from django.db.models import Q, F, Sum
 from django.db.models.fields.files import ImageFieldFile, FileField
 from django.utils import timezone
 from PIL import Image, ImageOps
@@ -56,6 +56,7 @@ class Game(models.Model):
     ratings       = models.PositiveIntegerField(default=0)
     total_rating  = models.PositiveIntegerField(default=0)
     popularity    = models.FloatField(default=0.0)
+    revenue       = models.DecimalField(decimal_places=2, max_digits=10, default=Decimal('0.00'))
 
     class Meta:
         ordering = ['viewcount', 'sellcount']
@@ -72,12 +73,28 @@ class Game(models.Model):
             self.popularity = self.sellcount * (self.total_rating / self.ratings)
 
     def increment_viewcount(self):
+        """Increments the viewcount. This method should be used instead of directly
+        modifying model instances to avoid race conditions, and ensure that all the
+        required modifications are made to the instance.
+        """
         self.viewcount = F('viewcount') + 1
         self.save()
 
-    def increment_sellcount(self):
+    def increment_sellcount(self, **kwargs):
+        """Increments the sellcount. This method should be used instead of directly
+        modifying model instances to avoid race conditions, and ensure that all the
+        required modifications are made to the instance.
+        
+        This method is automatically called by a signal handler when a PaymentDetail
+        object is saved.
+        
+        Args:
+            price - The price the game was bought for (optional)
+        """
         self.sellcount = F('sellcount') + 1
         self.calculate_popularity()
+        if 'price' in kwargs:
+            self.revenue = F('revenue') + kwargs['price']
         self.save()
 
 
@@ -118,7 +135,16 @@ class Game(models.Model):
         self.refresh_from_db()
         self.calculate_popularity()
         self.save()
-
+    
+    def get_rating(self):
+        """Returns the calculated rating. Simply total_rating / ratings, or 0 if no
+        ratings have been given.
+        """
+        if self.ratings > 0:
+            return self.total_rating / self.ratings
+        else:
+            return 0
+    
     def get_rating_cleaned(self):
         """Returns the ratings as they should be read by the game/rating.html
         template.
@@ -131,7 +157,7 @@ class Game(models.Model):
             return int((self.total_rating / self.ratings) * 2 + 0.5)
         else:
             return 0
-
+    
     @staticmethod
     def resize_image(image, name, size):
         if not isinstance(size, ImageSizeEnum):
@@ -220,7 +246,7 @@ class GamePlayed(models.Model):
     a middle model could be used in many to many relationship
     as referred to README.md for database schema.
 
-    :members: game, gameScore, gameState, users
+    :members: game, gameScore, gameState, users, rating
 
     """
 

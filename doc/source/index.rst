@@ -14,6 +14,7 @@ Contents:
   modules/gameHub
   modules/game
   modules/accounts
+  modules/api
   
 Indices and tables
 ==================
