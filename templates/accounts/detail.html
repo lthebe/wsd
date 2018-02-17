@@ -54,7 +54,7 @@
 
             {% for developed_game in developed_games %}
                     <div class="col-sm-3 mt-2">
-                        <h3 class="inline text-nowrap w-100">{{ developed_game.title }}</h3>
+                        <h3 class="inline text-nowrap w-100">{{ developed_game.title|truncatechars:15 }}</h3>
                         <img class="embed-responsive"  src="{{developed_game.gamethumb.url}}" alt="Card image cap">
                         <div class="btn-group-sm">
                             <a class="btn btn-primary mt-1"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
@@ -63,10 +63,10 @@
                     </div>
                     <div class="col-sm-3 mt-2">
                         <h4>Stats</h4>
-                        <div><span class="text-primary">Total view: </span><span>{{developed_game.viewcount}}</span></div>
-                        <div><span class="text-primary">Total sells: </span><span>{{developed_game.sellcount}}</span></div>
-                        <div><span class="text-primary">Game price: </span><span>{{developed_game.price}}</span></div>
-                        <div><span class="text-primary">Game earnings: </span><span>{{developed_game.total_earn}}</span></div>
+                        <div><span class="text-primary">Views: </span><span>{{developed_game.viewcount}}</span></div>
+                        <div><span class="text-primary">Sells: </span><span>{{developed_game.sellcount}}</span></div>
+                        <div><span class="text-primary">Price: </span><span>{{developed_game.price}}</span></div>
+                        <div><span class="text-primary">Earns: </span><span>{{developed_game.total_earn}}</span></div>
                         <a class="btn btn-primary mt-1" href="{% url 'accounts:statistics' request.user.id developed_game.id%}">Info</a>
                     </div>
             {% empty %}
