@@ -47,7 +47,7 @@ class UsersTest(TestCase):
         
         content = self.parser.parse(BytesIO(response.content))
         
-        got_users = {user['username'] for user in content}
+        got_users = {user['username'] for user in content['results']}
         has_users = {user.username for user in User.objects.all()}
         self.assertTrue(got_users == has_users)
         
@@ -61,7 +61,7 @@ class UsersTest(TestCase):
         
         content = self.parser.parse(BytesIO(response.content))
         
-        got_users = {user['username'] for user in content}
+        got_users = {user['username'] for user in content['results']}
         has_users = {user.username for user in
             Group.objects.get(name='Developer').user_set.all()
         }
@@ -104,7 +104,10 @@ class DevelopedGamesTest(TestCase):
         
         content = self.parser.parse(BytesIO(response.content))
         
-        got_games = {(game['title'], game['developer']) for game in content}
+        got_games = {
+            (game['title'], game['developer'])
+            for game in content['results']
+        }
         has_games = {
             (game.title, game.developer.username)
             for game in Game.objects.all()
@@ -122,7 +125,7 @@ class DevelopedGamesTest(TestCase):
             
             content = self.parser.parse(BytesIO(response.content))
             
-            got_games = {game['title'] for game in content}
+            got_games = {game['title'] for game in content['results']}
             has_games = {
                 game.title for game in Game.objects.all().filter(developer=developer)
             }
@@ -175,7 +178,7 @@ class BoughtGamesTest(TestCase):
             
             content = self.parser.parse(BytesIO(response.content))
             
-            got_games = {game['game'] for game in content}
+            got_games = {game['game'] for game in content['results']}
             has_games = {
                 gameplayed.game.title for gameplayed in user.gameplayed_set.all()
             }
@@ -193,7 +196,7 @@ class BoughtGamesTest(TestCase):
             
             content = self.parser.parse(BytesIO(response.content))
             
-            got_buyers = {user['user'] for user in content}
+            got_buyers = {user['user'] for user in content['results']}
             has_buyers = {
                 gameplayed.user.username
                 for gameplayed in game.gameplayed_set.all()
@@ -254,7 +257,7 @@ class SortByTest(TestCase):
         self.assertEquals(response.status_code, 200)
         content = self.parser.parse(BytesIO(response.content))
         for i in range(4):
-            self.assertEquals(content[i]['title'], 'game{}'.format(i))
+            self.assertEquals(content['results'][i]['title'], 'game{}'.format(i))
         
         response = self.client.get(
             reverse('api:game-list', args=['v1']),
@@ -264,7 +267,7 @@ class SortByTest(TestCase):
         self.assertEquals(response.status_code, 200)
         content = self.parser.parse(BytesIO(response.content))
         for i in range(4):
-            self.assertEquals(content[i]['title'], 'game{}'.format(3 - i))
+            self.assertEquals(content['results'][i]['title'], 'game{}'.format(3 - i))
     
     def testHighscore(self):
         """Test sorting by game score.
@@ -287,7 +290,7 @@ class SortByTest(TestCase):
         self.assertEquals(response.status_code, 200)
         content = self.parser.parse(BytesIO(response.content))
         for i in range(4):
-            self.assertEquals(content[i]['user'], 'ply{}'.format(i))
+            self.assertEquals(content['results'][i]['user'], 'ply{}'.format(i))
         
         response = self.client.get(
             reverse('api:game-buyers', args=['v1', 'game0']),
@@ -297,4 +300,4 @@ class SortByTest(TestCase):
         self.assertEquals(response.status_code, 200)
         content = self.parser.parse(BytesIO(response.content))
         for i in range(4):
-            self.assertEquals(content[i]['user'], 'ply{}'.format(3 - i))
+            self.assertEquals(content['results'][i]['user'], 'ply{}'.format(3 - i))

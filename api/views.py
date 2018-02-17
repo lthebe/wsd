@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 from game.models import Game, GamePlayed
 
@@ -50,18 +51,23 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             self.serializer_class
         )
     
+    def get_paginator(self):
+        return api_settings.DEFAULT_PAGINATION_CLASS()
+    
     @detail_route(methods=['get'])
     def games(self, request, version, username=None):
         """Detail view for querying the games bought by a player. Serialized with
         GamePlayedSerializer
         """
         user = self.get_object()
-        qset = order_by_filter(request, user.gameplayed_set, GamePlayedSerializer)
+        qset = order_by_filter(request, user.gameplayed_set.all(), GamePlayedSerializer)
+        paginator = self.get_paginator()
+        page = paginator.paginate_queryset(qset, request)
         serializer = GamePlayedSerializer(
-            qset, many=True,
+            page, many=True,
             context={'request': request}
         )
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
     """Same as UserViewSet, with a few notable differences.
@@ -88,18 +94,23 @@ class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
             self.serializer_class
         )
     
+    def get_paginator(self):
+        return api_settings.DEFAULT_PAGINATION_CLASS()
+    
     @detail_route(methods=['get'])
     def games(self, request, version, username=None):
         """Detail view for querying the games developed by a developer, serializer
         with GameSerializer
         """
         user = self.get_object()
-        qset = order_by_filter(request, user.game_set, GameSerializer)
+        qset = order_by_filter(request, user.game_set.all(), GameSerializer)
+        paginator = self.get_paginator()
+        page = paginator.paginate_queryset(qset, request)
         serializer = GameSerializer(
-            qset, many=True,
+            page, many=True,
             context={'request': request}
         )
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 class GameViewSet(viewsets.ReadOnlyModelViewSet):
     """Allows for querying the games, with all statistics included.
@@ -120,6 +131,9 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
             self.serializer_class
         )
     
+    def get_paginator(self):
+        return api_settings.DEFAULT_PAGINATION_CLASS()
+    
     @detail_route(methods=['get'])
     def buyers(self, request, version, title=None):
         """Detail view for querying the users who have bought a game, serialized with
@@ -131,8 +145,10 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
             GamePlayed.objects.all().filter(game=game),
             UserGamePlayedSerializer
         )
+        paginator = self.get_paginator()
+        page = paginator.paginate_queryset(qset, request)
         serializer = UserGamePlayedSerializer(
-            qset, many=True,
+            page, many=True,
             context={'request': request}
         )
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
