@@ -51,13 +51,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         )
     
     @detail_route(methods=['get'])
-    def games(self, request, username=None):
+    def games(self, request, version, username=None):
         """Detail view for querying the games bought by a player. Serialized with
         GamePlayedSerializer
         """
         user = self.get_object()
         qset = order_by_filter(request, user.gameplayed_set, GamePlayedSerializer)
-        serializer = GamePlayedSerializer(qset, many=True)
+        serializer = GamePlayedSerializer(
+            qset, many=True,
+            context={'request': request}
+        )
         return Response(serializer.data)
 
 class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
@@ -86,13 +89,16 @@ class DeveloperViewSet(viewsets.ReadOnlyModelViewSet):
         )
     
     @detail_route(methods=['get'])
-    def games(self, request, username=None):
+    def games(self, request, version, username=None):
         """Detail view for querying the games developed by a developer, serializer
         with GameSerializer
         """
         user = self.get_object()
         qset = order_by_filter(request, user.game_set, GameSerializer)
-        serializer = GameSerializer(qset, many=True)
+        serializer = GameSerializer(
+            qset, many=True,
+            context={'request': request}
+        )
         return Response(serializer.data)
 
 class GameViewSet(viewsets.ReadOnlyModelViewSet):
@@ -115,7 +121,7 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
         )
     
     @detail_route(methods=['get'])
-    def buyers(self, request, title=None):
+    def buyers(self, request, version, title=None):
         """Detail view for querying the users who have bought a game, serialized with
         UserSerializer.
         """
@@ -125,5 +131,8 @@ class GameViewSet(viewsets.ReadOnlyModelViewSet):
             GamePlayed.objects.all().filter(game=game),
             UserGamePlayedSerializer
         )
-        serializer = UserGamePlayedSerializer(qset, many=True)
+        serializer = UserGamePlayedSerializer(
+            qset, many=True,
+            context={'request': request}
+        )
         return Response(serializer.data)

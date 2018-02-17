@@ -39,7 +39,10 @@ class UsersTest(TestCase):
     
     def testUserList(self):
         
-        response = self.client.get(reverse('api:user-list'), None, format='json')
+        response = self.client.get(
+            reverse('api:user-list', args=['v1']),
+            None, format='json'
+        )
         self.assertEquals(response.status_code, 200)
         
         content = self.parser.parse(BytesIO(response.content))
@@ -50,7 +53,10 @@ class UsersTest(TestCase):
         
     def testDeveloperList(self):
         
-        response = self.client.get(reverse('api:developer-list'), None, format='json')
+        response = self.client.get(
+            reverse('api:developer-list', args=['v1']),
+            None, format='json'
+        )
         self.assertEquals(response.status_code, 200)
         
         content = self.parser.parse(BytesIO(response.content))
@@ -60,15 +66,6 @@ class UsersTest(TestCase):
             Group.objects.get(name='Developer').user_set.all()
         }
         self.assertTrue(got_users == has_users)
-        
-        #self.assertEquals(len(content), 3)
-        #
-        #developer_list = list(map(
-        #    lambda user: user.username,
-        #    Group.objects.get(name='Developer').user_set.all()
-        #))
-        #for user in content:
-        #    self.assertTrue(user['username'] in developer_list)
 
 class DevelopedGamesTest(TestCase):
     """Tests the querying of games, and information from the developers.
@@ -99,7 +96,10 @@ class DevelopedGamesTest(TestCase):
     
     def testGamesList(self):
         
-        response = self.client.get(reverse('api:game-list'), None, format='json')
+        response = self.client.get(
+            reverse('api:game-list', args=['v1']),
+            None, format='json'
+        )
         self.assertEquals(response.status_code, 200)
         
         content = self.parser.parse(BytesIO(response.content))
@@ -115,7 +115,7 @@ class DevelopedGamesTest(TestCase):
         
         for developer in Group.objects.get(name='Developer').user_set.all():
             response = self.client.get(
-                reverse('api:developer-games', args=[developer.username]),
+                reverse('api:developer-games', args=['v1', developer.username]),
                 None, format='json'
             )
             self.assertEquals(response.status_code, 200)
@@ -168,7 +168,7 @@ class BoughtGamesTest(TestCase):
         
         for user in Group.objects.get(name='Player').user_set.all():
             response = self.client.get(
-                reverse('api:user-games', args=[user.username]),
+                reverse('api:user-games', args=['v1', user.username]),
                 None, format='json'
             )
             self.assertEquals(response.status_code, 200)
@@ -186,7 +186,7 @@ class BoughtGamesTest(TestCase):
         
         for game in Game.objects.all():
             response = self.client.get(
-                reverse('api:game-buyers', args=[game.title]),
+                reverse('api:game-buyers', args=['v1', game.title]),
                 None, format='json'
             )
             self.assertEquals(response.status_code, 200)
@@ -247,7 +247,7 @@ class SortByTest(TestCase):
         """
         
         response = self.client.get(
-            reverse('api:game-list'),
+            reverse('api:game-list', args=['v1']),
             {'order_by': 'revenue'},
             format='json'
         )
@@ -257,7 +257,7 @@ class SortByTest(TestCase):
             self.assertEquals(content[i]['title'], 'game{}'.format(i))
         
         response = self.client.get(
-            reverse('api:game-list'),
+            reverse('api:game-list', args=['v1']),
             {'order_by': '-revenue'},
             format='json'
         )
@@ -280,7 +280,7 @@ class SortByTest(TestCase):
             gameplayed.save()
         
         response = self.client.get(
-            reverse('api:game-buyers', args=['game0']),
+            reverse('api:game-buyers', args=['v1', 'game0']),
             {'order_by': 'gameScore'},
             format='json'
         )
@@ -290,7 +290,7 @@ class SortByTest(TestCase):
             self.assertEquals(content[i]['user'], 'ply{}'.format(i))
         
         response = self.client.get(
-            reverse('api:game-buyers', args=['game0']),
+            reverse('api:game-buyers', args=['v1', 'game0']),
             {'order_by': '-gameScore'},
             format='json'
         )
