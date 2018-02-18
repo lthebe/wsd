@@ -13,17 +13,10 @@
         <a class="nav-link" href="{% url 'accounts:detail' request.user.id %}">Account</a>
       </li>
       {% endif %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Top Games
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Game 1</a>
-          <a class="dropdown-item" href="#">Game 2</a>
-          <a class="dropdown-item" href="#">Game 3</a>
-        </div>
-      </li>
       {% if request.user.is_authenticated %}
+      	<li class="nav-item">
+	  <a class="nav-link" href="{% url 'accounts:detail' request.user.id %}">Account</a>
+     	 </li>
         <li class="nav-item nav-link">
           Welcome {{ request.user.username }}
           {% if request.user|in_group:"Developer" %}
