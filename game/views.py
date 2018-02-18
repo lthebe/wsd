@@ -153,13 +153,13 @@ def upload(request):
         if form.is_valid():
             new_game = form.save(commit=False)
             new_game.developer = request.user
-            if new_game.gameimage:
-                try:
-                    new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
-                    new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
-                except ValueError: # enum exception
-                    # Todo how to render an exception to the view?
-                    raise ValueError
+            try:
+                if new_game.gameimage:
+                    new_game.gameimage = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.COVER)
+                    new_game.gamethumb = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.THUMBNAIL)
+            except ValueError: # enum exception
+                # Todo how to render an exception to the view?
+                raise ValueError
             #adds the developer as a player allowing to play game without buying
             new_game.save()
             played_game = GamePlayed.objects.create(gameScore=0)

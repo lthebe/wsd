@@ -15,6 +15,7 @@ html{
 }
 
 body {
+    /*allows footer position absolute*/
     margin-bottom: var(--footer-height);
     background-color: var(--lightgrey-background);
     /*carousel padding override*/
@@ -94,15 +95,6 @@ footer {
     background:#CCC
 }
 
-.card-footer{
-    color: #5a5a5a;
-    text-decoration: none !important;
-}
-
-.card-footer :hover{
-    color: white;
-}
-
 .center_div{
 
     margin: 0 auto;
@@ -113,6 +105,7 @@ footer {
     overflow:hidden;
 }
 
+/* Not implemented into html */
 .thumbnail-caption{
     position:absolute;
     bottom:-25%;
@@ -152,4 +145,27 @@ footer {
     max-width: 100%;
     height: auto;
     position: relative;
+}
+
+.border-row{
+    border-bottom: #5a5a5a solid 1px;
+    padding-bottom: 5px;
+}
+
+.description-box {
+  max-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.description-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0; padding: 30px 0;
+
+  /* "transparent" only works here because == rgba(0,0,0,0) */
+  background-image: linear-gradient(to bottom, transparent, white   );
 }

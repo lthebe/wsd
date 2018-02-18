@@ -15,9 +15,10 @@
   </div>
   <div class="panel-body">
     <h1 class="text-center text-uppercase">{{game.title}}</h1>
-    <p>
-      {{game.description}}
-    </p>
+    <div class="description-box">
+        <p>{{game.description}}</p>
+        <p class="read-more"><a href="#" class="btn btn-primary">Read More</a></p>
+    </div>
     <p>
       {% if not game_owner %}
         <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>

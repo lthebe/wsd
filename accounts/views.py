@@ -1,6 +1,8 @@
 import pdb
 from random import shuffle
 
+import ast
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.contrib.auth import login
@@ -16,9 +18,11 @@ from django.contrib.auth.models import User, Group
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
+from gameHub.settings import ImageSizeEnum
 from .forms import RegisterForm, GroupChoiceForm, ProfileUpdateForm
-from game.models import Game
+from game.models import Game, PaymentDetail, GamePlayed
+
+
 # Create your views here.
 
 class RegisterView(CreateView):
@@ -30,7 +34,11 @@ class RegisterView(CreateView):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
-            user.profile.image = form.cleaned_data.get('image')
+            tmp_img = form.cleaned_data.get('image')
+            if tmp_img is not None:
+                user.profile.image = Game.resize_image( tmp_img, tmp_img.name, ImageSizeEnum.PROFILE)
+            else:
+                user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
             if form.cleaned_data.get('developer'):
@@ -86,7 +94,11 @@ class ProfileUpdateView(UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             user = form.save(commit=False)
-            user.profile.image = form.cleaned_data.get('image')
+            tmp_img = form.cleaned_data.get('image')
+            if tmp_img is not None:
+                user.profile.image = Game.resize_image(tmp_img, tmp_img.name, ImageSizeEnum.PROFILE)
+            else:
+                user.profile.image = form.cleaned_data.get('image')
             user.profile.description = form.cleaned_data.get('description')
             user.profile.nickname = form.cleaned_data.get('nickname')
             user.save()
@@ -116,9 +128,28 @@ class ProfileDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
         #add what is needed in profiledetails
-        context['developed_games'] = Game.objects.filter(developer=self.request.user)
-        context['played_games'] = self.request.user.gameplayed_set.all()
+        developed_games = Game.objects.filter(developer=self.request.user)
+        played_games = self.request.user.gameplayed_set.all()
+        for played_game in played_games:
+            try:
+                dictionary=ast.literal_eval(played_game.gameState)
+                dictionary = dictionary['gameState']
+                played_game.score =  dictionary['score']
+                played_game.playedItems = dictionary['playerItems']
+
+                #played_game.score = dictionary['score']
+            except TypeError:
+                played_game.gameState = 'No Stats'
+        for game in developed_games:
+            game.total_earn = game.sellcount * game.price
+        context['developed_games'] = developed_games
+        context['played_games'] = played_games
         return context
+
+
+class ProfileStatisticsView(View):
+    def get(self, request, **args):
+        return render(request, template_name='accounts/statistic_details.html', context={'game': Game.objects.get(id=args.get('game'))})
 
 
 class HomeView(View):
