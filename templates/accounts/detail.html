@@ -6,7 +6,7 @@
     <div class="container">
         <div>
             {% if object.profile.image %}
-                <img class="d-block mx-auto border p-2 img-fluid" src="{{object.profile.image.url}}"/>
+                <img class="d-block mx-auto border p-2 img-fluid" src="{{object.profile.image.url}}" alt="image_profile"/>
             {% endif %}
         </div>
         <div>
@@ -74,6 +74,6 @@
             {% endfor %}
             </div>
         {% endif %}
-        <a href="{% url 'accounts:update' request.user.id %}"><button class="mt-2 btn btn-success">Update Profile</button></a>
+        <a href="{% url 'accounts:update' request.user.id %}" class="mt-2 btn btn-success">Update Profile</a>
     </div>
 {% endblock %}
