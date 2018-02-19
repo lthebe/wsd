@@ -6,7 +6,7 @@
     <div class="container">
         <div>
             {% if object.profile.image %}
-                <img class="d-block mx-auto border p-2 img-fluid" src="{{object.profile.image.url}}" alt="image_profile"/>
+                <img alt="{{object}}" class="d-block mx-auto border p-2 img-fluid" src="{{object.profile.image.url}}"/>
             {% endif %}
         </div>
         <div>
@@ -55,7 +55,9 @@
             {% for developed_game in developed_games %}
                     <div class="col-sm-3 mt-2">
                         <h3 class="inline text-nowrap w-100">{{ developed_game.title|truncatechars:15 }}</h3>
+                        {% if developed_game.gamethumb %}
                         <img class="embed-responsive"  src="{{developed_game.gamethumb.url}}" alt="Card image cap">
+                        {% endif %}
                         <div class="btn-group-sm">
                             <a class="btn btn-primary mt-1"  href="{% url 'game:delete' game=developed_game.id %}">Delete</a>
                             <a class="btn btn-primary mt-1" href="{% url 'game:game_update' game=developed_game.id %}">Update</a>

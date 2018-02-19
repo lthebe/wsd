@@ -1,6 +1,6 @@
 
-Game
-====
+REST API
+========
 
 This app implements the game model, and the buying, playing and searching
 functionality.
