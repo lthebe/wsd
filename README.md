@@ -1,14 +1,3 @@
-Typescript setup
-----------------
-
-The typescript files should be stored under the app they belong to under the directory
-static\_src. To build the scripts just run make from the project root. For example if
-a source file is stored under 'some\_app/static\_src/example.ts', then make will build
-it and output the compiled script to 'some\_app/static/example.js'.
-
-The build system requires that *tsc* can be invoked from the command line. The easiest
-way is to have a global installation.
-
 Documentation
 -------------
 
@@ -103,4 +92,57 @@ The testing of the frontend will be done continuously during development, both o
 
 **6. Risk Analysis**
 
+**7. Final Submission**
 
+## Features implemented **[Feature (points)] => description**
+Let's describe the feature in more details :)
+1. Authentication (200) => We implemented authentication using Django Auth - and
+  email validation is required before the account is activated. We used SMTP for
+  deployment whereas console for the test purpose. Third party login is developed
+  and it currently works with Google - the only downfall of the solution at the
+  moment is it keeps on asking to update either a user is a developer or a player
+  which implies that a user can be both player and developer if he chooses once
+  player and next developer (Many-To-Many between User Group relationship)
+2. Basic Player Functionalities (300) => Basic player functionalities are
+  implemented well - a user can play the game and save the state of the game or
+  load the game. A game is only available for play once you purchase the game.
+3. Basic Developer Functionalities (200) => A developer can upload a game - and
+  he can play his own game as well.
+4. Game/service interaction (200) => GameService interaction is fully implmeneted
+  to our understanding. A user has to save the state manually though (when a user
+  closes the browser tab, it does not  automatically save for example)
+5. Quality of Work (90)
+6. Non-functional requirements (175)
+7. Save/load and resolution feature (100)
+8. 3rd party login (100)
+9. RESTful API (70)
+10. Own Game (0)
+11. Mobile Friendly(50)
+12. Social Media Sharing (40) - Social Media sharing works and the detail of the
+  games are posted as well.
+
+## 3 Task Division
+Task division was more about communication than planning after we decided how to
+approach in the beginning. We used Slack for the communication. And discussed
+our issue in the slack. For example, we proposed like - hey, I am now going to
+implement this feature - and the person would be responsible for that feature.
+There were some aspects we were more focused definitely as we found it easier to
+proceed that way due to the difference on in what phase of the project we can
+commit. For example, Filippo was traveling in the beginning of our start while
+two other of us were on holiday and thought of spending on doing something. But,
+still we managed to get ourselves involved in all technology stacks.
+Was there any difficulties?
+As a team, probably not really - because we were supporting each other and
+communicating well. What one could not handle, could have been handled by another
+member. But, personally, I think we had some problems though.
+Who did what?
+Laxmi implemented the user accounts registering/login/logout, authentication, most
+of the models, and the interaction between the site and the games. Filippo worked
+mostly on frontend, making it responsive and mobile friendly, and managing the
+uploading of images. Carl set up the logging system, documentation system,
+implemented the search functionality, uploading of games and the rest api.
+
+## Instructions to use app
+1. Username for developer: gamehub_dev => **geoShip**
+2. Username/Password for player: gamehub_player => **geoShip**
+2. [Link to the game] (http://gamehub-aalto.herokuapp.com "GameHub@Heroku")
