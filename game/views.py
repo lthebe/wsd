@@ -157,9 +157,10 @@ def upload(request):
                 if new_game.gameimage:
                     new_game.gameimage = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.COVER)
                     new_game.gamethumb = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.THUMBNAIL)
-            except ValueError: # enum exception
-                # Todo how to render an exception to the view?
-                raise ValueError
+            except ValueError:
+                request.session['errors'] = {'imageError': 'Image not valid'}
+                form = UploadGameForm()
+                return HttpResponseRedirect(reverse('game:upload'))
             #adds the developer as a player allowing to play game without buying
             new_game.save()
             played_game = GamePlayed.objects.create(gameScore=0)
@@ -284,10 +285,10 @@ class GameUpdateView(UpdateView):
         if form.is_valid():
             new_game = form.save(commit=False)
             if new_game.gameimage:
-                new_game.gameimage = Game.resize_image(new_game, ImageSizeEnum.COVER)
-                new_game.gamethumb = Game.resize_image(new_game, ImageSizeEnum.THUMBNAIL)
+                new_game.gameimage = Game.resize_image(new_game.gameimage, new_game.gameimage.name, ImageSizeEnum.COVER)
+                new_game.gamethumb = Game.resize_image(new_game.gameimage, new_game.gameimage.name,ImageSizeEnum.THUMBNAIL)
             new_game.save(update_fields=['title', 'url', 'price','description','gameimage', 'gamethumb'])
-            return redirect(reverse('accounts:detail', kwargs={'pk': request.user.id}))
+            return redirect(reverse('game:detail', kwargs={'game': new_game.id}))
         else:
             return render(request, template_name='game/upload.html', context={'form': form })
     def get(self, request, game):
