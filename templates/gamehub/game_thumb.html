@@ -12,7 +12,7 @@
         {% if game.gamethumb %}
             <img class="embed-responsive"  src="{{game.gamethumb.url}}" alt="Card image cap">
         {% else %}
-            <img class="embed-responsive" alt="Card image cap">
+            {{game.title}}
         {% endif %}
     </div>
 </a>

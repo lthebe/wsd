@@ -18,7 +18,7 @@
             <div class="col-md-2" style="height: 100px;">
               <!-- There should be a default image for no image -->
               {% if hit.gameimage %}
-                <img class="card-img h-100" src="{{ hit.gameimage.url }}">
+                <img alt="{{hit.gameimage.title}}" class="card-img h-100" src="{{ hit.gameimage.url }}">
               {% else %}
                 <p>No image available.</p>
               {% endif %}

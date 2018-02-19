@@ -10,7 +10,7 @@
 <div class="panel-default">
   <div class="panel-heading">
     {% if game.gameimage %}
-    <img src="{{game.gameimage.url}}" class="img-responsive" style="width: 100%" />
+    <img src="{{game.gameimage.url}}" alt="{{game.title}}" class="img-responsive" style="width: 100%" />
     {% endif %}
   </div>
   <div class="panel-body">
@@ -21,7 +21,7 @@
     </div>
     <p>
       {% if not game_owner %}
-        <a href="{% url 'game:purchase' game=game.id %}"><button class="btn btn-warning">Buy</button></a>
+      <a class="btn btn-primary mt-1"  href="{% url 'game:purchase' game=game.id %}">Buy</a>
       {% endif %}
     </p>
     <div class="d-block text-center">
