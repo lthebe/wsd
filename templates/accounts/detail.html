@@ -76,6 +76,6 @@
             {% endfor %}
             </div>
         {% endif %}
-        <a href="{% url 'accounts:update' request.user.id %}"><button class="mt-2 btn btn-success">Update Profile</button></a>
+        <a href="{% url 'accounts:update' request.user.id %}" class="mt-2 btn btn-success">Update Profile</a>
     </div>
 {% endblock %}

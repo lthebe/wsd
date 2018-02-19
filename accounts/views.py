@@ -136,7 +136,6 @@ class ProfileDetailView(DetailView):
                 dictionary = dictionary['gameState']
                 played_game.score =  dictionary['score']
                 played_game.playedItems = dictionary['playerItems']
-
                 #played_game.score = dictionary['score']
             except TypeError:
                 played_game.gameState = 'No Stats'

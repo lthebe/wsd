@@ -9,13 +9,8 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       {% if request.user.is_authenticated %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:detail' request.user.id %}">Account</a>
-      </li>
-      {% endif %}
-      {% if request.user.is_authenticated %}
       	<li class="nav-item">
-	  <a class="nav-link" href="{% url 'accounts:detail' request.user.id %}">Account</a>
+	    <a class="nav-link" href="{% url 'accounts:detail' request.user.id %}">Account</a>
      	 </li>
         <li class="nav-item nav-link">
           Welcome {{ request.user.username }}
